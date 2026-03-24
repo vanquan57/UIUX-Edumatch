@@ -30,14 +30,27 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
+  # UI
+  flutter_screenutil: ^5.9.3
+  google_fonts: ^6.3.0
+  flutter_svg: ^2.2.0
+  intl: ^0.18.1
+  flutter_html: ^3.0.0-beta.2
+  # Environment
+  flutter_dotenv: ^5.1.0
+  # Routing
+  go_router: ^16.1.0
+  app_links: ^6.4.1
+  # Storage (optional)
+  shared_preferences: ^2.5.3
+  # Utils
+  logger: ^2.6.1
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.4
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -58,9 +71,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - .env
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
