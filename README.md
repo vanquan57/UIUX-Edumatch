@@ -78,6 +78,20 @@
    - Chờ PM hoặc team lead review
    - **Chỉ được merge khi PM/Team Lead phê duyệt**
 
+⚠️ **QUAN TRỌNG - Trước khi tạo PR:**
+```bash
+# 1. Cập nhật và rebase feature branch với develop trong 1 lệnh
+git pull --rebase origin develop
+
+# 2. Nếu có conflict, fix rồi tiếp tục rebase
+git rebase --continue
+
+# 3. Push lên với force (vì rebase thay đổi history)
+git push origin feature/<tên-feature> --force-with-lease
+
+# 4. Mới tạo PR
+```
+
 ### Đặt tên branch
 - Feature: `feature/tên-tính-năng`
 - Bug fix: `bugfix/tên-bug`
@@ -91,32 +105,145 @@
 - ♻️ Refactor: `refactor: mô tả`
 - ✅ Test: `test: mô tả`
 
-## 3. Các Role Cơ Bản
+## 3. Chuẩn Code & Quy Tắc Dự Án
+
+### Cấu Trúc Project (Clean Architecture)
+
+```
+lib/
+├── main.dart                 # Entry point
+├── core/
+│   ├── config/
+│   │   ├── constant.dart     # App constants, enums
+│   │   └── env.dart          # Environment variables
+│   └── router/
+│       └── app_router.dart   # Navigation routes
+├── features/
+│   ├── auth/
+│   │   └── presentation/
+│   │       └── views/
+│   │           └── login_view.dart
+│   └── home/
+│       └── presentation/
+│           └── views/
+│               └── home_view.dart
+└── share/
+    └── layouts/
+        ├── main_layout.dart  # Main layout wrapper
+        ├── header.dart
+        └── footer.dart
+```
+
+### Hướng Dẫn Cho Từng Role
+
+#### 1. **Developer - Coding Standards**
+
+**📁 Tạo Feature Mới:**
+```
+features/
+├── feature_name/
+│   ├── presentation/
+│   │   ├── views/
+│   │   │   └── feature_view.dart      # Main view/page
+│   │   ├── widgets/
+│   │   │   └── custom_widget.dart     # Reusable widgets
+│   │   └── controllers/
+│   │       └── feature_controller.dart # Logic (if needed)
+```
+
+**✍️ Naming Convention:**
+- Files: `snake_case.dart` (e.g., `login_view.dart`)
+- Classes: `PascalCase` (e.g., `LoginView`, `UserModel`)
+- Variables/Functions: `camelCase` (e.g., `userName`, `getUserData()`)
+- Constants: `UPPER_SNAKE_CASE` (e.g., `DEFAULT_TIMEOUT`)
+
+**📝 View/Page Template:**
+```dart
+import 'package:edu_match/core/router/app_router.dart';
+import 'package:flutter/material.dart';
+
+class FeaturePage extends StatelessWidget {
+  const FeaturePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: Text('Feature Page'));
+  }
+}
+```
+
+**🧭 Navigation (Go Router):**
+```dart
+// Đi tới page khác
+context.go(AppRouter.home);
+
+// Hoặc sử dụng route constants
+GoRoute(
+  path: '/feature',
+  name: 'feature',
+  builder: (context, state) => const FeaturePage(),
+)
+```
+
+**📐 Responsive Design (Flutter ScreenUtil):**
+```dart
+// Sử dụng .w (width) và .h (height) cho responsive UI
+Padding(
+  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+  child: Text('Hello', style: TextStyle(fontSize: 18.sp)),
+)
+```
+
+**🎨 Layout Components:**
+```dart
+// Sử dụng MainLayout cho các page
+MainLayout(
+  layoutType: LayoutType.normal,  // normal, fullscreen, custom
+  showHeader: true,
+  showFooter: true,
+  child: YourContent(),
+)
+```
+
+**✅ Best Practices:**
+- ✓ Sử dụng `const` constructor khi có thể
+- ✓ Tuân thủ folder structure
+- ✓ Tách logic ra khỏi UI widget
+- ✓ Sử dụng meaningful variable names
+- ✓ Comment cho code phức tạp
+- ✗ Không hard-code giá trị → sử dụng constants
+- ✗ Không import từ features khác → sử dụng shared components
+
+---
+
+
+2. Tạo reusable widgets trong `share/widgets/`
+   ```
+   share/
+   └── widgets/
+       ├── buttons/
+       │   └── primary_button.dart
+       ├── inputs/
+       │   └── text_field.dart
+       └── cards/
+           └── feature_card.dart
+   ```
+
+
+
+
+## 4. Các Role Cơ Bản
 
 ### 1. **PM (Project Manager)**
    - Quản lý roadmap và timeline
    - Review và phê duyệt PR trước khi merge vào develop
    - Cập nhật trạng thái công việc
    - Giao việc cho team
+   - Kiểm tra code quality & conventions
 
 ### 2. **Developer**
    - Thực hiện các feature dựa trên yêu cầu PM
+   - Tuân thủ folder structure & naming convention
    - Tạo feature branch, commit và push code
    - Tạo PR gửi cho PM review
    - Fix issues dựa trên feedback
-
-### 3. **UI/UX Designer**
-   - Thiết kế giao diện ứng dụng
-   - Cung cấp design system và assets
-   - Support developer trong việc implement UI
-
-### 4. **QA/Tester**
-   - Test chức năng trên các nhánh
-   - Report bugs chi tiết
-   - Xác nhận fix trước khi merge
-
-## Tài liệu tham khảo
-
-- [Flutter Documentation](https://docs.flutter.dev/)
-- [Dart Language](https://dart.dev/)
-- [Git Workflow](https://git-scm.com/)
