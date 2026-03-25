@@ -1,8 +1,8 @@
 import 'package:edu_match/core/config/constant.dart';
 import 'package:edu_match/share/layouts/footer.dart';
 import 'package:edu_match/share/layouts/header.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MainLayout extends StatelessWidget {
@@ -15,7 +15,17 @@ class MainLayout extends StatelessWidget {
   final PreferredSizeWidget? customHeader;
   final double headerHeight;
 
+  /// Status bar background color (default: matches backgroundColor or white)
+  final Color? statusBarColor;
+
+  /// Icon brightness on status bar (dark = icons tối, light = icons sáng)
+  final Brightness statusBarIconBrightness;
+
+  /// Có dùng SafeArea hay không (fullscreen thường cần = true)
+  final bool useSafeArea;
+
   const MainLayout({
+    super.key,
     required this.child,
     this.layoutType = LayoutType.normal,
     this.showHeader = true,
@@ -24,6 +34,9 @@ class MainLayout extends StatelessWidget {
     this.backgroundColor,
     this.customHeader,
     this.headerHeight = 185,
+    this.statusBarColor,
+    this.statusBarIconBrightness = Brightness.dark,
+    this.useSafeArea = true,
   });
 
   @override
@@ -34,23 +47,37 @@ class MainLayout extends StatelessWidget {
       vertical: isMobile ? 12.h : 16.h,
     );
 
+    final effectiveBgColor = backgroundColor ?? Colors.white;
+    final effectiveStatusBarColor = statusBarColor ?? effectiveBgColor;
+
+    final overlayStyle = SystemUiOverlayStyle(
+      statusBarColor: effectiveStatusBarColor,
+      statusBarIconBrightness: statusBarIconBrightness,
+    );
+
     if (layoutType == LayoutType.fullscreen) {
-      return Scaffold(
-        backgroundColor: backgroundColor,
-        body: SafeArea(child: child),
+      return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: overlayStyle,
+        child: Scaffold(
+          backgroundColor: effectiveBgColor,
+          body: useSafeArea ? SafeArea(child: child) : child,
+        ),
       );
     }
 
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: showHeader ? (customHeader ?? Header()) : null,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildContent(defaultPadding, context),
-              if (showFooter) const Footer(),
-            ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: overlayStyle,
+      child: Scaffold(
+        backgroundColor: effectiveBgColor,
+        appBar: showHeader ? (customHeader ?? Header()) : null,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildContent(defaultPadding, context),
+                if (showFooter) const Footer(),
+              ],
+            ),
           ),
         ),
       ),
