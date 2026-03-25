@@ -59,12 +59,9 @@ class _LoginPageState extends State<LoginPage> {
         if (mounted) {
           if (role == AppConstants.roleAdmin) {
             context.go(AppRouter.homeAdmin);
-          } else if (role == AppConstants.roleTutor) {
-            context.go(AppRouter.homeTutor);
-          } else if (role == AppConstants.roleParent) {
-            context.go(AppRouter.homeParent);
-          } else if (role == AppConstants.roleStudent) {
-            context.go(AppRouter.homeStudent);
+          } else {
+            // student, parent, tutor → onboarding flow on first launch
+            context.go(AppRouter.onboardingWelcome, extra: role);
           }
         }
       });

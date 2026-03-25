@@ -6,6 +6,9 @@ import 'package:edu_match/features/auth/presentation/views/register_view.dart';
 import 'package:edu_match/parent/features/home/presentation/views/parent_home_page.dart';
 import 'package:edu_match/share/layouts/main_layout.dart';
 import 'package:edu_match/student/features/home/presentation/views/student_home_page.dart';
+import 'package:edu_match/student/features/onboarding/presentation/views/profile_welcome_view.dart';
+import 'package:edu_match/student/features/onboarding/presentation/views/subject_interest_view.dart';
+import 'package:edu_match/student/features/onboarding/presentation/views/welcome_view.dart';
 import 'package:edu_match/tutor/features/home/presentation/views/tutor_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +21,9 @@ class AppRouter {
   static const String homeTutor = '/home/tutor';
   static const String homeParent = '/home/parent';
   static const String homeStudent = '/home/student';
+  static const String onboardingWelcome = '/onboarding/welcome';
+  static const String onboardingSubjectInterest = '/onboarding/subject-interest';
+  static const String onboardingProfileSetup = '/onboarding/profile-setup';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -128,6 +134,51 @@ class AppRouter {
             showHeader: true,
             showFooter: true,
             child: const StudentHomePage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: onboardingWelcome,
+        name: 'onboardingWelcome',
+        builder: (context, state) {
+          final role = state.extra as String? ?? AppConstants.roleStudent;
+          return MainLayout(
+            layoutType: LayoutType.fullscreen,
+            backgroundColor: Colors.white,
+            statusBarColor: Colors.white,
+            statusBarIconBrightness: Brightness.dark,
+            useSafeArea: false,
+            child: OnboardingWelcomePage(role: role),
+          );
+        },
+      ),
+      GoRoute(
+        path: onboardingSubjectInterest,
+        name: 'onboardingSubjectInterest',
+        builder: (context, state) {
+          final role = state.extra as String? ?? AppConstants.roleStudent;
+          return MainLayout(
+            layoutType: LayoutType.fullscreen,
+            backgroundColor: Colors.white,
+            statusBarColor: Colors.white,
+            statusBarIconBrightness: Brightness.dark,
+            useSafeArea: false,
+            child: SubjectInterestPage(role: role),
+          );
+        },
+      ),
+      GoRoute(
+        path: onboardingProfileSetup,
+        name: 'onboardingProfileSetup',
+        builder: (context, state) {
+          final role = state.extra as String? ?? AppConstants.roleStudent;
+          return MainLayout(
+            layoutType: LayoutType.fullscreen,
+            backgroundColor: Colors.white,
+            statusBarColor: Colors.white,
+            statusBarIconBrightness: Brightness.dark,
+            useSafeArea: false,
+            child: ProfileSetupPage(role: role),
           );
         },
       ),
