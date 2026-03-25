@@ -2,6 +2,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:edu_match/core/config/app_colors.dart';
 import 'package:edu_match/core/config/constant.dart';
 import 'package:edu_match/core/router/app_router.dart';
+import 'package:edu_match/core/services/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -57,6 +58,7 @@ class _LoginPageState extends State<LoginPage> {
       Future.delayed(const Duration(seconds: 2), () {
         setState(() => _isLoading = false);
         if (mounted) {
+          UserSession.login(role);
           if (role == AppConstants.roleAdmin) {
             context.go(AppRouter.homeAdmin);
           } else {

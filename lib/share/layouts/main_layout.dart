@@ -13,6 +13,8 @@ class MainLayout extends StatelessWidget {
   final EdgeInsets? padding;
   final Color? backgroundColor;
   final PreferredSizeWidget? customHeader;
+  // headerHeight is reserved for future custom header use; actual height is
+  // determined by Header.preferredSize (currently 100dp).
   final double headerHeight;
 
   /// Status bar background color (default: matches backgroundColor or white)
@@ -33,7 +35,7 @@ class MainLayout extends StatelessWidget {
     this.padding,
     this.backgroundColor,
     this.customHeader,
-    this.headerHeight = 185,
+    this.headerHeight = 100,
     this.statusBarColor,
     this.statusBarIconBrightness = Brightness.dark,
     this.useSafeArea = true,
