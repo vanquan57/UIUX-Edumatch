@@ -6,5 +6,9 @@ enum LayoutType {
 }
 
 class AppConstants {
-  // App constants go here
+  // define role admin, tutor, parent, student
+  static const String roleAdmin = 'admin';
+  static const String roleTutor = 'tutor';
+  static const String roleParent = 'parent';
+  static const String roleStudent = 'student';
 }

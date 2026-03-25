@@ -194,16 +194,79 @@ Padding(
 )
 ```
 
-**🎨 Layout Components:**
+**🎨 MainLayout — Layout chính của app:**
+
+`MainLayout` là wrapper dùng cho tất cả các màn hình. Hỗ trợ 2 loại layout và nhiều tuỳ chọn linh hoạt.
+
+---
+
+**Tất cả tham số:**
+
+| Tham số | Kiểu | Mặc định | Mô tả |
+|---|---|---|---|
+| `child` | `Widget` | **bắt buộc** | Nội dung màn hình |
+| `layoutType` | `LayoutType` | `normal` | Kiểu layout (`normal` hoặc `fullscreen`) |
+| `backgroundColor` | `Color?` | `Colors.white` | Màu nền Scaffold |
+| `statusBarColor` | `Color?` | theo `backgroundColor` | Màu vùng status bar (giờ/wifi/pin) |
+| `statusBarIconBrightness` | `Brightness` | `Brightness.dark` | Icon status bar: `dark`=đen, `light`=trắng |
+| `useSafeArea` | `bool` | `true` | Tránh vùng camera/notch hay không |
+| `showHeader` | `bool` | `true` | Hiện header *(chỉ áp dụng với `normal`)* |
+| `showFooter` | `bool` | `true` | Hiện footer *(chỉ áp dụng với `normal`)* |
+| `customHeader` | `PreferredSizeWidget?` | `null` | AppBar tuỳ chỉnh *(chỉ áp dụng với `normal`)* |
+| `padding` | `EdgeInsets?` | auto responsive | Padding nội dung *(chỉ áp dụng với `normal`)* |
+
+---
+
+**Ví dụ sử dụng:**
+
 ```dart
-// Sử dụng MainLayout cho các page
+// 1. Màn hình thông thường — có header + footer
 MainLayout(
-  layoutType: LayoutType.normal,  // normal, fullscreen, custom
-  showHeader: true,
-  showFooter: true,
-  child: YourContent(),
+  layoutType: LayoutType.normal,
+  child: YourPage(),
+)
+
+// 2. Thông thường — ẩn footer
+MainLayout(
+  layoutType: LayoutType.normal,
+  showFooter: false,
+  child: YourPage(),
+)
+
+// 3. Thông thường — header tuỳ chỉnh
+MainLayout(
+  layoutType: LayoutType.normal,
+  customHeader: AppBar(title: Text('Tiêu đề')),
+  child: YourPage(),
+)
+
+// 4. Fullscreen — nền trắng, icon status bar tối (màn login, onboarding)
+MainLayout(
+  layoutType: LayoutType.fullscreen,
+  backgroundColor: Colors.white,
+  statusBarColor: Colors.white,
+  statusBarIconBrightness: Brightness.dark,
+  child: YourPage(),
+)
+
+// 5. Fullscreen — nền tối, icon status bar sáng (màn splash, dark theme)
+MainLayout(
+  layoutType: LayoutType.fullscreen,
+  backgroundColor: Colors.black,
+  statusBarColor: Colors.black,
+  statusBarIconBrightness: Brightness.light,
+  child: YourPage(),
+)
+
+// 6. Fullscreen tuyệt đối — content chạy lên cả vùng camera/notch
+MainLayout(
+  layoutType: LayoutType.fullscreen,
+  useSafeArea: false,
+  child: YourPage(),
 )
 ```
+
+> ⚠️ Các tham số `showHeader`, `showFooter`, `customHeader`, `padding` chỉ có tác dụng với `LayoutType.normal`. Với `LayoutType.fullscreen` những tham số này bị bỏ qua.
 
 **✅ Best Practices:**
 - ✓ Sử dụng `const` constructor khi có thể
