@@ -1,7 +1,9 @@
 import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/router/app_router.dart';
 import 'package:edu_match/share/components/course_card.dart';
 import 'package:edu_match/share/components/empty_state.dart';
 import 'package:edu_match/share/components/online_tutor_item.dart';
+import 'package:edu_match/share/components/quick_action_item.dart';
 import 'package:edu_match/share/components/section_title.dart';
 import 'package:edu_match/share/components/skeleton_loader.dart';
 import 'package:edu_match/share/components/tutor_card.dart';
@@ -10,6 +12,7 @@ import 'package:edu_match/student/features/home/data/models/course_model.dart';
 import 'package:edu_match/student/features/home/data/models/tutor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class StudentHomePage extends StatefulWidget {
@@ -135,6 +138,10 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
           // Online Tutors Section
           _buildOnlineTutorsSection(),
+          SizedBox(height: 24.h),
+
+          // Quick Actions Section
+          _buildQuickActionsSection(),
           SizedBox(height: 24.h),
         ],
       ),
@@ -695,5 +702,147 @@ class _StudentHomePageState extends State<StudentHomePage> {
         },
       ),
     );
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Quick Actions Section
+  // ─────────────────────────────────────────────────────────────────────────────
+  Widget _buildQuickActionsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Quick Actions',
+          style: GoogleFonts.poppins(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textDark,
+          ),
+        ),
+        SizedBox(height: 16.h),
+        GridView.count(
+          crossAxisCount: 3,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisSpacing: 16.w,
+          mainAxisSpacing: 16.h,
+          children: [
+            QuickActionItem(
+              icon: Icons.search,
+              label: 'Tìm gia sư',
+              onTap: () => _navigateToTutorList(),
+            ),
+            QuickActionItem(
+              icon: Icons.play_circle_outline,
+              label: 'Học online',
+              onTap: () => _navigateToCourseList(),
+            ),
+            QuickActionItem(
+              icon: Icons.calendar_today,
+              label: 'Lịch học',
+              onTap: () => _navigateToSchedule(),
+            ),
+            QuickActionItem(
+              icon: Icons.message_outlined,
+              label: 'Tin nhắn',
+              onTap: () => _navigateToMessages(),
+            ),
+            QuickActionItem(
+              icon: Icons.favorite_border,
+              label: 'Ưa thích',
+              onTap: () => _navigateToFavorites(),
+            ),
+            QuickActionItem(
+              icon: Icons.person,
+              label: 'Hồ sơ',
+              onTap: () => _navigateToProfile(),
+            ),
+            QuickActionItem(
+              icon: Icons.assignment,
+              label: 'Bài tập',
+              onTap: () => _navigateToAssignments(),
+            ),
+            QuickActionItem(
+              icon: Icons.assessment,
+              label: 'Thống kê',
+              onTap: () => _navigateToStatistics(),
+            ),
+            QuickActionItem(
+              icon: Icons.settings,
+              label: 'Cài đặt',
+              onTap: () => _navigateToSettings(),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Navigation Methods
+  void _navigateToTutorList() {
+    // TODO: Navigate to Tutor List page
+    // context.go(AppRouter.tutorList);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Navigate to Tutor List')));
+  }
+
+  void _navigateToCourseList() {
+    // TODO: Navigate to Course List page
+    // context.go(AppRouter.courseList);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Navigate to Course List')));
+  }
+
+  void _navigateToSchedule() {
+    // TODO: Navigate to My Learning / Schedule page
+    // context.go(AppRouter.myLearning);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Navigate to Schedule')));
+  }
+
+  void _navigateToMessages() {
+    // TODO: Navigate to Chat List page
+    // context.go(AppRouter.chatList);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Navigate to Messages')));
+  }
+
+  void _navigateToFavorites() {
+    // TODO: Navigate to Favorites page
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Navigate to Favorites')));
+  }
+
+  void _navigateToProfile() {
+    // TODO: Navigate to Profile page
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Navigate to Profile')));
+  }
+
+  void _navigateToAssignments() {
+    // TODO: Navigate to Assignments page
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Navigate to Assignments')));
+  }
+
+  void _navigateToStatistics() {
+    // TODO: Navigate to Statistics page
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Navigate to Statistics')));
+  }
+
+  void _navigateToSettings() {
+    // TODO: Navigate to Settings page
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Navigate to Settings')));
   }
 }
