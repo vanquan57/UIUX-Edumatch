@@ -75,7 +75,6 @@ class _HeaderState extends State<Header> {
                   ),
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
                     itemCount: _navItems.length,
                     separatorBuilder: (_, __) => SizedBox(width: 4.w),
                     itemBuilder: (context, i) {
