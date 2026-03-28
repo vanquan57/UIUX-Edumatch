@@ -124,16 +124,16 @@ class _StudentHomePageState extends State<StudentHomePage> {
           _buildForYouSection(),
           SizedBox(height: 24.h),
 
+          // Banner Promotions Section
+          _buildBannerPromotionsSection(),
+          SizedBox(height: 24.h),
+
           // Featured Courses Section
           _buildFeaturedCoursesSection(),
           SizedBox(height: 24.h),
 
           // Online Tutors Section
           _buildOnlineTutorsSection(),
-          SizedBox(height: 24.h),
-
-          // Banner Promotions Section
-          _buildBannerPromotionsSection(),
           SizedBox(height: 24.h),
         ],
       ),
@@ -457,8 +457,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
         _isLoadingBanners
             ? _buildBannerSkeletonLoader()
             : _banners.isEmpty
-                ? _buildEmptyBannersState()
-                : _buildBannerCarousel(),
+            ? _buildEmptyBannersState()
+            : _buildBannerCarousel(),
       ],
     );
   }
@@ -557,10 +557,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Colors.black.withOpacity(0.4),
-                ],
+                colors: [Colors.transparent, Colors.black.withOpacity(0.4)],
               ),
             ),
           ),
@@ -691,9 +688,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
         subtitle: 'Hãy quay lại sau để cập nhật khuyến mãi mới',
         ctaText: 'Quay lại',
         onCtaPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Quay lại')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Quay lại')));
         },
       ),
     );
