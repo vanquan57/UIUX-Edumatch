@@ -18,6 +18,10 @@ class AppColors {
   static const Color textGray = Color(0xFF757575);
   static const Color textLightGray = Color(0xFFBDBDBD);
 
+  // Basic colors
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color black = Color(0xFF000000);
+
   // Utility colors
   static const Color errorRed = Color(0xFFD32F2F);
   static const Color warningOrange = Color(0xFFFFA500);

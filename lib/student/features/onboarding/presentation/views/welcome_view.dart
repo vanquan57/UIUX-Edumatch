@@ -20,21 +20,21 @@ class _OnboardingWelcomePageState extends State<OnboardingWelcomePage> {
   static const List<_OnboardingSlide> _slides = [
     _OnboardingSlide(
       icon: Icons.school_rounded,
-      gradientColors: [Color(0xFF1C8659), Color(0xFF2DB87F)],
+      gradientColors: [AppColors.primaryGreen, AppColors.accentGreen],
       title: 'Tìm gia sư phù hợp',
       description:
           'Kết nối với hàng ngàn gia sư chất lượng cao, phù hợp với nhu cầu và ngân sách của bạn.',
     ),
     _OnboardingSlide(
       icon: Icons.laptop_mac_rounded,
-      gradientColors: [Color(0xFF2DB87F), Color(0xFF7AC043)],
+      gradientColors: [AppColors.accentGreen, AppColors.primaryGreenLight],
       title: 'Học online mọi lúc mọi nơi',
       description:
           'Linh hoạt học tập theo lịch trình của bạn, bất cứ đâu chỉ với một chiếc điện thoại.',
     ),
     _OnboardingSlide(
       icon: Icons.menu_book_rounded,
-      gradientColors: [Color(0xFF0D5A3F), Color(0xFF1C8659)],
+      gradientColors: [AppColors.primaryGreenDark, AppColors.primaryGreen],
       title: 'Nhiều hình thức học đa dạng',
       description:
           'Chọn học 1-1, học nhóm, học online hoặc tại nhà — tất cả trong một ứng dụng.',
@@ -65,7 +65,7 @@ class _OnboardingWelcomePageState extends State<OnboardingWelcomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -168,7 +168,7 @@ class _OnboardingWelcomePageState extends State<OnboardingWelcomePage> {
                               style: GoogleFonts.poppins(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                                color: AppColors.white,
                               ),
                             ),
                           ),

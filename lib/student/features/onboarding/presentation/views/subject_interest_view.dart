@@ -64,7 +64,7 @@ class _SubjectInterestPageState extends State<SubjectInterestPage> {
     final canContinue = _selectedSubjects.isNotEmpty;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,7 +283,7 @@ class _SubjectInterestPageState extends State<SubjectInterestPage> {
                               style: GoogleFonts.poppins(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                                color: AppColors.white,
                               ),
                             ),
                           ),
@@ -327,7 +327,7 @@ class _SubjectChip extends StatelessWidget {
                   colors: [AppColors.primaryGreen, AppColors.accentGreen],
                 )
               : null,
-          color: isSelected ? null : Colors.white,
+          color: isSelected ? null : AppColors.white,
           borderRadius: BorderRadius.circular(40.r),
           border: Border.all(
             color: isSelected ? AppColors.primaryGreen : AppColors.borderColor,
@@ -349,7 +349,7 @@ class _SubjectChip extends StatelessWidget {
             Icon(
               isSelected ? Icons.check_circle_rounded : icon,
               size: 16.sp,
-              color: isSelected ? Colors.white : AppColors.textGray,
+              color: isSelected ? AppColors.white : AppColors.textGray,
             ),
             SizedBox(width: 6.w),
             Text(
@@ -358,7 +358,7 @@ class _SubjectChip extends StatelessWidget {
                 fontSize: 13.sp,
                 fontWeight:
                     isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? Colors.white : AppColors.textDark,
+                color: isSelected ? AppColors.white : AppColors.textDark,
               ),
             ),
           ],
@@ -390,18 +390,18 @@ class _ProgressDot extends StatelessWidget {
       height: 28.w,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: (isActive || isDone) ? color : Colors.white,
+        color: (isActive || isDone) ? color : AppColors.white,
         border: Border.all(color: color, width: 2),
       ),
       child: isDone
-          ? Icon(Icons.check_rounded, color: Colors.white, size: 14.sp)
+          ? Icon(Icons.check_rounded, color: AppColors.white, size: 14.sp)
           : Center(
               child: Container(
                 width: 8.w,
                 height: 8.w,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isActive ? Colors.white : color,
+                  color: isActive ? AppColors.white : color,
                 ),
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:edu_match/core/config/app_colors.dart';
 import 'package:edu_match/share/components/rating_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -38,15 +39,15 @@ class CourseCard extends StatelessWidget {
       child: Container(
         width: 200.w,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: const Color(0xFFE0E0E0),
+            color: AppColors.borderColor,
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0x1F000000),
+              color: AppColors.shadowColor,
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -66,18 +67,18 @@ class CourseCard extends StatelessWidget {
                   child: Container(
                     width: double.infinity,
                     height: 120.h,
-                    color: const Color(0xFFF5F5F5),
+                    color: AppColors.bgLight,
                     child: Image.asset(
                       thumbnail,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: const Color(0xFFE8F5E9),
+                          color: AppColors.lightGreen,
                           child: Center(
                             child: Icon(
                               Icons.video_library_rounded,
                               size: 48.sp,
-                              color: const Color(0xFF1C8659),
+                              color: AppColors.primaryGreen,
                             ),
                           ),
                         );
@@ -97,8 +98,8 @@ class CourseCard extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: badge == 'Hot'
-                            ? const Color(0xFFD32F2F)
-                            : const Color(0xFF1C8659),
+                            ? AppColors.errorRed
+                            : AppColors.primaryGreen,
                         borderRadius: BorderRadius.circular(6.r),
                       ),
                       child: Text(
@@ -106,7 +107,7 @@ class CourseCard extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           fontSize: 10.sp,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: AppColors.white,
                         ),
                       ),
                     ),
@@ -132,7 +133,7 @@ class CourseCard extends StatelessWidget {
                           style: GoogleFonts.poppins(
                             fontSize: 13.sp,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF1A1A1A),
+                            color: AppColors.textDark,
                           ),
                         ),
                         SizedBox(height: 6.h),
@@ -144,7 +145,7 @@ class CourseCard extends StatelessWidget {
                           style: GoogleFonts.poppins(
                             fontSize: 11.sp,
                             fontWeight: FontWeight.w400,
-                            color: const Color(0xFF757575),
+                            color: AppColors.textGray,
                           ),
                         ),
                       ],
@@ -165,7 +166,7 @@ class CourseCard extends StatelessWidget {
                           style: GoogleFonts.poppins(
                             fontSize: 13.sp,
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFF1C8659),
+                            color: AppColors.primaryGreen,
                           ),
                         ),
                       ],
@@ -192,7 +193,7 @@ class CourseCardSkeleton extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: const Color(0xFFE0E0E0),
+          color: AppColors.borderColor,
           width: 1,
         ),
       ),
@@ -208,7 +209,7 @@ class CourseCardSkeleton extends StatelessWidget {
             child: Container(
               width: double.infinity,
               height: 120.h,
-              color: const Color(0xFFE0E0E0),
+              color: AppColors.borderColor,
             ),
           ),
           // Content skeleton
@@ -226,7 +227,7 @@ class CourseCardSkeleton extends StatelessWidget {
                         height: 12.h,
                         width: 140.w,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE0E0E0),
+                          color: AppColors.borderColor,
                           borderRadius: BorderRadius.circular(4.r),
                         ),
                       ),
@@ -235,7 +236,7 @@ class CourseCardSkeleton extends StatelessWidget {
                         height: 10.h,
                         width: 100.w,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE0E0E0),
+                          color: AppColors.borderColor,
                           borderRadius: BorderRadius.circular(4.r),
                         ),
                       ),

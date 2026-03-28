@@ -1,3 +1,4 @@
+import 'package:edu_match/core/config/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -31,14 +32,14 @@ class EmptyState extends StatelessWidget {
               width: 80.w,
               height: 80.h,
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F5E9),
+                color: AppColors.lightGreen,
                 borderRadius: BorderRadius.circular(40.r),
               ),
               child: Center(
                 child: Icon(
                   icon,
                   size: 40.sp,
-                  color: const Color(0xFF1C8659),
+                  color: AppColors.primaryGreen,
                 ),
               ),
             ),
@@ -49,7 +50,7 @@ class EmptyState extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF1A1A1A),
+                color: AppColors.textDark,
               ),
               textAlign: TextAlign.center,
             ),
@@ -60,7 +61,7 @@ class EmptyState extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w400,
-                color: const Color(0xFF757575),
+                color: AppColors.textGray,
               ),
               textAlign: TextAlign.center,
             ),
@@ -72,7 +73,7 @@ class EmptyState extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onCtaPressed,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1C8659),
+                    backgroundColor: AppColors.primaryGreen,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.r),
                     ),

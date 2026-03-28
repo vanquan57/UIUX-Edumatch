@@ -1,3 +1,4 @@
+import 'package:edu_match/core/config/app_colors.dart';
 import 'package:edu_match/admin/features/home/presentation/views/admin_home_page.dart';
 import 'package:edu_match/core/config/constant.dart';
 import 'package:edu_match/features/auth/presentation/views/forgot_password_view.dart';
@@ -56,8 +57,8 @@ class AppRouter {
         builder: (context, state) {
           return const MainLayout(
             layoutType: LayoutType.fullscreen,
-            backgroundColor: Colors.white,
-            statusBarColor: Colors.white,
+            backgroundColor: AppColors.white,
+            statusBarColor: AppColors.white,
             statusBarIconBrightness: Brightness.dark,
             child: LoginPage(),
           );
@@ -69,8 +70,8 @@ class AppRouter {
         builder: (context, state) {
           return const MainLayout(
             layoutType: LayoutType.fullscreen,
-            backgroundColor: Colors.white,
-            statusBarColor: Colors.white,
+            backgroundColor: AppColors.white,
+            statusBarColor: AppColors.white,
             statusBarIconBrightness: Brightness.dark,
             child: RegisterPage(),
           );
@@ -82,8 +83,8 @@ class AppRouter {
         builder: (context, state) {
           return const MainLayout(
             layoutType: LayoutType.fullscreen,
-            backgroundColor: Colors.white,
-            statusBarColor: Colors.white,
+            backgroundColor: AppColors.white,
+            statusBarColor: AppColors.white,
             statusBarIconBrightness: Brightness.dark,
             child: ForgotPasswordPage(),
           );
@@ -144,8 +145,8 @@ class AppRouter {
           final role = state.extra as String? ?? AppConstants.roleStudent;
           return MainLayout(
             layoutType: LayoutType.fullscreen,
-            backgroundColor: Colors.white,
-            statusBarColor: Colors.white,
+            backgroundColor: AppColors.white,
+            statusBarColor: AppColors.white,
             statusBarIconBrightness: Brightness.dark,
             useSafeArea: false,
             child: OnboardingWelcomePage(role: role),
@@ -159,8 +160,8 @@ class AppRouter {
           final role = state.extra as String? ?? AppConstants.roleStudent;
           return MainLayout(
             layoutType: LayoutType.fullscreen,
-            backgroundColor: Colors.white,
-            statusBarColor: Colors.white,
+            backgroundColor: AppColors.white,
+            statusBarColor: AppColors.white,
             statusBarIconBrightness: Brightness.dark,
             useSafeArea: false,
             child: SubjectInterestPage(role: role),
@@ -174,8 +175,8 @@ class AppRouter {
           final role = state.extra as String? ?? AppConstants.roleStudent;
           return MainLayout(
             layoutType: LayoutType.fullscreen,
-            backgroundColor: Colors.white,
-            statusBarColor: Colors.white,
+            backgroundColor: AppColors.white,
+            statusBarColor: AppColors.white,
             statusBarIconBrightness: Brightness.dark,
             useSafeArea: false,
             child: ProfileSetupPage(role: role),

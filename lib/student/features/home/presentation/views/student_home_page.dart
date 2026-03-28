@@ -1,3 +1,4 @@
+import 'package:edu_match/core/config/app_colors.dart';
 import 'package:edu_match/share/components/course_card.dart';
 import 'package:edu_match/share/components/empty_state.dart';
 import 'package:edu_match/share/components/online_tutor_item.dart';
@@ -150,7 +151,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF1C8659), Color(0xFF0D5A3F)],
+          colors: [AppColors.primaryGreen, AppColors.primaryGreenDark],
         ),
         borderRadius: BorderRadius.circular(16.r),
       ),
@@ -162,7 +163,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
             style: GoogleFonts.poppins(
               fontSize: 18.sp,
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              color: AppColors.white,
             ),
           ),
           SizedBox(height: 8.h),
@@ -569,7 +570,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD32F2F),
+                  color: AppColors.errorRed,
                   borderRadius: BorderRadius.circular(6.r),
                 ),
                 child: Text(
@@ -577,7 +578,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                   style: GoogleFonts.poppins(
                     fontSize: 10.sp,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: AppColors.white,
                   ),
                 ),
               ),
@@ -595,7 +596,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                   style: GoogleFonts.poppins(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: AppColors.white,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -634,7 +635,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                             vertical: 6.h,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF7AC043),
+                            color: AppColors.primaryGreenLight,
                             borderRadius: BorderRadius.circular(6.r),
                           ),
                           child: Text(
@@ -642,7 +643,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                             style: GoogleFonts.poppins(
                               fontSize: 10.sp,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                              color: AppColors.white,
                             ),
                           ),
                         ),
@@ -670,7 +671,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4.r),
               color: _currentBannerIndex == index
-                  ? const Color(0xFF1C8659)
+                  ? AppColors.primaryGreen
                   : Colors.grey[300],
             ),
           ),
