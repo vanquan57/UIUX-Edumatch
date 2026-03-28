@@ -52,7 +52,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -191,7 +191,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             // Complete button — pinned at bottom
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.white,
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.shadowColor,
@@ -234,7 +234,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                                 height: 24.h,
                                 child: const CircularProgressIndicator(
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white),
+                                      AppColors.white),
                                   strokeWidth: 2.5,
                                 ),
                               )
@@ -243,7 +243,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                                 style: GoogleFonts.poppins(
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                 ),
                               ),
                       ),
@@ -291,7 +291,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
         ),
         prefixIconConstraints: BoxConstraints(minWidth: 44.w),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppColors.white,
         contentPadding:
             EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         border: OutlineInputBorder(
@@ -342,18 +342,18 @@ class _ProgressDot extends StatelessWidget {
       height: 28.w,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: (isActive || isDone) ? color : Colors.white,
+        color: (isActive || isDone) ? color : AppColors.white,
         border: Border.all(color: color, width: 2),
       ),
       child: isDone
-          ? Icon(Icons.check_rounded, color: Colors.white, size: 14.sp)
+          ? Icon(Icons.check_rounded, color: AppColors.white, size: 14.sp)
           : Center(
               child: Container(
                 width: 8.w,
                 height: 8.w,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isActive ? Colors.white : color,
+                  color: isActive ? AppColors.white : color,
                 ),
               ),
             ),

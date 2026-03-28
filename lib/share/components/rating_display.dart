@@ -1,3 +1,4 @@
+import 'package:edu_match/core/config/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,7 +22,7 @@ class RatingDisplay extends StatelessWidget {
       children: [
         Icon(
           Icons.star_rounded,
-          color: const Color(0xFFFFA500),
+          color: AppColors.warningOrange,
           size: compact ? 14.sp : 16.sp,
         ),
         SizedBox(width: 4.w),
@@ -30,7 +31,7 @@ class RatingDisplay extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: compact ? 12.sp : 14.sp,
             fontWeight: FontWeight.w600,
-            color: const Color(0xFF1A1A1A),
+            color: AppColors.textDark,
           ),
         ),
         SizedBox(width: 4.w),
@@ -39,7 +40,7 @@ class RatingDisplay extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: compact ? 11.sp : 12.sp,
             fontWeight: FontWeight.w400,
-            color: const Color(0xFF757575),
+            color: AppColors.textGray,
           ),
         ),
       ],

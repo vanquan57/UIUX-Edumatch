@@ -34,7 +34,7 @@ class _HeaderState extends State<Header> {
         final isLoggedIn = role != null;
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.white,
             boxShadow: [
               BoxShadow(
                 color: AppColors.shadowColor,
@@ -276,7 +276,7 @@ class _BadgeIconButton extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 9.sp,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      color: AppColors.white,
                     ),
                   ),
                 ),
@@ -304,7 +304,7 @@ class _AvatarDropdown extends StatelessWidget {
         borderRadius: BorderRadius.circular(14.r),
       ),
       elevation: 8,
-      color: Colors.white,
+      color: AppColors.white,
       onSelected: (action) => _handleAction(context, action),
       itemBuilder: (context) => [
         _menuItem(

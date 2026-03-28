@@ -128,7 +128,7 @@ class _AboutSection extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                      color: AppColors.white,
                     ),
                   ),
                 ],
@@ -168,7 +168,7 @@ class _LinksSection extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: AppColors.white,
           ),
         ),
         SizedBox(height: 12.h),
@@ -214,7 +214,7 @@ class _ContactSection extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: AppColors.white,
           ),
         ),
         SizedBox(height: 12.h),
@@ -278,7 +278,7 @@ class _SocialSection extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: AppColors.white,
           ),
         ),
         SizedBox(height: 12.h),

@@ -1,3 +1,4 @@
+import 'package:edu_match/core/config/app_colors.dart';
 import 'package:edu_match/share/components/rating_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -39,12 +40,12 @@ class TutorCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: const Color(0xFFE0E0E0),
+            color: AppColors.borderColor,
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0x1F000000),
+              color: AppColors.shadowColor,
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -64,7 +65,7 @@ class TutorCard extends StatelessWidget {
                   child: Container(
                     width: double.infinity,
                     height: 120.h,
-                    color: const Color(0xFFF5F5F5),
+                    color: AppColors.bgLight,
                     child: Image.asset(
                       avatar,
                       fit: BoxFit.cover,
@@ -94,7 +95,7 @@ class TutorCard extends StatelessWidget {
                         vertical: 4.h,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4CAF50),
+                        color: AppColors.successGreen,
                         borderRadius: BorderRadius.circular(12.r),
                       ),
                       child: Text(
@@ -122,7 +123,7 @@ class TutorCard extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1A1A1A),
+                        color: AppColors.textDark,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

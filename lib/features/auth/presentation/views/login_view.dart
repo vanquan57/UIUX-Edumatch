@@ -183,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: AppColors.white,
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: 16.w,
                               vertical: 14.h,
@@ -273,7 +273,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: AppColors.white,
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: 16.w,
                               vertical: 14.h,
@@ -371,7 +371,7 @@ class _LoginPageState extends State<LoginPage> {
                           dropdownStyleData: DropdownStyleData(
                             width: 200.w,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: AppColors.white,
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                           ),
@@ -384,7 +384,7 @@ class _LoginPageState extends State<LoginPage> {
                           },
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: AppColors.white,
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: 16.w,
                               vertical: 14.h,
@@ -454,7 +454,7 @@ class _LoginPageState extends State<LoginPage> {
                                     width: 24.w,
                                     child: const CircularProgressIndicator(
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
+                                        AppColors.white,
                                       ),
                                       strokeWidth: 2,
                                     ),
@@ -464,7 +464,7 @@ class _LoginPageState extends State<LoginPage> {
                                     style: GoogleFonts.poppins(
                                       fontSize: 16.sp,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.white,
+                                      color: AppColors.white,
                                     ),
                                   ),
                           ),
@@ -506,7 +506,7 @@ class _LoginPageState extends State<LoginPage> {
                       width: double.infinity,
                       height: 54.h,
                       child: Material(
-                        color: Colors.white,
+                        color: AppColors.white,
                         shape: RoundedRectangleBorder(
                           side: const BorderSide(
                             color: AppColors.borderColor,

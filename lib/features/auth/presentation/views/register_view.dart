@@ -108,7 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: Colors.white,
+            fillColor: AppColors.white,
             contentPadding: EdgeInsets.symmetric(
               horizontal: 16.w,
               vertical: 14.h,
@@ -407,7 +407,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: AppColors.white,
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: 16.w,
                           vertical: 14.h,
@@ -463,7 +463,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 width: 24.w,
                                 child: const CircularProgressIndicator(
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
+                                    AppColors.white,
                                   ),
                                   strokeWidth: 2,
                                 ),
@@ -473,7 +473,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 style: GoogleFonts.poppins(
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                 ),
                               ),
                       ),
@@ -510,7 +510,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   width: double.infinity,
                   height: 54.h,
                   child: Material(
-                    color: Colors.white,
+                    color: AppColors.white,
                     shape: RoundedRectangleBorder(
                       side: const BorderSide(
                         color: AppColors.borderColor,

@@ -1,3 +1,4 @@
+import 'package:edu_match/core/config/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,7 +27,7 @@ class SectionTitle extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF1A1A1A),
+              color: AppColors.textDark,
             ),
           ),
           if (showViewAll)
@@ -41,7 +42,7 @@ class SectionTitle extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF1C8659),
+                  color: AppColors.primaryGreen,
                 ),
               ),
             ),
