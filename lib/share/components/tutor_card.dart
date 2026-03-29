@@ -35,7 +35,6 @@ class TutorCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap ?? onViewProfile,
       child: Container(
-        width: 200.w,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16.r),
@@ -63,12 +62,12 @@ class TutorCard extends StatelessWidget {
                     topRight: Radius.circular(16.r),
                   ),
                   child: Container(
-                    width: double.infinity,
                     height: 120.h,
                     color: AppColors.bgLight,
                     child: Image.asset(
                       avatar,
                       fit: BoxFit.cover,
+                      width: double.infinity,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
                           color: const Color(0xFFE8F5E9),
@@ -113,58 +112,59 @@ class TutorCard extends StatelessWidget {
             // Content section
             Expanded(
               child: Padding(
-                padding: EdgeInsets.all(12.w),
+                padding: EdgeInsets.all(10.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
                     // Name
                     Text(
                       name,
                       style: GoogleFonts.poppins(
-                        fontSize: 14.sp,
+                        fontSize: 13.sp,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textDark,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 6.h),
+                    SizedBox(height: 4.h),
                     // Rating
                     RatingDisplay(
                       rating: rating,
                       reviewCount: reviewCount,
                       compact: true,
                     ),
-                    SizedBox(height: 8.h),
+                    SizedBox(height: 6.h),
                     // Price
                     Text(
                       '${(pricePerHour / 1000).toStringAsFixed(0)}K/h',
                       style: GoogleFonts.poppins(
-                        fontSize: 13.sp,
+                        fontSize: 12.sp,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF1C8659),
                       ),
                     ),
-                    SizedBox(height: 8.h),
+                    SizedBox(height: 6.h),
                     // Subjects tags
                     Expanded(
                       child: Wrap(
-                        spacing: 4.w,
-                        runSpacing: 4.h,
+                        spacing: 3.w,
+                        runSpacing: 3.h,
                         children: subjects.take(2).map((subject) {
                           return Container(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 8.w,
-                              vertical: 3.h,
+                              horizontal: 6.w,
+                              vertical: 2.h,
                             ),
                             decoration: BoxDecoration(
                               color: const Color(0xFFE8F5E9),
-                              borderRadius: BorderRadius.circular(6.r),
+                              borderRadius: BorderRadius.circular(5.r),
                             ),
                             child: Text(
                               subject,
                               style: GoogleFonts.poppins(
-                                fontSize: 10.sp,
+                                fontSize: 9.sp,
                                 fontWeight: FontWeight.w500,
                                 color: const Color(0xFF1C8659),
                               ),
@@ -173,11 +173,11 @@ class TutorCard extends StatelessWidget {
                         }).toList(),
                       ),
                     ),
-                    SizedBox(height: 8.h),
+                    SizedBox(height: 6.h),
                     // CTA Button
                     SizedBox(
                       width: double.infinity,
-                      height: 36.h,
+                      height: 32.h,
                       child: ElevatedButton(
                         onPressed: onViewProfile,
                         style: ElevatedButton.styleFrom(
@@ -186,11 +186,12 @@ class TutorCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           elevation: 0,
+                          padding: EdgeInsets.zero,
                         ),
                         child: Text(
                           'Xem hồ sơ',
                           style: GoogleFonts.poppins(
-                            fontSize: 12.sp,
+                            fontSize: 11.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),

@@ -7,6 +7,7 @@ import 'package:edu_match/features/auth/presentation/views/register_view.dart';
 import 'package:edu_match/parent/features/home/presentation/views/parent_home_page.dart';
 import 'package:edu_match/share/layouts/main_layout.dart';
 import 'package:edu_match/student/features/home/presentation/views/student_home_page.dart';
+import 'package:edu_match/student/features/marketplace/presentation/views/tutor_list_page.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/profile_welcome_view.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/subject_interest_view.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/welcome_view.dart';
@@ -25,6 +26,7 @@ class AppRouter {
   static const String onboardingWelcome = '/onboarding/welcome';
   static const String onboardingSubjectInterest = '/onboarding/subject-interest';
   static const String onboardingProfileSetup = '/onboarding/profile-setup';
+  static const String marketplaceTutorList = '/marketplace/tutors';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -180,6 +182,18 @@ class AppRouter {
             statusBarIconBrightness: Brightness.dark,
             useSafeArea: false,
             child: ProfileSetupPage(role: role),
+          );
+        },
+      ),
+      GoRoute(
+        path: marketplaceTutorList,
+        name: 'marketplaceTutorList',
+        builder: (context, state) {
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: true,
+            showFooter: true,
+            child: const TutorListPage(),
           );
         },
       ),

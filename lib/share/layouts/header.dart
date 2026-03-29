@@ -20,7 +20,7 @@ class Header extends StatefulWidget implements PreferredSizeWidget {
 
 class _HeaderState extends State<Header> {
   static const _navItems = [
-    _NavItem('Tìm gia sư', '/find-tutor'),
+    _NavItem('Tìm gia sư', '/marketplace/tutors'),
     _NavItem('Khóa học', '/courses'),
     _NavItem('Về chúng tôi', '/about'),
     _NavItem('Blog', '/blog'),

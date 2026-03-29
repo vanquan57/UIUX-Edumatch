@@ -7,9 +7,9 @@ import 'package:edu_match/share/components/quick_action_item.dart';
 import 'package:edu_match/share/components/section_title.dart';
 import 'package:edu_match/share/components/skeleton_loader.dart';
 import 'package:edu_match/share/components/tutor_card.dart';
-import 'package:edu_match/student/features/home/data/models/banner_model.dart';
-import 'package:edu_match/student/features/home/data/models/course_model.dart';
-import 'package:edu_match/student/features/home/data/models/tutor_model.dart';
+import 'package:edu_match/student/data/models/banner_model.dart';
+import 'package:edu_match/student/data/models/course_model.dart';
+import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -197,10 +197,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
         SectionTitle(
           title: 'Gia sư phù hợp với bạn',
           onViewAllPressed: () {
-            // Navigate to full tutor list
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Xem tất cả gia sư')));
+            context.go(AppRouter.marketplaceTutorList);
           },
         ),
         _isLoadingRecommendations
@@ -220,7 +217,10 @@ class _StudentHomePageState extends State<StudentHomePage> {
         itemCount: 3,
         itemBuilder: (context, index) => Padding(
           padding: EdgeInsets.only(right: 12.w),
-          child: const TutorCardSkeleton(),
+          child: SizedBox(
+            width: 200.w,
+            child: const TutorCardSkeleton(),
+          ),
         ),
       ),
     );
@@ -236,20 +236,23 @@ class _StudentHomePageState extends State<StudentHomePage> {
           final tutor = _recommendedTutors[index];
           return Padding(
             padding: EdgeInsets.only(right: 12.w),
-            child: TutorCard(
-              id: tutor.id,
-              name: tutor.name,
-              avatar: tutor.avatar,
-              rating: tutor.rating,
-              reviewCount: tutor.reviewCount,
-              pricePerHour: tutor.pricePerHour,
-              subjects: tutor.subjects,
-              isOnline: tutor.isOnline,
-              onViewProfile: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Xem hồ sơ ${tutor.name}')),
-                );
-              },
+            child: SizedBox(
+              width: 200.w,
+              child: TutorCard(
+                id: tutor.id,
+                name: tutor.name,
+                avatar: tutor.avatar,
+                rating: tutor.rating,
+                reviewCount: tutor.reviewCount,
+                pricePerHour: tutor.pricePerHour,
+                subjects: tutor.subjects,
+                isOnline: tutor.isOnline,
+                onViewProfile: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Xem hồ sơ ${tutor.name}')),
+                  );
+                },
+              ),
             ),
           );
         },
@@ -371,10 +374,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
         SectionTitle(
           title: 'Gia sư đang online (${_onlineTutors.length})',
           onViewAllPressed: () {
-            // Navigate to full courses list
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Xem tất cả gia sư online')),
-            );
+            context.go(AppRouter.marketplaceTutorList);
           },
         ),
         SizedBox(height: 12.h),
@@ -780,11 +780,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   // Navigation Methods
   void _navigateToTutorList() {
-    // TODO: Navigate to Tutor List page
-    // context.go(AppRouter.tutorList);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Navigate to Tutor List')));
+    context.go(AppRouter.marketplaceTutorList);
   }
 
   void _navigateToCourseList() {
