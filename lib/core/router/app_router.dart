@@ -8,6 +8,7 @@ import 'package:edu_match/parent/features/home/presentation/views/parent_home_pa
 import 'package:edu_match/share/layouts/main_layout.dart';
 import 'package:edu_match/student/features/home/presentation/views/student_home_page.dart';
 import 'package:edu_match/student/features/list_tutor/presentation/views/tutor_list_page.dart';
+import 'package:edu_match/student/features/feedback/presentation/views/list_feedback.dart';
 import 'package:edu_match/student/features/tutor_details/presentation/views/tutor_details_page.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/profile_welcome_view.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/subject_interest_view.dart';
@@ -29,6 +30,7 @@ class AppRouter {
   static const String onboardingProfileSetup = '/onboarding/profile-setup';
   static const String marketplaceTutorList = '/marketplace/tutors';
   static const String marketplaceTutorDetails = '/marketplace/tutor-details/:tutorId';
+  static const String feedbackList = '/tutor/:tutorId/feedback';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -42,7 +44,7 @@ class AppRouter {
 
   // GoRouter configuration
   static final GoRouter router = GoRouter(
-    initialLocation: marketplaceTutorList, // ✅ Screen default 
+    initialLocation: login, // ✅ Screen default 
     debugLogDiagnostics: true, // Debug mode
 
     redirect: (BuildContext context, GoRouterState state) {
@@ -210,6 +212,28 @@ class AppRouter {
             showFooter: true,
             padding: EdgeInsets.zero,
             child: TutorDetailsPage(tutorId: tutorId),
+          );
+        },
+      ),
+      GoRoute(
+        path: feedbackList,
+        name: 'feedbackList',
+        builder: (context, state) {
+          final tutorId = state.pathParameters['tutorId']!;
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final tutorName = extra['tutorName'] as String? ?? 'Gia sư';
+          final tutorRating = extra['tutorRating'] as double? ?? 0.0;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            backgroundColor: AppColors.bgLight,
+            padding: EdgeInsets.zero,
+            child: FeedbackListPage(
+              tutorId: tutorId,
+              tutorName: tutorName,
+              tutorRating: tutorRating,
+            ),
           );
         },
       ),

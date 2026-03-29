@@ -846,8 +846,12 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
             ),
             GestureDetector(
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Xem tất cả đánh giá')),
+                context.push(
+                  AppRouter.feedbackList.replaceFirst(':tutorId', tutor.id),
+                  extra: {
+                    'tutorName': tutor.name,
+                    'tutorRating': tutor.rating,
+                  },
                 );
               },
               child: Text(
