@@ -197,7 +197,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
         SectionTitle(
           title: 'Gia sư phù hợp với bạn',
           onViewAllPressed: () {
-            context.go(AppRouter.marketplaceTutorList);
+            context.push(AppRouter.marketplaceTutorList);
           },
         ),
         _isLoadingRecommendations
@@ -248,8 +248,12 @@ class _StudentHomePageState extends State<StudentHomePage> {
                 subjects: tutor.subjects,
                 isOnline: tutor.isOnline,
                 onViewProfile: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Xem hồ sơ ${tutor.name}')),
+                  context.push(
+                    AppRouter.marketplaceTutorDetails.replaceFirst(
+                      ':tutorId',
+                      tutor.id,
+                    ),
+                    extra: tutor,
                   );
                 },
               ),
@@ -374,7 +378,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
         SectionTitle(
           title: 'Gia sư đang online (${_onlineTutors.length})',
           onViewAllPressed: () {
-            context.go(AppRouter.marketplaceTutorList);
+            context.push(AppRouter.marketplaceTutorList);
           },
         ),
         SizedBox(height: 12.h),
@@ -418,8 +422,12 @@ class _StudentHomePageState extends State<StudentHomePage> {
               name: tutor.name,
               avatar: tutor.avatar,
               onChatPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Chat với ${tutor.name}')),
+                context.push(
+                  AppRouter.marketplaceTutorDetails.replaceFirst(
+                    ':tutorId',
+                    tutor.id,
+                  ),
+                  extra: tutor,
                 );
               },
             ),
@@ -780,12 +788,12 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   // Navigation Methods
   void _navigateToTutorList() {
-    context.go(AppRouter.marketplaceTutorList);
+    context.push(AppRouter.marketplaceTutorList);
   }
 
   void _navigateToCourseList() {
     // TODO: Navigate to Course List page
-    // context.go(AppRouter.courseList);
+    // context.push(AppRouter.courseList);
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Navigate to Course List')));
@@ -793,7 +801,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   void _navigateToSchedule() {
     // TODO: Navigate to My Learning / Schedule page
-    // context.go(AppRouter.myLearning);
+    // context.push(AppRouter.myLearning);
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Navigate to Schedule')));
@@ -801,7 +809,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   void _navigateToMessages() {
     // TODO: Navigate to Chat List page
-    // context.go(AppRouter.chatList);
+    // context.push(AppRouter.chatList);
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Navigate to Messages')));
