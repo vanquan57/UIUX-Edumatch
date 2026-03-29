@@ -1,8 +1,10 @@
 import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/router/app_router.dart';
 import 'package:edu_match/share/components/tutor_card.dart';
 import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TutorListPage extends StatefulWidget {
@@ -109,29 +111,6 @@ class _TutorListPageState extends State<TutorListPage> {
     _updateCurrentPage();
   }
 
-  void _applyFilters() {
-    Navigator.pop(context);
-    // TODO: Call API with filters
-    // GET /tutors?filters={subjects, priceRange, rating, location}
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Áp dụng bộ lọc')),
-    );
-  }
-
-  void _resetFilters() {
-    setState(() {
-      _selectedSubjects.clear();
-      _priceRange = const RangeValues(50000, 500000);
-      _minRating = 0;
-      _selectedLocation = 'Tất cả';
-    });
-    Navigator.pop(context);
-    // TODO: Reload list without filters
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Xóa bộ lọc')),
-    );
-  }
-
   void _showFilterBottomSheet() {
     showModalBottomSheet(
       context: context,
@@ -221,8 +200,12 @@ class _TutorListPageState extends State<TutorListPage> {
                   subjects: tutor.subjects,
                   isOnline: tutor.isOnline,
                   onViewProfile: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('View ${tutor.name} profile')),
+                    context.push(
+                      AppRouter.marketplaceTutorDetails.replaceFirst(
+                        ':tutorId',
+                        tutor.id,
+                      ),
+                      extra: tutor,
                     );
                   },
                 ),
@@ -245,8 +228,12 @@ class _TutorListPageState extends State<TutorListPage> {
           padding: EdgeInsets.only(bottom: 12.h),
           child: GestureDetector(
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('View ${tutor.name} profile')),
+              context.push(
+                AppRouter.marketplaceTutorDetails.replaceFirst(
+                  ':tutorId',
+                  tutor.id,
+                ),
+                extra: tutor,
               );
             },
             child: Container(

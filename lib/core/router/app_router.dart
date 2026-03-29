@@ -7,7 +7,8 @@ import 'package:edu_match/features/auth/presentation/views/register_view.dart';
 import 'package:edu_match/parent/features/home/presentation/views/parent_home_page.dart';
 import 'package:edu_match/share/layouts/main_layout.dart';
 import 'package:edu_match/student/features/home/presentation/views/student_home_page.dart';
-import 'package:edu_match/student/features/marketplace/presentation/views/tutor_list_page.dart';
+import 'package:edu_match/student/features/list_tutor/presentation/views/tutor_list_page.dart';
+import 'package:edu_match/student/features/tutor_details/presentation/views/tutor_details_page.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/profile_welcome_view.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/subject_interest_view.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/welcome_view.dart';
@@ -27,6 +28,7 @@ class AppRouter {
   static const String onboardingSubjectInterest = '/onboarding/subject-interest';
   static const String onboardingProfileSetup = '/onboarding/profile-setup';
   static const String marketplaceTutorList = '/marketplace/tutors';
+  static const String marketplaceTutorDetails = '/marketplace/tutor-details/:tutorId';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -40,7 +42,7 @@ class AppRouter {
 
   // GoRouter configuration
   static final GoRouter router = GoRouter(
-    initialLocation: login, // ✅ Screen default 
+    initialLocation: marketplaceTutorList, // ✅ Screen default 
     debugLogDiagnostics: true, // Debug mode
 
     redirect: (BuildContext context, GoRouterState state) {
@@ -194,6 +196,20 @@ class AppRouter {
             showHeader: true,
             showFooter: true,
             child: const TutorListPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: marketplaceTutorDetails,
+        name: 'marketplaceTutorDetails',
+        builder: (context, state) {
+          final tutorId = state.pathParameters['tutorId']!;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            padding: EdgeInsets.zero,
+            child: TutorDetailsPage(tutorId: tutorId),
           );
         },
       ),
