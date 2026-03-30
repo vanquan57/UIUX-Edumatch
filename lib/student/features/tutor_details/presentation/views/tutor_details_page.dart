@@ -551,13 +551,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                     padding: EdgeInsets.only(right: 12.w),
                     child: GestureDetector(
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '${cert.name} - ${cert.issuer ?? 'N/A'}',
-                            ),
-                          ),
-                        );
+                        _showCertificateDetailDialog(context, cert);
                       },
                       child: Container(
                         width: 140.w,
@@ -848,10 +842,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
               onTap: () {
                 context.push(
                   AppRouter.feedbackList.replaceFirst(':tutorId', tutor.id),
-                  extra: {
-                    'tutorName': tutor.name,
-                    'tutorRating': tutor.rating,
-                  },
+                  extra: {'tutorName': tutor.name, 'tutorRating': tutor.rating},
                 );
               },
               child: Text(
@@ -1329,7 +1320,11 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                           SizedBox(height: 4.h),
                           Row(
                             children: [
-                              Icon(Icons.star, size: 12.sp, color: Colors.amber),
+                              Icon(
+                                Icons.star,
+                                size: 12.sp,
+                                color: Colors.amber,
+                              ),
                               SizedBox(width: 2.w),
                               Text(
                                 '${nearbyTutor.rating}',
@@ -1409,4 +1404,207 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
   }
 
   double _toRad(double deg) => deg * (3.141592653589793 / 180);
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Certificate Detail Dialog
+  // ─────────────────────────────────────────────────────────────────────────────
+  void _showCertificateDetailDialog(
+    BuildContext context,
+    CertificateModel cert,
+  ) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.5),
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
+          child: GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Center(
+              child: GestureDetector(
+                onTap: () {}, // Prevent closing when tapping on dialog
+                child: SingleChildScrollView(
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: 400.w,
+                      maxHeight: MediaQuery.of(context).size.height * 0.85,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16.r),
+                    ),
+                    child: Stack(
+                      children: [
+                        // Main content
+                        SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(height: 12.h),
+                              // Certificate image
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  child:
+                                      cert.image != null &&
+                                          cert.image!.isNotEmpty
+                                      ? Image.asset(
+                                          cert.image!,
+                                          width: double.infinity,
+                                          height: 280.h,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Container(
+                                          width: double.infinity,
+                                          height: 280.h,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              12.r,
+                                            ),
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                              colors: [
+                                                AppColors.primaryGreen
+                                                    .withOpacity(0.3),
+                                                AppColors.lightGreen
+                                                    .withOpacity(0.2),
+                                              ],
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.card_giftcard,
+                                              size: 60.sp,
+                                              color: AppColors.primaryGreen,
+                                            ),
+                                          ),
+                                        ),
+                                ),
+                              ),
+                              SizedBox(height: 20.h),
+                              // Certificate name
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                                child: Text(
+                                  cert.name,
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.roboto(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textDark,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 12.h),
+                              // Certificate issuer
+                              if (cert.issuer != null &&
+                                  cert.issuer!.isNotEmpty)
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w,
+                                  ),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 12.w,
+                                      vertical: 8.h,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.lightGreen,
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.verified,
+                                          size: 16.sp,
+                                          color: AppColors.primaryGreen,
+                                        ),
+                                        SizedBox(width: 8.w),
+                                        Expanded(
+                                          child: Text(
+                                            cert.issuer!,
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: GoogleFonts.roboto(
+                                              fontSize: 13.sp,
+                                              fontWeight: FontWeight.w500,
+                                              color: AppColors.primaryGreen,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              SizedBox(height: 24.h),
+                              // Close button
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primaryGreen,
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 12.h,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          8.r,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Đóng',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 16.h),
+                            ],
+                          ),
+                        ),
+                        // Close button (X button)
+                        Positioned(
+                          top: 8.w,
+                          right: 8.w,
+                          child: GestureDetector(
+                            onTap: () => Navigator.of(context).pop(),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.bgLight,
+                                shape: BoxShape.circle,
+                              ),
+                              padding: EdgeInsets.all(8.w),
+                              child: Icon(
+                                Icons.close,
+                                size: 20.sp,
+                                color: AppColors.textDark,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
