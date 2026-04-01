@@ -6,6 +6,12 @@ import 'package:edu_match/features/auth/presentation/views/login_view.dart';
 import 'package:edu_match/features/auth/presentation/views/register_view.dart';
 import 'package:edu_match/parent/features/home/presentation/views/parent_home_page.dart';
 import 'package:edu_match/share/layouts/main_layout.dart';
+import 'package:edu_match/student/data/models/booking_model.dart';
+import 'package:edu_match/student/data/models/tutor_model.dart';
+import 'package:edu_match/student/features/confirm_booking/presentation/views/choice_learning_method.dart';
+import 'package:edu_match/student/features/confirm_booking/presentation/views/confirm_info_booking.dart';
+import 'package:edu_match/student/features/confirm_booking/presentation/views/request_learning_requirement.dart';
+import 'package:edu_match/student/features/confirm_booking/presentation/views/select_time_slot.dart';
 import 'package:edu_match/student/features/home/presentation/views/student_home_page.dart';
 import 'package:edu_match/student/features/list_tutor/presentation/views/tutor_list_page.dart';
 import 'package:edu_match/student/features/feedback/presentation/views/list_feedback.dart';
@@ -31,6 +37,10 @@ class AppRouter {
   static const String marketplaceTutorList = '/marketplace/tutors';
   static const String marketplaceTutorDetails = '/marketplace/tutor-details/:tutorId';
   static const String feedbackList = '/tutor/:tutorId/feedback';
+  static const String bookingLearningMethod = '/booking/learning-method';
+  static const String bookingSelectTimeSlot = '/booking/select-time-slot';
+  static const String bookingRequestRequirement = '/booking/request-requirement';
+  static const String bookingConfirmInfo = '/booking/confirm-info';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -234,6 +244,64 @@ class AppRouter {
               tutorName: tutorName,
               tutorRating: tutorRating,
             ),
+          );
+        },
+      ),
+      GoRoute(
+        path: bookingLearningMethod,
+        name: 'bookingLearningMethod',
+        builder: (context, state) {
+          final tutor = state.extra as TutorModel;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: true,
+            showFooter: true,
+            padding: EdgeInsets.zero,
+            child: ChoiceLearningMethodPage(tutor: tutor),
+          );
+        },
+      ),
+      GoRoute(
+        path: bookingSelectTimeSlot,
+        name: 'bookingSelectTimeSlot',
+        builder: (context, state) {
+          final booking = state.extra as BookingModel;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: true,
+            showFooter: true,
+            padding: EdgeInsets.zero,
+            child: SelectTimeSlotPage(booking: booking),
+          );
+        },
+      ),
+      GoRoute(
+        path: bookingRequestRequirement,
+        name: 'bookingRequestRequirement',
+        builder: (context, state) {
+          final booking = state.extra as BookingModel;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: true,
+            showFooter: true,
+            backgroundColor: AppColors.white,
+            padding: EdgeInsets.zero,
+            child: RequestLearningRequirementPage(booking: booking),
+          );
+        },
+      ),
+      GoRoute(
+        path: bookingConfirmInfo,
+        name: 'bookingConfirmInfo',
+        builder: (context, state) {
+          final booking = state.extra as BookingModel;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: true,
+            showFooter: true,
+            backgroundColor: AppColors.white,
+            padding: EdgeInsets.zero,
+            child: ConfirmInfoBookingPage(booking: booking),
           );
         },
       ),

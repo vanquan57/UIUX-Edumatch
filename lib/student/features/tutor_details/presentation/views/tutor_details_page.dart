@@ -99,14 +99,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
 
   void _onBookingPressed() {
     // Event: onClickBooking → navigate BookingFlow
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Chuyển hướng tới trang đặt lịch'),
-        duration: Duration(milliseconds: 1500),
-      ),
-    );
-    // TODO: Navigate to booking flow
-    // context.go(AppRouter.bookingFlow, extra: tutor);
+    context.push(AppRouter.bookingLearningMethod, extra: tutor);
   }
 
   void _onChatPressed() {
