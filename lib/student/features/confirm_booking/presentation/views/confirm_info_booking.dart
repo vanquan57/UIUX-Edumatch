@@ -17,7 +17,6 @@ class ConfirmInfoBookingPage extends StatefulWidget {
 
 class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
   late BookingModel booking;
-  bool isLoading = false;
 
   // Fake pricing data
   static const double pricePerSession = 250000; // VND
@@ -28,47 +27,8 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
     booking = widget.booking;
   }
 
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(milliseconds: 1500),
-      ),
-    );
-  }
-
   void _onPaymentPressed() {
-    if (isLoading) return;
-    
-    setState(() => isLoading = true);
-
-    try {
-      // Simulate payment processing
-      Future.delayed(const Duration(seconds: 1), () {
-        if (mounted) {
-          setState(() => isLoading = false);
-          
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Thanh toán thành công! Đặt lịch của bạn đã được xác nhận'),
-              duration: Duration(milliseconds: 1500),
-            ),
-          );
-          
-          // Navigate to success or home
-          Future.delayed(const Duration(milliseconds: 500), () {
-            if (mounted) {
-              context.pushNamed('homeStudent');
-            }
-          });
-        }
-      });
-    } catch (e) {
-      if (mounted) {
-        setState(() => isLoading = false);
-        _showErrorSnackBar('Lỗi: ${e.toString()}');
-      }
-    }
+    context.pushNamed('bookingPayment', extra: booking);
   }
 
   String _formatPrice(double price) {
@@ -269,9 +229,6 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
     final isOnline = booking.type == 'online';
     final icon = isOnline ? Icons.videocam : Icons.location_on;
     final methodLabel = isOnline ? 'Học Online (Video Call)' : 'Học Offline (Tại Địa Điểm)';
-    final scheduleLabel = booking.scheduleType == 'monthly'
-        ? 'Học theo tháng'
-        : 'Học theo ngày';
 
     return Container(
       padding: EdgeInsets.all(12.w),
@@ -280,42 +237,17 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
         borderRadius: BorderRadius.circular(8.r),
         border: Border.all(color: AppColors.borderColor, width: 1),
       ),
-      child: Column(
+      child: Row(
         children: [
-          Row(
-            children: [
-              Icon(icon, color: AppColors.primaryGreen, size: 22.sp),
-              SizedBox(width: 12.w),
-              Text(
-                methodLabel,
-                style: GoogleFonts.inter(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textDark,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 8.h),
-          Row(
-            children: [
-              Icon(
-                booking.scheduleType == 'monthly'
-                    ? Icons.date_range
-                    : Icons.today,
-                color: AppColors.accentGreen,
-                size: 22.sp,
-              ),
-              SizedBox(width: 12.w),
-              Text(
-                scheduleLabel,
-                style: GoogleFonts.inter(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textDark,
-                ),
-              ),
-            ],
+          Icon(icon, color: AppColors.primaryGreen, size: 22.sp),
+          SizedBox(width: 12.w),
+          Text(
+            methodLabel,
+            style: GoogleFonts.inter(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textDark,
+            ),
           ),
         ],
       ),
@@ -746,31 +678,22 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
       ),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       child: GestureDetector(
-        onTap: isLoading ? null : _onPaymentPressed,
+        onTap: _onPaymentPressed,
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 14.h),
           decoration: BoxDecoration(
-            color: isLoading ? AppColors.disabledGray : AppColors.primaryGreen,
+            color: AppColors.primaryGreen,
             borderRadius: BorderRadius.circular(8.r),
           ),
           child: Center(
-            child: isLoading
-                ? SizedBox(
-                    height: 20.h,
-                    width: 20.h,
-                    child: const CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryGreen),
-                    ),
-                  )
-                : Text(
-                    'Thanh Toán',
-                    style: GoogleFonts.inter(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.white,
-                    ),
-                  ),
+            child: Text(
+              'Tiến Hành Thanh Toán',
+              style: GoogleFonts.inter(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.white,
+              ),
+            ),
           ),
         ),
       ),
