@@ -309,34 +309,119 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
       final weekdayLabel = weekdays.isEmpty
           ? 'Chưa chọn'
           : weekdays.map((d) => weekdayNames[d]).join(', ');
-      dateSection = Row(
+      final startDate = booking.monthlyStartDate;
+      final startDateLabel = startDate != null
+          ? DateFormat('dd/MM/yyyy').format(startDate)
+          : 'Chưa chọn';
+
+      dateSection = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.date_range, color: AppColors.primaryGreen, size: 20.sp),
-          SizedBox(width: 8.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          // 8-session info banner
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+            decoration: BoxDecoration(
+              color: AppColors.lightGreen,
+              borderRadius: BorderRadius.circular(6.r),
+              border: Border.all(
+                color: AppColors.primaryGreen.withValues(alpha: 0.4),
+              ),
+            ),
+            child: Row(
               children: [
-                Text(
-                  'Học hàng tuần',
-                  style: GoogleFonts.inter(
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.textLightGray,
-                  ),
+                Icon(
+                  Icons.info_outline,
+                  color: AppColors.primaryGreen,
+                  size: 14.sp,
                 ),
-                SizedBox(height: 2.h),
-                Text(
-                  weekdayLabel,
-                  style: GoogleFonts.inter(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textDark,
+                SizedBox(width: 6.w),
+                Expanded(
+                  child: Text(
+                    '8 buổi/tháng • Hoàn thành khi học đủ 8 buổi',
+                    style: GoogleFonts.inter(
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.primaryGreen,
+                    ),
                   ),
                 ),
               ],
             ),
+          ),
+          SizedBox(height: 10.h),
+
+          // Weekdays row
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.date_range,
+                color: AppColors.primaryGreen,
+                size: 20.sp,
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Học hàng tuần',
+                      style: GoogleFonts.inter(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.textLightGray,
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      weekdayLabel,
+                      style: GoogleFonts.inter(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10.h),
+
+          // Start date row
+          Row(
+            children: [
+              Icon(
+                Icons.calendar_month_outlined,
+                color: AppColors.primaryGreen,
+                size: 20.sp,
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Ngày bắt đầu',
+                      style: GoogleFonts.inter(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.textLightGray,
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      startDateLabel,
+                      style: GoogleFonts.inter(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       );

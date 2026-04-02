@@ -28,6 +28,8 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
 
   // For monthly learning - selected weekdays (0=Mon, 6=Sun)
   List<int> selectedWeekdays = [];
+  // For monthly learning - start date of the month plan
+  DateTime? monthlyStartDate;
   // For daily learning - selected dates
   List<DateTime> selectedDates = [];
 
@@ -156,9 +158,12 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
       if (mounted) {
         final isMonthly = booking.scheduleType == 'monthly';
         final updatedBooking = booking.copyWith(
-          selectedDate: selectedDates.isNotEmpty ? selectedDates.first : null,
+          selectedDate: isMonthly
+              ? monthlyStartDate
+              : (selectedDates.isNotEmpty ? selectedDates.first : null),
           selectedDates: isMonthly ? [] : selectedDates,
           selectedWeekdays: isMonthly ? selectedWeekdays : [],
+          monthlyStartDate: isMonthly ? monthlyStartDate : null,
         );
 
         await Future.delayed(const Duration(milliseconds: 500));
@@ -481,9 +486,48 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
       'Chủ nhật',
     ];
 
+    final startDateText = monthlyStartDate != null
+        ? DateFormat('dd/MM/yyyy').format(monthlyStartDate!)
+        : 'Chọn ngày bắt đầu';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // 8-session info note
+        Container(
+          padding: EdgeInsets.all(12.w),
+          decoration: BoxDecoration(
+            color: AppColors.lightGreen,
+            borderRadius: BorderRadius.circular(8.r),
+            border: Border.all(
+              color: AppColors.primaryGreen.withValues(alpha: 0.4),
+            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.info_outline,
+                color: AppColors.primaryGreen,
+                size: 16.sp,
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: Text(
+                  'Mỗi tháng học 8 buổi. Hệ thống sẽ tự động đánh dấu hoàn thành khi bạn học đủ 8 buổi trong tháng.',
+                  style: GoogleFonts.inter(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.primaryGreen,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 16.h),
+
+        // Weekday selector
         Text(
           'Chọn các thứ học trong tuần (có thể chọn nhiều)',
           style: GoogleFonts.inter(
@@ -527,6 +571,75 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
               ),
             );
           }),
+        ),
+        SizedBox(height: 20.h),
+
+        // Start date picker
+        Text(
+          'Ngày bắt đầu *',
+          style: GoogleFonts.inter(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textDark,
+          ),
+        ),
+        SizedBox(height: 4.h),
+        Text(
+          'Không thể chọn ngày trước ngày hôm nay',
+          style: GoogleFonts.inter(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w400,
+            color: AppColors.textGray,
+          ),
+        ),
+        SizedBox(height: 8.h),
+        GestureDetector(
+          onTap: _showMonthlyStartDatePicker,
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: monthlyStartDate != null
+                    ? AppColors.primaryGreen
+                    : AppColors.borderColor,
+                width: monthlyStartDate != null ? 2 : 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_month_outlined,
+                  color: monthlyStartDate != null
+                      ? AppColors.primaryGreen
+                      : AppColors.textGray,
+                  size: 20.sp,
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Text(
+                    startDateText,
+                    style: GoogleFonts.inter(
+                      fontSize: 15.sp,
+                      fontWeight: monthlyStartDate != null
+                          ? FontWeight.w600
+                          : FontWeight.w400,
+                      color: monthlyStartDate != null
+                          ? AppColors.textDark
+                          : AppColors.textLightGray,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_drop_down,
+                  color: AppColors.textGray,
+                  size: 24.sp,
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );
@@ -594,6 +707,38 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
 
     if (picked != null) {
       _onDateSelected(picked);
+    }
+  }
+
+  Future<void> _showMonthlyStartDatePicker() async {
+    final now = DateTime.now();
+    final initialDate = monthlyStartDate != null && !monthlyStartDate!.isBefore(now)
+        ? monthlyStartDate!
+        : now;
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: now,
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      helpText: 'Chọn ngày bắt đầu tháng học',
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: AppColors.primaryGreen,
+              onPrimary: AppColors.white,
+              surface: AppColors.white,
+              onSurface: AppColors.textDark,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() => monthlyStartDate = picked);
     }
   }
 
@@ -717,6 +862,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
         selectedSlot == null ||
         isLocking ||
         (booking.scheduleType == 'monthly' && selectedWeekdays.isEmpty) ||
+        (booking.scheduleType == 'monthly' && monthlyStartDate == null) ||
         (booking.scheduleType != 'monthly' && selectedDates.isEmpty);
 
     return Container(
