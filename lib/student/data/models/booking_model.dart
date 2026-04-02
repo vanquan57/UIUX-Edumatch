@@ -26,6 +26,9 @@ class BookingModel {
   /// Dùng khi scheduleType == 'monthly'
   final List<int>? selectedWeekdays;
 
+  /// Ngày bắt đầu tháng học (dùng khi scheduleType == 'monthly')
+  final DateTime? monthlyStartDate;
+
   final String? selectedTimeSlot;
 
   /// Môn học mà học sinh đã chọn
@@ -47,6 +50,7 @@ class BookingModel {
     this.selectedDate,
     this.selectedDates,
     this.selectedWeekdays,
+    this.monthlyStartDate,
     this.selectedTimeSlot,
     this.subject,
     this.sessionDuration,
@@ -66,6 +70,7 @@ class BookingModel {
     DateTime? selectedDate,
     List<DateTime>? selectedDates,
     List<int>? selectedWeekdays,
+    DateTime? monthlyStartDate,
     String? selectedTimeSlot,
     String? subject,
     int? sessionDuration,
@@ -84,6 +89,7 @@ class BookingModel {
       selectedDate: selectedDate ?? this.selectedDate,
       selectedDates: selectedDates ?? this.selectedDates,
       selectedWeekdays: selectedWeekdays ?? this.selectedWeekdays,
+      monthlyStartDate: monthlyStartDate ?? this.monthlyStartDate,
       selectedTimeSlot: selectedTimeSlot ?? this.selectedTimeSlot,
       subject: subject ?? this.subject,
       sessionDuration: sessionDuration ?? this.sessionDuration,

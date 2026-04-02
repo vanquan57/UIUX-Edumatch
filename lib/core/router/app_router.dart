@@ -56,7 +56,7 @@ class AppRouter {
 
   // GoRouter configuration
   static final GoRouter router = GoRouter(
-    initialLocation: login, // ✅ Screen default 
+    initialLocation: marketplaceTutorList, // ✅ Screen default 
     debugLogDiagnostics: true, // Debug mode
 
     redirect: (BuildContext context, GoRouterState state) {

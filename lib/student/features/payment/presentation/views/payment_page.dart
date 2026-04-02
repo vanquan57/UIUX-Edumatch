@@ -296,6 +296,22 @@ class _PaymentPageState extends State<PaymentPage>
           if (b.selectedDates?.isNotEmpty == true || b.selectedWeekdays?.isNotEmpty == true)
             SizedBox(height: 8.h),
 
+          // Monthly start date + session note
+          if (isMonthly && b.monthlyStartDate != null) ...[
+            _buildInfoRow(
+              Icons.calendar_month_outlined,
+              'Ngày bắt đầu',
+              DateFormat('dd/MM/yyyy').format(b.monthlyStartDate!),
+            ),
+            SizedBox(height: 8.h),
+            _buildInfoRow(
+              Icons.info_outline,
+              'Lưu ý',
+              '8 buổi/tháng • Hoàn thành khi học đủ 8 buổi',
+            ),
+            SizedBox(height: 8.h),
+          ],
+
           // Time slot
           if (b.selectedTimeSlot != null)
             _buildInfoRow(
