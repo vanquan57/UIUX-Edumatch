@@ -10,6 +10,7 @@ import 'package:edu_match/student/data/models/booking_model.dart';
 import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/choice_learning_method.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/confirm_info_booking.dart';
+import 'package:edu_match/student/features/payment/presentation/views/payment_page.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/request_learning_requirement.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/select_time_slot.dart';
 import 'package:edu_match/student/features/home/presentation/views/student_home_page.dart';
@@ -41,6 +42,7 @@ class AppRouter {
   static const String bookingSelectTimeSlot = '/booking/select-time-slot';
   static const String bookingRequestRequirement = '/booking/request-requirement';
   static const String bookingConfirmInfo = '/booking/confirm-info';
+  static const String bookingPayment = '/booking/payment';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -302,6 +304,21 @@ class AppRouter {
             backgroundColor: AppColors.white,
             padding: EdgeInsets.zero,
             child: ConfirmInfoBookingPage(booking: booking),
+          );
+        },
+      ),
+      GoRoute(
+        path: bookingPayment,
+        name: 'bookingPayment',
+        builder: (context, state) {
+          final booking = state.extra as BookingModel;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: true,
+            showFooter: true,
+            backgroundColor: AppColors.bgLight,
+            padding: EdgeInsets.zero,
+            child: PaymentPage(booking: booking),
           );
         },
       ),
