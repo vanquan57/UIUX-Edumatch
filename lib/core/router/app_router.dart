@@ -11,6 +11,7 @@ import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/choice_learning_method.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/confirm_info_booking.dart';
 import 'package:edu_match/student/features/payment/presentation/views/payment_page.dart';
+import 'package:edu_match/student/features/payment/presentation/views/payment_successful_page.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/request_learning_requirement.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/select_time_slot.dart';
 import 'package:edu_match/student/features/home/presentation/views/student_home_page.dart';
@@ -43,6 +44,7 @@ class AppRouter {
   static const String bookingRequestRequirement = '/booking/request-requirement';
   static const String bookingConfirmInfo = '/booking/confirm-info';
   static const String bookingPayment = '/booking/payment';
+  static const String bookingPaymentSuccess = '/booking/payment-success';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -56,7 +58,7 @@ class AppRouter {
 
   // GoRouter configuration
   static final GoRouter router = GoRouter(
-    initialLocation: marketplaceTutorList, // ✅ Screen default 
+    initialLocation: login, // ✅ Screen default 
     debugLogDiagnostics: true, // Debug mode
 
     redirect: (BuildContext context, GoRouterState state) {
@@ -319,6 +321,20 @@ class AppRouter {
             backgroundColor: AppColors.bgLight,
             padding: EdgeInsets.zero,
             child: PaymentPage(booking: booking),
+          );
+        },
+      ),
+      GoRoute(
+        path: bookingPaymentSuccess,
+        name: 'bookingPaymentSuccess',
+        builder: (context, state) {
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: true,
+            showFooter: true,
+            backgroundColor: AppColors.bgLight,
+            padding: EdgeInsets.zero,
+            child: const PaymentSuccessfulPage(),
           );
         },
       ),
