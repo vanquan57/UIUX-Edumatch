@@ -1,4 +1,5 @@
 import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/router/app_router.dart';
 import 'package:edu_match/student/data/models/booking_model.dart';
 import 'package:edu_match/student/data/models/student_model.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-enum _PaymentState { idle, processing, success, failed }
+enum _PaymentState { idle, processing, failed }
 
 enum _PaymentMethod { bank, wallet }
 
@@ -31,14 +32,10 @@ class PaymentPage extends StatefulWidget {
   State<PaymentPage> createState() => _PaymentPageState();
 }
 
-class _PaymentPageState extends State<PaymentPage>
-    with SingleTickerProviderStateMixin {
+class _PaymentPageState extends State<PaymentPage> {
   _PaymentState _paymentState = _PaymentState.idle;
   _PaymentMethod _selectedMethod = _PaymentMethod.bank;
   _BankOption _bankOption = _BankOption.internetBanking;
-
-  late AnimationController _successAnimController;
-  late Animation<double> _successScaleAnim;
 
   static const double _pricePerSession = 250000;
   static const double _feeRate = 0.02;
@@ -50,31 +47,101 @@ class _PaymentPageState extends State<PaymentPage>
   String get _transferContent =>
       '$_kFakeBookingRef ${_formatPrice(_total).replaceAll('₫', '').replaceAll('.', '')}';
 
-  @override
-  void initState() {
-    super.initState();
-    _successAnimController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-    _successScaleAnim = CurvedAnimation(
-      parent: _successAnimController,
-      curve: Curves.elasticOut,
-    );
-  }
-
-  @override
-  void dispose() {
-    _successAnimController.dispose();
-    super.dispose();
-  }
-
   void _onPay() {
+    if (_selectedMethod == _PaymentMethod.wallet) {
+      _showWalletConfirmDialog();
+      return;
+    }
+    _startPaymentFlow();
+  }
+
+  void _showWalletConfirmDialog() {
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.45),
+      builder: (ctx) {
+        final lightScheme = ColorScheme.fromSeed(
+          seedColor: AppColors.primaryGreen,
+          brightness: Brightness.light,
+        ).copyWith(surface: AppColors.white);
+        return Theme(
+          data: ThemeData(
+            useMaterial3: true,
+            brightness: Brightness.light,
+            colorScheme: lightScheme,
+            dialogTheme: const DialogThemeData(backgroundColor: AppColors.white),
+          ),
+          child: AlertDialog(
+            backgroundColor: AppColors.white,
+            surfaceTintColor: Colors.transparent,
+            elevation: 8,
+            shadowColor: Colors.black26,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14.r),
+            ),
+            title: Text(
+              'Xác nhận thanh toán',
+              style: GoogleFonts.inter(
+                fontSize: 17.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textDark,
+              ),
+            ),
+            content: Text(
+              'Bạn có chắc muốn thanh toán bằng Ví EduMatch?',
+              style: GoogleFonts.inter(
+                fontSize: 14.sp,
+                color: AppColors.textGray,
+                height: 1.45,
+              ),
+            ),
+            actionsPadding:
+                EdgeInsets.only(left: 16.w, right: 8.w, bottom: 12.h),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(
+                  'Không',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textDark,
+                  ),
+                ),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.primaryGreen,
+                  foregroundColor: AppColors.white,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  _startPaymentFlow();
+                },
+                child: Text(
+                  'Đồng ý',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14.sp,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _startPaymentFlow() {
     setState(() => _paymentState = _PaymentState.processing);
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 5), () {
       if (!mounted) return;
-      setState(() => _paymentState = _PaymentState.success);
-      _successAnimController.forward();
+      context.pushReplacement(AppRouter.bookingPaymentSuccess);
     });
   }
 
@@ -93,8 +160,6 @@ class _PaymentPageState extends State<PaymentPage>
     switch (_paymentState) {
       case _PaymentState.processing:
         return _buildProcessingOverlay();
-      case _PaymentState.success:
-        return _buildSuccessScreen();
       case _PaymentState.failed:
         return _buildFailedScreen();
       case _PaymentState.idle:
@@ -1082,7 +1147,7 @@ class _PaymentPageState extends State<PaymentPage>
                     Icon(
                       walletInsufficient
                           ? Icons.block
-                          : Icons.lock_outline,
+                          : Icons.check_circle_outline,
                       color: AppColors.white,
                       size: 16.sp,
                     ),
@@ -1090,7 +1155,9 @@ class _PaymentPageState extends State<PaymentPage>
                     Text(
                       walletInsufficient
                           ? 'Số dư không đủ'
-                          : 'Thanh Toán Ngay',
+                          : (_selectedMethod == _PaymentMethod.bank
+                              ? 'Xác nhận đã thanh toán'
+                              : 'Xác nhận thanh toán'),
                       style: GoogleFonts.inter(
                         fontSize: 15.sp,
                         fontWeight: FontWeight.w600,
@@ -1143,136 +1210,6 @@ class _PaymentPageState extends State<PaymentPage>
                   fontSize: 12.sp, color: AppColors.textGray)),
         ],
       ),
-    );
-  }
-
-  // ─── Success ───────────────────────────────────────────────────────────────
-
-  Widget _buildSuccessScreen() {
-    final methodLabel = _selectedMethod == _PaymentMethod.bank
-        ? (_bankOption == _BankOption.internetBanking
-            ? 'Internet Banking'
-            : 'VietQR')
-        : 'Ví EduMatch';
-
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ScaleTransition(
-              scale: _successScaleAnim,
-              child: Container(
-                width: 90.w,
-                height: 90.w,
-                decoration: BoxDecoration(
-                    color: AppColors.lightGreen, shape: BoxShape.circle),
-                child: Center(
-                  child: Icon(Icons.check_circle,
-                      color: AppColors.successGreen, size: 52.sp),
-                ),
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Text('Thanh Toán Thành Công!',
-                style: GoogleFonts.inter(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textDark)),
-            SizedBox(height: 8.h),
-            Text(
-              'Booking của bạn đã được xác nhận.\nGia sư sẽ liên hệ với bạn sớm nhất.',
-              style: GoogleFonts.inter(
-                  fontSize: 13.sp, color: AppColors.textGray, height: 1.5),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 24.h),
-            _buildSuccessSummary(methodLabel),
-            SizedBox(height: 28.h),
-            GestureDetector(
-              onTap: () => context.goNamed('homeStudent'),
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(vertical: 14.h),
-                decoration: BoxDecoration(
-                    color: AppColors.primaryGreen,
-                    borderRadius: BorderRadius.circular(10.r)),
-                child: Center(
-                  child: Text('Về Trang Chủ',
-                      style: GoogleFonts.inter(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.white)),
-                ),
-              ),
-            ),
-            SizedBox(height: 12.h),
-            GestureDetector(
-              onTap: () {},
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(vertical: 14.h),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(10.r),
-                  border: Border.all(color: AppColors.primaryGreen),
-                ),
-                child: Center(
-                  child: Text('Xem Lịch Học',
-                      style: GoogleFonts.inter(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primaryGreen)),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSuccessSummary(String methodLabel) {
-    return Container(
-      padding: EdgeInsets.all(14.w),
-      decoration: BoxDecoration(
-        color: AppColors.bgLight,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderColor),
-      ),
-      child: Column(
-        children: [
-          _buildSRow('Gia sư', widget.booking.tutorName ?? 'Gia sư'),
-          SizedBox(height: 8.h),
-          _buildSRow('Môn học', widget.booking.subject ?? '—'),
-          SizedBox(height: 8.h),
-          _buildSRow('Phương thức', methodLabel),
-          SizedBox(height: 8.h),
-          Divider(color: AppColors.dividerColor, height: 1),
-          SizedBox(height: 8.h),
-          _buildSRow('Số tiền', _formatPrice(_total),
-              valueColor: AppColors.primaryGreen, bold: true),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSRow(String label, String value,
-      {Color? valueColor, bool bold = false}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label,
-            style: GoogleFonts.inter(
-                fontSize: 12.sp, color: AppColors.textGray)),
-        Text(value,
-            style: GoogleFonts.inter(
-              fontSize: 12.sp,
-              fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
-              color: valueColor ?? AppColors.textDark,
-            )),
-      ],
     );
   }
 
