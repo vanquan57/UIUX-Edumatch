@@ -1,7 +1,8 @@
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/core/config/constant.dart';
 import 'package:edu_match/core/router/app_router.dart';
 import 'package:edu_match/core/services/user_session.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -10,9 +11,9 @@ import 'package:google_fonts/google_fonts.dart';
 class Header extends StatefulWidget implements PreferredSizeWidget {
   const Header({super.key});
 
-  // Row 1 (56) + Row 2 nav (44) = 100
+  // Row 1 (56) + Row 2 nav (44) + SafeArea padding = 108
   @override
-  Size get preferredSize => const Size.fromHeight(100);
+  Size get preferredSize => const Size.fromHeight(108);
 
   @override
   State<Header> createState() => _HeaderState();
@@ -28,30 +29,36 @@ class _HeaderState extends State<Header> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
     return ValueListenableBuilder<String?>(
       valueListenable: UserSession.roleNotifier,
       builder: (context, role, _) {
         final isLoggedIn = role != null;
         return Container(
           decoration: BoxDecoration(
-            color: AppColors.white,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.shadowColor,
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            color: colors.white,
+            border: AppThemeConfig.isLowFidelityMode 
+                ? Border(bottom: BorderSide(color: colors.borderColor, width: 1.5))
+                : null,
+            boxShadow: AppThemeConfig.isLowFidelityMode 
+                ? null 
+                : [
+                    BoxShadow(
+                      color: colors.shadowColor,
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
           ),
           child: SafeArea(
             bottom: false,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // ── Row 1: Logo + Auth ──────────────────────────
-                SizedBox(
-                  height: 56,
-                  child: Padding(
+            child: IntrinsicHeight(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // ── Row 1: Logo + Auth ──────────────────────────
+                  Container(
+                    height: 56,
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Row(
                       children: [
@@ -64,25 +71,26 @@ class _HeaderState extends State<Header> {
                       ],
                     ),
                   ),
-                ),
-                // ── Row 2: Nav links ────────────────────────────
-                Container(
-                  height: 44,
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      top: BorderSide(color: AppColors.dividerColor),
+                  // ── Row 2: Nav links ────────────────────────────
+                  Container(
+                    height: 44,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(color: colors.dividerColor),
+                      ),
+                    ),
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      itemCount: _navItems.length,
+                      separatorBuilder: (_, __) => SizedBox(width: 4.w),
+                      itemBuilder: (context, i) {
+                        return _NavChip(item: _navItems[i]);
+                      },
                     ),
                   ),
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _navItems.length,
-                    separatorBuilder: (_, __) => SizedBox(width: 4.w),
-                    itemBuilder: (context, i) {
-                      return _NavChip(item: _navItems[i]);
-                    },
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -96,20 +104,38 @@ class _HeaderState extends State<Header> {
 class _Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     return GestureDetector(
       onTap: () => context.go(AppRouter.homeStudent),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8.r),
-            child: Image.asset(
-              'assets/images/logo.jpg',
-              width: 32.w,
-              height: 32.w,
-              fit: BoxFit.cover,
-            ),
-          ),
+          // Logo placeholder for low-fi mode
+          AppThemeConfig.isLowFidelityMode
+              ? Container(
+                  width: 32.w,
+                  height: 32.w,
+                  decoration: BoxDecoration(
+                    color: colors.bgLight,
+                    border: Border.all(color: colors.borderColor, width: 1.5),
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                  child: Icon(
+                    Icons.school_outlined,
+                    size: 20.sp,
+                    color: colors.textSecondary,
+                  ),
+                )
+              : ClipRRect(
+                  borderRadius: BorderRadius.circular(8.r),
+                  child: Image.asset(
+                    'assets/images/logo.jpg',
+                    width: 32.w,
+                    height: 32.w,
+                    fit: BoxFit.cover,
+                  ),
+                ),
           SizedBox(width: 8.w),
           RichText(
             text: TextSpan(
@@ -119,7 +145,9 @@ class _Logo extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primaryGreen,
+                    color: AppThemeConfig.isLowFidelityMode 
+                        ? colors.textDark 
+                        : colors.primaryGreen,
                   ),
                 ),
                 TextSpan(
@@ -127,7 +155,9 @@ class _Logo extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primaryGreenLight,
+                    color: AppThemeConfig.isLowFidelityMode 
+                        ? colors.textSecondary 
+                        : colors.primaryGreenLight,
                   ),
                 ),
               ],
@@ -144,47 +174,58 @@ class _Logo extends StatelessWidget {
 class _GuestActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        TextButton(
-          onPressed: () => context.go(AppRouter.login),
-          style: TextButton.styleFrom(
+        // Login button
+        GestureDetector(
+          onTap: () => context.go(AppRouter.login),
+          child: Container(
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-          ),
-          child: Text(
-            'Đăng nhập',
-            style: GoogleFonts.poppins(
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w500,
-              color: AppColors.primaryGreen,
+            child: Text(
+              'Đăng nhập',
+              style: GoogleFonts.poppins(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w500,
+                color: AppThemeConfig.isLowFidelityMode 
+                    ? colors.textDark 
+                    : colors.primaryGreen,
+              ),
             ),
           ),
         ),
         SizedBox(width: 6.w),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppColors.primaryGreen, AppColors.accentGreen],
+        // Register button
+        GestureDetector(
+          onTap: () => context.go(AppRouter.register),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 7.h),
+            decoration: BoxDecoration(
+              color: AppThemeConfig.isLowFidelityMode 
+                  ? colors.white 
+                  : null,
+              gradient: AppThemeConfig.isLowFidelityMode 
+                  ? null 
+                  : LinearGradient(
+                      colors: [colors.primaryGreen, colors.accentGreen],
+                    ),
+              border: AppThemeConfig.isLowFidelityMode 
+                  ? Border.all(color: colors.textDark, width: 1.5)
+                  : null,
+              borderRadius: BorderRadius.circular(
+                AppThemeConfig.isLowFidelityMode ? 4.r : 20.r,
+              ),
             ),
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(20.r),
-            child: InkWell(
-              onTap: () => context.go(AppRouter.register),
-              borderRadius: BorderRadius.circular(20.r),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 7.h),
-                child: Text(
-                  'Đăng ký',
-                  style: GoogleFonts.poppins(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
+            child: Text(
+              'Đăng ký',
+              style: GoogleFonts.poppins(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w600,
+                color: AppThemeConfig.isLowFidelityMode 
+                    ? colors.textDark 
+                    : Colors.white,
               ),
             ),
           ),
@@ -241,6 +282,8 @@ class _BadgeIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     return GestureDetector(
       onTap: onTap,
       child: Stack(
@@ -250,13 +293,18 @@ class _BadgeIconButton extends StatelessWidget {
             width: 36.w,
             height: 36.w,
             decoration: BoxDecoration(
-              color: AppColors.bgLight,
-              borderRadius: BorderRadius.circular(10.r),
+              color: colors.bgLight,
+              border: AppThemeConfig.isLowFidelityMode 
+                  ? Border.all(color: colors.borderColor, width: 1.5)
+                  : null,
+              borderRadius: BorderRadius.circular(
+                AppThemeConfig.isLowFidelityMode ? 4.r : 10.r,
+              ),
             ),
             child: Icon(
               icon,
               size: 20.sp,
-              color: AppColors.textDark,
+              color: colors.textDark,
             ),
           ),
           if (badgeCount > 0)
@@ -266,8 +314,13 @@ class _BadgeIconButton extends StatelessWidget {
               child: Container(
                 width: 16.w,
                 height: 16.w,
-                decoration: const BoxDecoration(
-                  color: AppColors.errorRed,
+                decoration: BoxDecoration(
+                  color: AppThemeConfig.isLowFidelityMode 
+                      ? colors.textDark 
+                      : colors.errorRed,
+                  border: AppThemeConfig.isLowFidelityMode 
+                      ? Border.all(color: colors.white, width: 1)
+                      : null,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -276,7 +329,7 @@ class _BadgeIconButton extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 9.sp,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.white,
+                      color: colors.white,
                     ),
                   ),
                 ),
@@ -304,7 +357,7 @@ class _AvatarDropdown extends StatelessWidget {
         borderRadius: BorderRadius.circular(14.r),
       ),
       elevation: 8,
-      color: AppColors.white,
+      color: AppThemeConfig.colors.white,
       onSelected: (action) => _handleAction(context, action),
       itemBuilder: (context) => [
         _menuItem(
@@ -344,16 +397,18 @@ class _AvatarDropdown extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircleAvatar(
-            radius: 17.r,
-            backgroundImage:
-                const AssetImage('assets/images/have_login.jpg'),
-          ),
+          AppThemeConfig.isLowFidelityMode
+              ? LowFiAvatar(size: 34.r)
+              : CircleAvatar(
+                  radius: 17.r,
+                  backgroundImage:
+                      const AssetImage('assets/images/have_login.jpg'),
+                ),
           SizedBox(width: 4.w),
           Icon(
             Icons.keyboard_arrow_down_rounded,
             size: 16.sp,
-            color: AppColors.textGray,
+            color: AppThemeConfig.colors.textGray,
           ),
         ],
       ),
@@ -366,7 +421,8 @@ class _AvatarDropdown extends StatelessWidget {
     String label, {
     bool isDestructive = false,
   }) {
-    final color = isDestructive ? AppColors.errorRed : AppColors.textDark;
+    final colors = AppThemeConfig.colors;
+    final color = isDestructive ? colors.errorRed : colors.textDark;
     return PopupMenuItem<_MenuAction>(
       value: action,
       child: Row(
@@ -411,6 +467,7 @@ class _NavChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
     final currentPath = GoRouterState.of(context).uri.path;
     final isActive = currentPath == item.path;
 
@@ -421,10 +478,12 @@ class _NavChip extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 14.w),
         decoration: BoxDecoration(
           border: isActive
-              ? const Border(
+              ? Border(
                   bottom: BorderSide(
-                    color: AppColors.primaryGreen,
-                    width: 2,
+                    color: AppThemeConfig.isLowFidelityMode 
+                        ? colors.textDark 
+                        : colors.primaryGreen,
+                    width: AppThemeConfig.isLowFidelityMode ? 2.5 : 2,
                   ),
                 )
               : null,
@@ -434,7 +493,9 @@ class _NavChip extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: 13.sp,
             fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-            color: isActive ? AppColors.primaryGreen : AppColors.textGray,
+            color: isActive 
+                ? (AppThemeConfig.isLowFidelityMode ? colors.textDark : colors.primaryGreen)
+                : colors.textGray,
           ),
         ),
       ),

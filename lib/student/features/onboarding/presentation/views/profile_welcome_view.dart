@@ -1,6 +1,8 @@
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/core/config/constant.dart';
 import 'package:edu_match/core/router/app_router.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_button.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -51,8 +53,10 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -80,7 +84,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                       style: GoogleFonts.poppins(
                         fontSize: 26.sp,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textDark,
+                        color: colors.textDark,
                         height: 1.3,
                       ),
                     ),
@@ -89,7 +93,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                       'Thông tin này giúp chúng tôi tìm gia sư và khóa học phù hợp nhất cho bạn.',
                       style: GoogleFonts.poppins(
                         fontSize: 13.sp,
-                        color: AppColors.textGray,
+                        color: colors.textGray,
                         height: 1.5,
                       ),
                     ),
@@ -152,27 +156,31 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                           SizedBox(height: 12.h),
 
                           // Info note
-                          Container(
-                            padding: EdgeInsets.all(14.w),
-                            decoration: BoxDecoration(
-                              color: AppColors.lightGreen,
-                              borderRadius: BorderRadius.circular(12.r),
+                          LowFiCard(
+                            backgroundColor: AppThemeConfig.isLowFidelityMode 
+                                ? colors.bgLight 
+                                : colors.lightGreen,
+                            borderRadius: BorderRadius.circular(
+                              AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
                             ),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(
-                                  Icons.info_outline_rounded,
-                                  size: 18.sp,
-                                  color: AppColors.primaryGreen,
-                                ),
-                                SizedBox(width: 10.w),
+                                if (!AppThemeConfig.isLowFidelityMode)
+                                  Icon(
+                                    Icons.info_outline_rounded,
+                                    size: 18.sp,
+                                    color: colors.primaryGreen,
+                                  ),
+                                if (!AppThemeConfig.isLowFidelityMode) SizedBox(width: 10.w),
                                 Expanded(
                                   child: Text(
                                     'Bạn có thể cập nhật thông tin này bất cứ lúc nào trong phần Hồ sơ.',
                                     style: GoogleFonts.poppins(
                                       fontSize: 12.sp,
-                                      color: AppColors.primaryGreenDark,
+                                      color: AppThemeConfig.isLowFidelityMode 
+                                          ? colors.textGray 
+                                          : colors.primaryGreenDark,
                                       height: 1.5,
                                     ),
                                   ),
@@ -191,65 +199,29 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             // Complete button — pinned at bottom
             Container(
               decoration: BoxDecoration(
-                color: AppColors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.shadowColor,
-                    blurRadius: 12,
-                    offset: const Offset(0, -4),
-                  ),
-                ],
+                color: colors.white,
+                border: AppThemeConfig.isLowFidelityMode 
+                    ? Border(top: BorderSide(color: colors.borderColor, width: 1.5))
+                    : null,
+                boxShadow: AppThemeConfig.isLowFidelityMode 
+                    ? null 
+                    : [
+                        BoxShadow(
+                          color: colors.shadowColor,
+                          blurRadius: 12,
+                          offset: const Offset(0, -4),
+                        ),
+                      ],
               ),
               padding: EdgeInsets.all(24.w),
-              child: SizedBox(
+              child: LowFiButton(
+                text: 'Hoàn tất',
+                onTap: _isLoading ? null : _handleComplete,
+                type: LowFiButtonType.primary,
+                size: LowFiButtonSize.large,
                 width: double.infinity,
-                height: 54.h,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        AppColors.primaryGreen,
-                        AppColors.accentGreen,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(14.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primaryGreen.withOpacity(0.35),
-                        blurRadius: 16,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(14.r),
-                    child: InkWell(
-                      onTap: _isLoading ? null : _handleComplete,
-                      borderRadius: BorderRadius.circular(14.r),
-                      child: Center(
-                        child: _isLoading
-                            ? SizedBox(
-                                width: 24.w,
-                                height: 24.h,
-                                child: const CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      AppColors.white),
-                                  strokeWidth: 2.5,
-                                ),
-                              )
-                            : Text(
-                                'Hoàn tất',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.white,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
+                isLoading: _isLoading,
+                isEnabled: !_isLoading,
               ),
             ),
           ],
@@ -259,12 +231,13 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   }
 
   Widget _buildFieldLabel(String label) {
+    final colors = AppThemeConfig.colors;
     return Text(
       label,
       style: GoogleFonts.poppins(
         fontSize: 14.sp,
         fontWeight: FontWeight.w500,
-        color: AppColors.textDark,
+        color: colors.textDark,
       ),
     );
   }
@@ -276,46 +249,72 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
     int maxLines = 1,
     String? Function(String?)? validator,
   }) {
+    final colors = AppThemeConfig.colors;
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
       validator: validator,
-      style: GoogleFonts.poppins(fontSize: 14.sp, color: AppColors.textDark),
+      style: GoogleFonts.poppins(fontSize: 14.sp, color: colors.textDark),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: GoogleFonts.poppins(
-            fontSize: 14.sp, color: AppColors.textLightGray),
-        prefixIcon: Padding(
-          padding: EdgeInsets.only(left: 12.w, right: 8.w),
-          child: Icon(icon, color: AppColors.primaryGreen, size: 20.sp),
-        ),
-        prefixIconConstraints: BoxConstraints(minWidth: 44.w),
+            fontSize: 14.sp, color: colors.textLightGray),
+        prefixIcon: AppThemeConfig.isLowFidelityMode 
+            ? null 
+            : Padding(
+                padding: EdgeInsets.only(left: 12.w, right: 8.w),
+                child: Icon(icon, color: colors.primaryGreen, size: 20.sp),
+              ),
+        prefixIconConstraints: AppThemeConfig.isLowFidelityMode 
+            ? null 
+            : BoxConstraints(minWidth: 44.w),
         filled: true,
-        fillColor: AppColors.white,
+        fillColor: colors.white,
         contentPadding:
             EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide:
-              const BorderSide(color: AppColors.borderColor, width: 1),
+          borderRadius: BorderRadius.circular(
+            AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+          ),
+          borderSide: BorderSide(
+            color: colors.borderColor, 
+            width: AppThemeConfig.isLowFidelityMode ? 1.5 : 1,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide:
-              const BorderSide(color: AppColors.borderColor, width: 1),
+          borderRadius: BorderRadius.circular(
+            AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+          ),
+          borderSide: BorderSide(
+            color: colors.borderColor, 
+            width: AppThemeConfig.isLowFidelityMode ? 1.5 : 1,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide:
-              const BorderSide(color: AppColors.primaryGreen, width: 2),
+          borderRadius: BorderRadius.circular(
+            AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+          ),
+          borderSide: BorderSide(
+            color: AppThemeConfig.isLowFidelityMode 
+                ? colors.textDark 
+                : colors.primaryGreen, 
+            width: 2,
+          ),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: AppColors.errorRed, width: 1),
+          borderRadius: BorderRadius.circular(
+            AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+          ),
+          borderSide: BorderSide(
+            color: colors.errorRed, 
+            width: AppThemeConfig.isLowFidelityMode ? 1.5 : 1,
+          ),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
+          borderRadius: BorderRadius.circular(
+            AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+          ),
+          borderSide: BorderSide(color: colors.errorRed, width: 2),
         ),
       ),
     );
@@ -330,30 +329,41 @@ class _ProgressDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     Color color;
     if (isDone || isActive) {
-      color = AppColors.primaryGreen;
+      color = colors.primaryGreen;
     } else {
-      color = AppColors.disabledGray;
+      color = colors.disabledGray;
     }
 
     return Container(
       width: 28.w,
       height: 28.w,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: (isActive || isDone) ? color : AppColors.white,
-        border: Border.all(color: color, width: 2),
+        shape: AppThemeConfig.isLowFidelityMode ? BoxShape.rectangle : BoxShape.circle,
+        borderRadius: AppThemeConfig.isLowFidelityMode ? BorderRadius.circular(4.r) : null,
+        color: (isActive || isDone) ? color : colors.white,
+        border: Border.all(
+          color: color, 
+          width: AppThemeConfig.isLowFidelityMode ? 1.5 : 2,
+        ),
       ),
       child: isDone
-          ? Icon(Icons.check_rounded, color: AppColors.white, size: 14.sp)
+          ? Icon(
+              AppThemeConfig.isLowFidelityMode ? Icons.check : Icons.check_rounded, 
+              color: colors.white, 
+              size: 14.sp,
+            )
           : Center(
               child: Container(
                 width: 8.w,
                 height: 8.w,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isActive ? AppColors.white : color,
+                  shape: AppThemeConfig.isLowFidelityMode ? BoxShape.rectangle : BoxShape.circle,
+                  borderRadius: AppThemeConfig.isLowFidelityMode ? BorderRadius.circular(2.r) : null,
+                  color: isActive ? colors.white : color,
                 ),
               ),
             ),
@@ -366,10 +376,12 @@ class _ProgressLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     return Expanded(
       child: Container(
-        height: 2,
-        color: AppColors.primaryGreen.withOpacity(0.3),
+        height: AppThemeConfig.isLowFidelityMode ? 1.5 : 2,
+        color: colors.primaryGreen.withOpacity(0.3),
       ),
     );
   }

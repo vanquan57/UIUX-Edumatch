@@ -1,4 +1,5 @@
 import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,6 +10,136 @@ class Footer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
+    return AppThemeConfig.isLowFidelityMode
+        ? _buildLowFiFooter(colors)
+        : _buildFullFooter();
+  }
+
+  Widget _buildLowFiFooter(AppColorScheme colors) {
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        border: Border.all(color: colors.borderColor, width: 1.5),
+      ),
+      child: Column(
+        children: [
+          // Logo section
+          Container(
+            padding: EdgeInsets.all(8.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Text(
+              '[LOGO] EduMatch',
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+                color: colors.textDark,
+              ),
+            ),
+          ),
+          SizedBox(height: 12.h),
+          
+          // Links sections
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Liên kết',
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textDark,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    ...['Tìm gia sư', 'Khóa học', 'Blog'].map((text) => 
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 2.h),
+                        child: Text(
+                          text,
+                          style: TextStyle(
+                            fontSize: 9.sp,
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hỗ trợ',
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textDark,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    ...['FAQ', 'Chính sách', 'Điều khoản'].map((text) => 
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 2.h),
+                        child: Text(
+                          text,
+                          style: TextStyle(
+                            fontSize: 9.sp,
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+          
+          // Contact section
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(6.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Text(
+              '[LIÊN HỆ & MẠNG XÃ HỘI]',
+              style: TextStyle(
+                fontSize: 9.sp,
+                color: colors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          
+          // Copyright
+          Text(
+            '© 2026 EduMatch',
+            style: TextStyle(
+              fontSize: 8.sp,
+              color: colors.textLightGray,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFullFooter() {
     return Container(
       color: AppColors.bgDark,
       child: Column(

@@ -1,7 +1,10 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/core/config/constant.dart';
 import 'package:edu_match/core/router/app_router.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_button.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -56,7 +59,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 'Tạo tài khoản thành công!',
                 style: GoogleFonts.poppins(fontSize: 14.sp),
               ),
-              backgroundColor: AppColors.primaryGreen,
+              backgroundColor: AppThemeConfig.colors.primaryGreen,
             ),
           );
           context.go(AppRouter.login);
@@ -75,6 +78,8 @@ class _RegisterPageState extends State<RegisterPage> {
     Widget? suffixIcon,
     String? Function(String?)? validator,
   }) {
+    final colors = AppThemeConfig.colors;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -83,7 +88,7 @@ class _RegisterPageState extends State<RegisterPage> {
           style: GoogleFonts.poppins(
             fontSize: 14.sp,
             fontWeight: FontWeight.w500,
-            color: AppColors.textDark,
+            color: colors.textDark,
           ),
         ),
         SizedBox(height: 8.h),
@@ -96,56 +101,76 @@ class _RegisterPageState extends State<RegisterPage> {
             hintText: hint,
             hintStyle: GoogleFonts.poppins(
               fontSize: 14.sp,
-              color: AppColors.textLightGray,
+              color: colors.textLightGray,
             ),
-            prefixIcon: Padding(
-              padding: EdgeInsets.only(left: 12.w),
-              child: Icon(
-                prefixIcon,
-                color: AppColors.primaryGreen,
-                size: 20.sp,
-              ),
-            ),
+            prefixIcon: AppThemeConfig.isLowFidelityMode 
+                ? null 
+                : Padding(
+                    padding: EdgeInsets.only(left: 12.w),
+                    child: Icon(
+                      prefixIcon,
+                      color: colors.primaryGreen,
+                      size: 20.sp,
+                    ),
+                  ),
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: AppColors.white,
+            fillColor: colors.white,
             contentPadding: EdgeInsets.symmetric(
               horizontal: 16.w,
               vertical: 14.h,
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(
-                color: AppColors.borderColor,
-                width: 1,
+              borderRadius: BorderRadius.circular(
+                AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+              ),
+              borderSide: BorderSide(
+                color: colors.borderColor,
+                width: AppThemeConfig.isLowFidelityMode ? 1.5 : 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(
-                color: AppColors.borderColor,
-                width: 1,
+              borderRadius: BorderRadius.circular(
+                AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+              ),
+              borderSide: BorderSide(
+                color: colors.borderColor,
+                width: AppThemeConfig.isLowFidelityMode ? 1.5 : 1,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(
-                color: AppColors.primaryGreen,
+              borderRadius: BorderRadius.circular(
+                AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+              ),
+              borderSide: BorderSide(
+                color: AppThemeConfig.isLowFidelityMode 
+                    ? colors.textDark 
+                    : colors.primaryGreen,
                 width: 2,
               ),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(color: AppColors.errorRed, width: 1),
+              borderRadius: BorderRadius.circular(
+                AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+              ),
+              borderSide: BorderSide(
+                color: colors.errorRed, 
+                width: AppThemeConfig.isLowFidelityMode ? 1.5 : 1,
+              ),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
+              borderRadius: BorderRadius.circular(
+                AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+              ),
+              borderSide: BorderSide(
+                color: colors.errorRed, 
+                width: 2,
+              ),
             ),
           ),
           style: GoogleFonts.poppins(
             fontSize: 14.sp,
-            color: AppColors.textDark,
+            color: colors.textDark,
           ),
         ),
       ],
@@ -154,6 +179,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     return SingleChildScrollView(
       padding: EdgeInsets.all(14.w),
       child: Column(
@@ -172,7 +199,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       style: GoogleFonts.poppins(
                         fontSize: 28.sp,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textDark,
+                        color: colors.textDark,
                       ),
                     ),
                     SizedBox(height: 8.h),
@@ -181,34 +208,42 @@ class _RegisterPageState extends State<RegisterPage> {
                       style: GoogleFonts.poppins(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.textGray,
+                        color: colors.textGray,
                       ),
                     ),
                   ],
                 ),
               ),
               SizedBox(width: 16.w),
-              Container(
-                height: 60.h,
-                width: 60.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryGreen.withOpacity(0.15),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
+              // Logo - Low-fi version
+              AppThemeConfig.isLowFidelityMode
+                  ? LowFiImagePlaceholder(
+                      width: 60.w,
+                      height: 60.h,
+                      icon: Icons.school_outlined,
+                      text: 'LOGO',
+                    )
+                  : Container(
+                      height: 60.h,
+                      width: 60.w,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colors.primaryGreen.withOpacity(0.15),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12.r),
+                        child: Image.asset(
+                          'assets/images/logo.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12.r),
-                  child: Image.asset(
-                    'assets/images/logo.jpg',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
             ],
           ),
 
@@ -265,20 +300,22 @@ class _RegisterPageState extends State<RegisterPage> {
                   hint: 'Nhập mật khẩu của bạn',
                   prefixIcon: Icons.lock_outline,
                   obscureText: _obscurePassword,
-                  suffixIcon: Padding(
-                    padding: EdgeInsets.only(right: 12.w),
-                    child: GestureDetector(
-                      onTap: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
-                      child: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        color: AppColors.textLightGray,
-                        size: 20.sp,
-                      ),
-                    ),
-                  ),
+                  suffixIcon: AppThemeConfig.isLowFidelityMode 
+                      ? null 
+                      : Padding(
+                          padding: EdgeInsets.only(right: 12.w),
+                          child: GestureDetector(
+                            onTap: () =>
+                                setState(() => _obscurePassword = !_obscurePassword),
+                            child: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: colors.textLightGray,
+                              size: 20.sp,
+                            ),
+                          ),
+                        ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Vui lòng nhập mật khẩu';
@@ -298,22 +335,24 @@ class _RegisterPageState extends State<RegisterPage> {
                   hint: 'Nhập lại mật khẩu',
                   prefixIcon: Icons.lock_outline,
                   obscureText: _obscureConfirmPassword,
-                  suffixIcon: Padding(
-                    padding: EdgeInsets.only(right: 12.w),
-                    child: GestureDetector(
-                      onTap: () => setState(
-                        () =>
-                            _obscureConfirmPassword = !_obscureConfirmPassword,
-                      ),
-                      child: Icon(
-                        _obscureConfirmPassword
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        color: AppColors.textLightGray,
-                        size: 20.sp,
-                      ),
-                    ),
-                  ),
+                  suffixIcon: AppThemeConfig.isLowFidelityMode 
+                      ? null 
+                      : Padding(
+                          padding: EdgeInsets.only(right: 12.w),
+                          child: GestureDetector(
+                            onTap: () => setState(
+                              () =>
+                                  _obscureConfirmPassword = !_obscureConfirmPassword,
+                            ),
+                            child: Icon(
+                              _obscureConfirmPassword
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: colors.textLightGray,
+                              size: 20.sp,
+                            ),
+                          ),
+                        ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Vui lòng xác nhận mật khẩu';
@@ -335,7 +374,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       style: GoogleFonts.poppins(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.textDark,
+                        color: colors.textDark,
                       ),
                     ),
                     SizedBox(height: 8.h),
@@ -346,17 +385,17 @@ class _RegisterPageState extends State<RegisterPage> {
                         'Chọn vai trò của bạn',
                         style: GoogleFonts.poppins(
                           fontSize: 14.sp,
-                          color: AppColors.textLightGray,
+                          color: colors.textLightGray,
                         ),
                       ),
                       items: [
                         DropdownItem(
-                          value: AppConstants.roleTutor,
+                          value: 'admin',
                           child: Text(
                             'Admin',
                             style: GoogleFonts.poppins(
                               fontSize: 14.sp,
-                              color: AppColors.textDark,
+                              color: colors.textDark,
                             ),
                           ),
                         ),
@@ -366,7 +405,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             'Học sinh',
                             style: GoogleFonts.poppins(
                               fontSize: 14.sp,
-                              color: AppColors.textDark,
+                              color: colors.textDark,
                             ),
                           ),
                         ),
@@ -376,7 +415,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             'Phụ huynh',
                             style: GoogleFonts.poppins(
                               fontSize: 14.sp,
-                              color: AppColors.textDark,
+                              color: colors.textDark,
                             ),
                           ),
                         ),
@@ -386,7 +425,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             'Gia sư',
                             style: GoogleFonts.poppins(
                               fontSize: 14.sp,
-                              color: AppColors.textDark,
+                              color: colors.textDark,
                             ),
                           ),
                         ),
@@ -394,8 +433,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       dropdownStyleData: DropdownStyleData(
                         width: 200.w,
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12.r),
+                          color: colors.white,
+                          border: AppThemeConfig.isLowFidelityMode 
+                              ? Border.all(color: colors.borderColor, width: 1.5)
+                              : null,
+                          borderRadius: BorderRadius.circular(
+                            AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+                          ),
                         ),
                       ),
                       onChanged: (value) => _roleListenable.value = value,
@@ -407,37 +451,47 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: AppColors.white,
+                        fillColor: colors.white,
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: 16.w,
                           vertical: 14.h,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                          borderSide: const BorderSide(
-                            color: AppColors.borderColor,
-                            width: 1,
+                          borderRadius: BorderRadius.circular(
+                            AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+                          ),
+                          borderSide: BorderSide(
+                            color: colors.borderColor,
+                            width: AppThemeConfig.isLowFidelityMode ? 1.5 : 1,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                          borderSide: const BorderSide(
-                            color: AppColors.borderColor,
-                            width: 1,
+                          borderRadius: BorderRadius.circular(
+                            AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+                          ),
+                          borderSide: BorderSide(
+                            color: colors.borderColor,
+                            width: AppThemeConfig.isLowFidelityMode ? 1.5 : 1,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                          borderSide: const BorderSide(
-                            color: AppColors.primaryGreen,
+                          borderRadius: BorderRadius.circular(
+                            AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+                          ),
+                          borderSide: BorderSide(
+                            color: AppThemeConfig.isLowFidelityMode 
+                                ? colors.textDark 
+                                : colors.primaryGreen,
                             width: 2,
                           ),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                          borderSide: const BorderSide(
-                            color: AppColors.errorRed,
-                            width: 1,
+                          borderRadius: BorderRadius.circular(
+                            AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+                          ),
+                          borderSide: BorderSide(
+                            color: colors.errorRed,
+                            width: AppThemeConfig.isLowFidelityMode ? 1.5 : 1,
                           ),
                         ),
                       ),
@@ -447,38 +501,14 @@ class _RegisterPageState extends State<RegisterPage> {
                 SizedBox(height: 32.h),
 
                 // Register Button
-                SizedBox(
+                LowFiButton(
+                  text: 'Tạo tài khoản',
+                  onTap: _isLoading ? null : _handleRegister,
+                  type: LowFiButtonType.primary,
+                  size: LowFiButtonSize.large,
                   width: double.infinity,
-                  height: 54.h,
-                  child: Material(
-                    color: AppColors.primaryGreen,
-                    borderRadius: BorderRadius.circular(12.r),
-                    child: InkWell(
-                      onTap: _isLoading ? null : _handleRegister,
-                      borderRadius: BorderRadius.circular(12.r),
-                      child: Center(
-                        child: _isLoading
-                            ? SizedBox(
-                                height: 24.h,
-                                width: 24.w,
-                                child: const CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.white,
-                                  ),
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(
-                                'Tạo tài khoản',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.white,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
+                  isLoading: _isLoading,
+                  isEnabled: !_isLoading,
                 ),
                 SizedBox(height: 20.h),
 
@@ -486,7 +516,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 Row(
                   children: [
                     Expanded(
-                      child: Container(height: 1, color: AppColors.borderColor),
+                      child: Container(
+                        height: AppThemeConfig.isLowFidelityMode ? 1.5 : 1, 
+                        color: colors.borderColor,
+                      ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -494,60 +527,34 @@ class _RegisterPageState extends State<RegisterPage> {
                         'hoặc',
                         style: GoogleFonts.poppins(
                           fontSize: 12.sp,
-                          color: AppColors.textGray,
+                          color: colors.textGray,
                         ),
                       ),
                     ),
                     Expanded(
-                      child: Container(height: 1, color: AppColors.borderColor),
+                      child: Container(
+                        height: AppThemeConfig.isLowFidelityMode ? 1.5 : 1, 
+                        color: colors.borderColor,
+                      ),
                     ),
                   ],
                 ),
                 SizedBox(height: 20.h),
 
                 // Google Sign Up Button
-                SizedBox(
+                LowFiButton(
+                  text: 'Đăng ký với Google',
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Đang kết nối với Google...'),
+                      ),
+                    );
+                  },
+                  type: LowFiButtonType.secondary,
+                  size: LowFiButtonSize.large,
                   width: double.infinity,
-                  height: 54.h,
-                  child: Material(
-                    color: AppColors.white,
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(
-                        color: AppColors.borderColor,
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Đang kết nối với Google...'),
-                          ),
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(12.r),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.g_mobiledata,
-                            color: AppColors.primaryGreen,
-                            size: 24.sp,
-                          ),
-                          SizedBox(width: 12.w),
-                          Text(
-                            'Đăng ký với Google',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textDark,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  icon: AppThemeConfig.isLowFidelityMode ? null : Icons.g_mobiledata,
                 ),
                 SizedBox(height: 24.h),
 
@@ -560,7 +567,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       style: GoogleFonts.poppins(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.textGray,
+                        color: colors.textGray,
                       ),
                     ),
                     GestureDetector(
@@ -570,7 +577,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         style: GoogleFonts.poppins(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.primaryGreen,
+                          color: colors.primaryGreen,
                         ),
                       ),
                     ),

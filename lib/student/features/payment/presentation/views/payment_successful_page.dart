@@ -1,5 +1,6 @@
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/core/router/app_router.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -10,24 +11,113 @@ class PaymentSuccessfulPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
+    return AppThemeConfig.isLowFidelityMode
+        ? _buildLowFiLayout(context, colors)
+        : _buildFullLayout(context, colors);
+  }
+
+  Widget _buildLowFiLayout(BuildContext context, AppColorScheme colors) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        children: [
+          SizedBox(height: 40.h),
+          
+          // Success icon
+          Container(
+            width: 80.w,
+            height: 80.w,
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Center(
+              child: Text(
+                '✓',
+                style: TextStyle(
+                  fontSize: 40.sp,
+                  fontWeight: FontWeight.bold,
+                  color: colors.textDark,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 24.h),
+          
+          // Success message
+          Text(
+            'Thanh toán thành công',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          
+          Text(
+            'Bạn đã đặt lịch học thành công',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12.sp,
+              color: colors.textSecondary,
+            ),
+          ),
+          SizedBox(height: 32.h),
+          
+          // Action button
+          GestureDetector(
+            onTap: () => context.go(AppRouter.homeStudent),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.textDark, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+                color: colors.textDark,
+              ),
+              child: Center(
+                child: Text(
+                  'Quản lý lịch học',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFullLayout(BuildContext context, AppColorScheme colors) {
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
       child: Column(
         children: [
+          // Success Icon
           Container(
             width: 72.w,
             height: 72.w,
             decoration: BoxDecoration(
-              color: AppColors.lightGreen,
+              color: colors.lightGreen,
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.check_circle,
-              color: AppColors.successGreen,
+              color: colors.successGreen,
               size: 44.sp,
             ),
           ),
           SizedBox(height: 20.h),
+          
+          // Success Image/Placeholder
           ClipRRect(
             borderRadius: BorderRadius.circular(12.r),
             child: Image.asset(
@@ -36,55 +126,34 @@ class PaymentSuccessfulPage extends StatelessWidget {
               errorBuilder: (_, __, ___) => Container(
                 height: 180.h,
                 alignment: Alignment.center,
-                color: AppColors.bgLight,
+                color: colors.bgLight,
                 child: Icon(Icons.celebration,
-                    size: 64.sp, color: AppColors.primaryGreen),
+                    size: 64.sp, color: colors.primaryGreen),
               ),
             ),
           ),
           SizedBox(height: 24.h),
+          
+          // Success Message
           Text(
             'Bạn đã thanh toán thành công',
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               fontSize: 20.sp,
               fontWeight: FontWeight.w700,
-              color: AppColors.textDark,
+              color: colors.textDark,
               height: 1.35,
             ),
           ),
           SizedBox(height: 32.h),
-          GestureDetector(
+          
+          // CTA Button
+          LowFiButton(
+            text: 'Quản lý lịch học',
             onTap: () => context.go(AppRouter.homeStudent),
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 14.h),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.primaryGreen, AppColors.accentGreen],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                ),
-                borderRadius: BorderRadius.circular(10.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primaryGreen.withValues(alpha: 0.28),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Text(
-                  'Quản lý lịch học',
-                  style: GoogleFonts.inter(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.white,
-                  ),
-                ),
-              ),
-            ),
+            type: LowFiButtonType.primary,
+            size: LowFiButtonSize.large,
+            width: double.infinity,
           ),
         ],
       ),

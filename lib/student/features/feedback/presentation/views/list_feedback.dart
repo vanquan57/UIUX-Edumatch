@@ -2,7 +2,9 @@ import 'package:edu_match/student/data/models/feedback_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_button.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_card.dart';
 
 class FeedbackListPage extends StatefulWidget {
   final String tutorId;
@@ -69,7 +71,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.white,
+      backgroundColor: AppThemeConfig.colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
@@ -97,7 +99,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                             style: GoogleFonts.roboto(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
+                              color: AppThemeConfig.colors.textDark,
                             ),
                           ),
                           GestureDetector(
@@ -156,8 +158,8 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                                 _updateDisplayedFeedbacks();
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.bgLight,
-                                foregroundColor: AppColors.textDark,
+                                backgroundColor: AppThemeConfig.colors.bgLight,
+                                foregroundColor: AppThemeConfig.colors.textDark,
                                 padding: EdgeInsets.symmetric(vertical: 12.h),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12.r),
@@ -175,8 +177,8 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                                 _updateDisplayedFeedbacks();
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryGreen,
-                                foregroundColor: AppColors.white,
+                                backgroundColor: AppThemeConfig.colors.primaryGreen,
+                                foregroundColor: AppThemeConfig.colors.white,
                                 padding: EdgeInsets.symmetric(vertical: 12.h),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12.r),
@@ -212,11 +214,11 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
         decoration: BoxDecoration(
           border: Border.all(
-            color: isSelected ? AppColors.primaryGreen : AppColors.borderColor,
+            color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.borderColor,
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(12.r),
-          color: isSelected ? AppColors.primaryGreen : AppColors.white,
+          color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.white,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -227,7 +229,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                 style: GoogleFonts.roboto(
                   fontSize: 14.sp,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected ? AppColors.white : AppColors.textDark,
+                  color: isSelected ? AppThemeConfig.colors.white : AppThemeConfig.colors.textDark,
                 ),
               ),
             ),
@@ -236,7 +238,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
               value: value,
               groupValue: _selectedRating,
               onChanged: (_) => onTap(),
-              activeColor: AppColors.white,
+              activeColor: AppThemeConfig.colors.white,
               visualDensity: VisualDensity.compact,
             ),
           ],
@@ -282,6 +284,318 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
+    return AppThemeConfig.isLowFidelityMode
+        ? _buildLowFiLayout(colors)
+        : _buildFullLayout();
+  }
+
+  Widget _buildLowFiLayout(AppColorScheme colors) {
+    final filteredFeedbacks = _getFilteredFeedbacks();
+    final averageRating = FeedbackModel.calculateAverageRating(filteredFeedbacks);
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Text(
+            'Đánh giá của học viên',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Tutor info and rating
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '[TUTOR RATING]',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      widget.tutorName,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textDark,
+                      ),
+                    ),
+                    Text(
+                      '${averageRating.toStringAsFixed(1)} ⭐',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textDark,
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  '${filteredFeedbacks.length} đánh giá',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Filters
+          Text(
+            'Lọc đánh giá',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedSentiment = _selectedSentiment == SentimentLabel.positive 
+                          ? null 
+                          : SentimentLabel.positive;
+                    });
+                    _updateDisplayedFeedbacks();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedSentiment == SentimentLabel.positive ? colors.textDark : colors.borderColor,
+                        width: _selectedSentiment == SentimentLabel.positive ? 2 : 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: _selectedSentiment == SentimentLabel.positive ? colors.bgLight : colors.white,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Tích cực',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textDark,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 4.w),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedSentiment = _selectedSentiment == SentimentLabel.neutral 
+                          ? null 
+                          : SentimentLabel.neutral;
+                    });
+                    _updateDisplayedFeedbacks();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedSentiment == SentimentLabel.neutral ? colors.textDark : colors.borderColor,
+                        width: _selectedSentiment == SentimentLabel.neutral ? 2 : 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: _selectedSentiment == SentimentLabel.neutral ? colors.bgLight : colors.white,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Trung tính',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textDark,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 4.w),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedSentiment = _selectedSentiment == SentimentLabel.negative 
+                          ? null 
+                          : SentimentLabel.negative;
+                    });
+                    _updateDisplayedFeedbacks();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedSentiment == SentimentLabel.negative ? colors.textDark : colors.borderColor,
+                        width: _selectedSentiment == SentimentLabel.negative ? 2 : 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: _selectedSentiment == SentimentLabel.negative ? colors.bgLight : colors.white,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Tiêu cực',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textDark,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16.h),
+
+          // Feedback list
+          Text(
+            'Danh sách đánh giá',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          if (displayedFeedbacks.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(32.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Center(
+                child: Text(
+                  '[CHƯA CÓ ĐÁNH GIÁ]',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ),
+            )
+          else
+            ...displayedFeedbacks.map((feedback) => Container(
+              width: double.infinity,
+              margin: EdgeInsets.only(bottom: 8.h),
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        feedback.studentName,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textDark,
+                        ),
+                      ),
+                      Text(
+                        '${feedback.rating}⭐',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: colors.textDark,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    feedback.comment,
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    feedback.date,
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: colors.textLightGray,
+                    ),
+                  ),
+                ],
+              ),
+            )).toList(),
+
+          // Load more button
+          if (hasMoreItems)
+            Padding(
+              padding: EdgeInsets.only(top: 16.h),
+              child: GestureDetector(
+                onTap: isLoadingMore ? null : _loadMore,
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(12.w),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: colors.borderColor, width: 1.5),
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                  child: Center(
+                    child: isLoadingMore
+                        ? SizedBox(
+                            height: 16.h,
+                            width: 16.h,
+                            child: const CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(
+                            '[XEM THÊM ĐÁNH GIÁ]',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: colors.textSecondary,
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFullLayout() {
     final filteredFeedbacks = _getFilteredFeedbacks();
     final averageRating = FeedbackModel.calculateAverageRating(filteredFeedbacks);
     final ratingDistribution =
@@ -292,7 +606,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
       children: [
         // Header with back button
         Container(
-          color: AppColors.white,
+          color: AppThemeConfig.colors.white,
           child: Padding(
             padding:
                 EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -303,12 +617,12 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                   child: Container(
                     padding: EdgeInsets.all(8.w),
                     decoration: BoxDecoration(
-                      color: AppColors.bgLight,
+                      color: AppThemeConfig.colors.bgLight,
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Icon(
                       Icons.arrow_back,
-                      color: AppColors.textDark,
+                      color: AppThemeConfig.colors.textDark,
                       size: 24.sp,
                     ),
                   ),
@@ -320,7 +634,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                     style: GoogleFonts.roboto(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
+                      color: AppThemeConfig.colors.textDark,
                     ),
                   ),
                 ),
@@ -331,7 +645,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
 
         // Average rating section
         Container(
-          color: AppColors.white,
+          color: AppThemeConfig.colors.white,
           child: Padding(
             padding:
                 EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
@@ -349,7 +663,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                           style: GoogleFonts.roboto(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textDark,
+                            color: AppThemeConfig.colors.textDark,
                           ),
                         ),
                         SizedBox(height: 4.h),
@@ -357,7 +671,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                           '${filteredFeedbacks.length} đánh giá',
                           style: GoogleFonts.roboto(
                             fontSize: 13.sp,
-                            color: AppColors.textGray,
+                            color: AppThemeConfig.colors.textGray,
                           ),
                         ),
                       ],
@@ -370,7 +684,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                           style: GoogleFonts.roboto(
                             fontSize: 32.sp,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primaryGreen,
+                            color: AppThemeConfig.colors.primaryGreen,
                           ),
                         ),
                         Row(
@@ -380,7 +694,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                                 index < averageRating.toInt()
                                     ? Icons.star
                                     : Icons.star_border,
-                                color: AppColors.primaryGreen,
+                                color: AppThemeConfig.colors.primaryGreen,
                                 size: 16.sp,
                               );
                             }),
@@ -401,7 +715,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                       style: GoogleFonts.roboto(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
+                        color: AppThemeConfig.colors.textDark,
                       ),
                     ),
                     SizedBox(height: 12.h),
@@ -423,12 +737,12 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                                     '$rating',
                                     style: GoogleFonts.roboto(
                                       fontSize: 12.sp,
-                                      color: AppColors.textDark,
+                                      color: AppThemeConfig.colors.textDark,
                                     ),
                                   ),
                                   Icon(
                                     Icons.star,
-                                    color: AppColors.primaryGreen,
+                                    color: AppThemeConfig.colors.primaryGreen,
                                     size: 14.sp,
                                   ),
                                 ],
@@ -441,13 +755,13 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                                 child: Container(
                                   height: 8.h,
                                   decoration: BoxDecoration(
-                                    color: AppColors.dividerColor,
+                                    color: AppThemeConfig.colors.dividerColor,
                                   ),
                                   child: FractionallySizedBox(
                                     widthFactor: percentage / 100,
                                     alignment: Alignment.centerLeft,
                                     child: Container(
-                                      color: AppColors.primaryGreen,
+                                      color: AppThemeConfig.colors.primaryGreen,
                                     ),
                                   ),
                                 ),
@@ -462,7 +776,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                                 style: GoogleFonts.roboto(
                                   fontSize: 12.sp,
                                   fontWeight: FontWeight.w500,
-                                  color: AppColors.textGray,
+                                  color: AppThemeConfig.colors.textGray,
                                 ),
                                 textAlign: TextAlign.right,
                               ),
@@ -502,12 +816,12 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                         decoration: BoxDecoration(
                           color: _selectedSentiment == SentimentLabel.positive 
-                              ? AppColors.primaryGreen 
-                              : AppColors.white,
+                              ? AppThemeConfig.colors.primaryGreen 
+                              : AppThemeConfig.colors.white,
                           border: Border.all(
                             color: _selectedSentiment == SentimentLabel.positive 
-                                ? AppColors.primaryGreen 
-                                : AppColors.borderColor,
+                                ? AppThemeConfig.colors.primaryGreen 
+                                : AppThemeConfig.colors.borderColor,
                           ),
                           borderRadius: BorderRadius.circular(8.r),
                         ),
@@ -518,8 +832,8 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w500,
                               color: _selectedSentiment == SentimentLabel.positive
-                                  ? AppColors.white
-                                  : AppColors.textDark,
+                                  ? AppThemeConfig.colors.white
+                                  : AppThemeConfig.colors.textDark,
                             ),
                           ),
                         ),
@@ -541,12 +855,12 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                         decoration: BoxDecoration(
                           color: _selectedSentiment == SentimentLabel.neutral 
-                              ? AppColors.primaryGreen 
-                              : AppColors.white,
+                              ? AppThemeConfig.colors.primaryGreen 
+                              : AppThemeConfig.colors.white,
                           border: Border.all(
                             color: _selectedSentiment == SentimentLabel.neutral 
-                                ? AppColors.primaryGreen 
-                                : AppColors.borderColor,
+                                ? AppThemeConfig.colors.primaryGreen 
+                                : AppThemeConfig.colors.borderColor,
                           ),
                           borderRadius: BorderRadius.circular(8.r),
                         ),
@@ -557,8 +871,8 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w500,
                               color: _selectedSentiment == SentimentLabel.neutral
-                                  ? AppColors.white
-                                  : AppColors.textDark,
+                                  ? AppThemeConfig.colors.white
+                                  : AppThemeConfig.colors.textDark,
                             ),
                           ),
                         ),
@@ -580,12 +894,12 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                         decoration: BoxDecoration(
                           color: _selectedSentiment == SentimentLabel.negative 
-                              ? AppColors.primaryGreen 
-                              : AppColors.white,
+                              ? AppThemeConfig.colors.primaryGreen 
+                              : AppThemeConfig.colors.white,
                           border: Border.all(
                             color: _selectedSentiment == SentimentLabel.negative 
-                                ? AppColors.primaryGreen 
-                                : AppColors.borderColor,
+                                ? AppThemeConfig.colors.primaryGreen 
+                                : AppThemeConfig.colors.borderColor,
                           ),
                           borderRadius: BorderRadius.circular(8.r),
                         ),
@@ -596,8 +910,8 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w500,
                               color: _selectedSentiment == SentimentLabel.negative
-                                  ? AppColors.white
-                                  : AppColors.textDark,
+                                  ? AppThemeConfig.colors.white
+                                  : AppThemeConfig.colors.textDark,
                             ),
                           ),
                         ),
@@ -617,9 +931,9 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
                         decoration: BoxDecoration(
-                          color: _selectedRating != null ? AppColors.primaryGreen : AppColors.white,
+                          color: _selectedRating != null ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.white,
                           border: Border.all(
-                            color: _selectedRating != null ? AppColors.primaryGreen : AppColors.borderColor,
+                            color: _selectedRating != null ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.borderColor,
                           ),
                           borderRadius: BorderRadius.circular(8.r),
                         ),
@@ -630,7 +944,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                               Icon(
                                 Icons.star_rounded,
                                 size: 18.sp,
-                                color: _selectedRating != null ? AppColors.white : AppColors.textGray,
+                                color: _selectedRating != null ? AppThemeConfig.colors.white : AppThemeConfig.colors.textGray,
                               ),
                               SizedBox(width: 4.w),
                               Text(
@@ -638,7 +952,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                                 style: GoogleFonts.roboto(
                                   fontSize: 12.sp,
                                   fontWeight: FontWeight.w500,
-                                  color: _selectedRating != null ? AppColors.white : AppColors.textDark,
+                                  color: _selectedRating != null ? AppThemeConfig.colors.white : AppThemeConfig.colors.textDark,
                                 ),
                               ),
                             ],
@@ -669,7 +983,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                       'Chưa có đánh giá',
                       style: GoogleFonts.roboto(
                         fontSize: 14.sp,
-                        color: AppColors.textGray,
+                        color: AppThemeConfig.colors.textGray,
                       ),
                     ),
                   ),
@@ -697,7 +1011,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.primaryGreen),
+                  border: Border.all(color: AppThemeConfig.colors.primaryGreen),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Center(
@@ -707,7 +1021,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                           width: 20.h,
                           child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.primaryGreen,
+                              AppThemeConfig.colors.primaryGreen,
                             ),
                             strokeWidth: 2,
                           ),
@@ -717,7 +1031,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                           style: GoogleFonts.roboto(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.primaryGreen,
+                            color: AppThemeConfig.colors.primaryGreen,
                           ),
                         ),
                 ),
@@ -734,8 +1048,8 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        border: Border.all(color: AppColors.borderColor),
+        color: AppThemeConfig.colors.white,
+        border: Border.all(color: AppThemeConfig.colors.borderColor),
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
@@ -754,7 +1068,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                       height: 40.w,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.borderColor),
+                        border: Border.all(color: AppThemeConfig.colors.borderColor),
                       ),
                       child: ClipOval(
                         child: Image.asset(
@@ -762,11 +1076,11 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
-                              color: AppColors.lightGreen,
+                              color: AppThemeConfig.colors.lightGreen,
                               child: Icon(
                                 Icons.person_rounded,
                                 size: 20.sp,
-                                color: AppColors.primaryGreen,
+                                color: AppThemeConfig.colors.primaryGreen,
                               ),
                             );
                           },
@@ -783,14 +1097,14 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                             style: GoogleFonts.roboto(
                               fontSize: 13.sp,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
+                              color: AppThemeConfig.colors.textDark,
                             ),
                           ),
                           Text(
                             feedback.date,
                             style: GoogleFonts.roboto(
                               fontSize: 11.sp,
-                              color: AppColors.textGray,
+                              color: AppThemeConfig.colors.textGray,
                             ),
                           ),
                         ],
@@ -805,14 +1119,14 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                   ...List.generate(feedback.rating, (index) {
                     return Icon(
                       Icons.star,
-                      color: AppColors.primaryGreen,
+                      color: AppThemeConfig.colors.primaryGreen,
                       size: 14.sp,
                     );
                   }),
                   ...List.generate(5 - feedback.rating, (index) {
                     return Icon(
                       Icons.star_border,
-                      color: AppColors.textLightGray,
+                      color: AppThemeConfig.colors.textLightGray,
                       size: 14.sp,
                     );
                   }),
@@ -826,7 +1140,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
             feedback.comment,
             style: GoogleFonts.roboto(
               fontSize: 13.sp,
-              color: AppColors.textDark,
+              color: AppThemeConfig.colors.textDark,
               height: 1.5,
             ),
           ),

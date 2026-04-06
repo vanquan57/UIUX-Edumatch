@@ -1,4 +1,4 @@
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/admin/features/home/presentation/views/admin_home_page.dart';
 import 'package:edu_match/core/config/constant.dart';
 import 'package:edu_match/features/auth/presentation/views/forgot_password_view.dart';
@@ -6,8 +6,6 @@ import 'package:edu_match/features/auth/presentation/views/login_view.dart';
 import 'package:edu_match/features/auth/presentation/views/register_view.dart';
 import 'package:edu_match/parent/features/home/presentation/views/parent_home_page.dart';
 import 'package:edu_match/share/layouts/main_layout.dart';
-import 'package:edu_match/student/data/models/booking_model.dart';
-import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/choice_learning_method.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/confirm_info_booking.dart';
 import 'package:edu_match/student/features/payment/presentation/views/payment_page.dart';
@@ -60,7 +58,7 @@ class AppRouter {
 
   // GoRouter configuration
   static final GoRouter router = GoRouter(
-    initialLocation: login, // ✅ Screen default 
+    initialLocation: bookingPaymentSuccess, // ✅ Screen default 
     debugLogDiagnostics: true, // Debug mode
 
     redirect: (BuildContext context, GoRouterState state) {
@@ -77,12 +75,13 @@ class AppRouter {
         path: login,
         name: 'login',
         builder: (context, state) {
-          return const MainLayout(
+          final colors = AppThemeConfig.colors;
+          return MainLayout(
             layoutType: LayoutType.fullscreen,
-            backgroundColor: AppColors.white,
-            statusBarColor: AppColors.white,
+            backgroundColor: colors.white,
+            statusBarColor: colors.white,
             statusBarIconBrightness: Brightness.dark,
-            child: LoginPage(),
+            child: const LoginPage(),
           );
         },
       ),
@@ -90,12 +89,13 @@ class AppRouter {
         path: register,
         name: 'register',
         builder: (context, state) {
-          return const MainLayout(
+          final colors = AppThemeConfig.colors;
+          return MainLayout(
             layoutType: LayoutType.fullscreen,
-            backgroundColor: AppColors.white,
-            statusBarColor: AppColors.white,
+            backgroundColor: colors.white,
+            statusBarColor: colors.white,
             statusBarIconBrightness: Brightness.dark,
-            child: RegisterPage(),
+            child: const RegisterPage(),
           );
         },
       ),
@@ -103,12 +103,13 @@ class AppRouter {
         path: forgotPassword,
         name: 'forgotPassword',
         builder: (context, state) {
-          return const MainLayout(
+          final colors = AppThemeConfig.colors;
+          return MainLayout(
             layoutType: LayoutType.fullscreen,
-            backgroundColor: AppColors.white,
-            statusBarColor: AppColors.white,
+            backgroundColor: colors.white,
+            statusBarColor: colors.white,
             statusBarIconBrightness: Brightness.dark,
-            child: ForgotPasswordPage(),
+            child: const ForgotPasswordPage(),
           );
         },
       ),
@@ -164,11 +165,12 @@ class AppRouter {
         path: onboardingWelcome,
         name: 'onboardingWelcome',
         builder: (context, state) {
+          final colors = AppThemeConfig.colors;
           final role = state.extra as String? ?? AppConstants.roleStudent;
           return MainLayout(
             layoutType: LayoutType.fullscreen,
-            backgroundColor: AppColors.white,
-            statusBarColor: AppColors.white,
+            backgroundColor: colors.white,
+            statusBarColor: colors.white,
             statusBarIconBrightness: Brightness.dark,
             useSafeArea: false,
             child: OnboardingWelcomePage(role: role),
@@ -179,11 +181,12 @@ class AppRouter {
         path: onboardingSubjectInterest,
         name: 'onboardingSubjectInterest',
         builder: (context, state) {
+          final colors = AppThemeConfig.colors;
           final role = state.extra as String? ?? AppConstants.roleStudent;
           return MainLayout(
             layoutType: LayoutType.fullscreen,
-            backgroundColor: AppColors.white,
-            statusBarColor: AppColors.white,
+            backgroundColor: colors.white,
+            statusBarColor: colors.white,
             statusBarIconBrightness: Brightness.dark,
             useSafeArea: false,
             child: SubjectInterestPage(role: role),
@@ -194,11 +197,12 @@ class AppRouter {
         path: onboardingProfileSetup,
         name: 'onboardingProfileSetup',
         builder: (context, state) {
+          final colors = AppThemeConfig.colors;
           final role = state.extra as String? ?? AppConstants.roleStudent;
           return MainLayout(
             layoutType: LayoutType.fullscreen,
-            backgroundColor: AppColors.white,
-            statusBarColor: AppColors.white,
+            backgroundColor: colors.white,
+            statusBarColor: colors.white,
             statusBarIconBrightness: Brightness.dark,
             useSafeArea: false,
             child: ProfileSetupPage(role: role),
@@ -251,11 +255,12 @@ class AppRouter {
           final extra = state.extra as Map<String, dynamic>? ?? {};
           final tutorName = extra['tutorName'] as String? ?? 'Gia sư';
           final tutorRating = extra['tutorRating'] as double? ?? 0.0;
+          final colors = AppThemeConfig.colors;
           return MainLayout(
             layoutType: LayoutType.normal,
             showHeader: false,
             showFooter: true,
-            backgroundColor: AppColors.bgLight,
+            backgroundColor: colors.bgLight,
             padding: EdgeInsets.zero,
             child: FeedbackListPage(
               tutorId: tutorId,
@@ -269,13 +274,12 @@ class AppRouter {
         path: bookingLearningMethod,
         name: 'bookingLearningMethod',
         builder: (context, state) {
-          final tutor = state.extra as TutorModel;
           return MainLayout(
             layoutType: LayoutType.normal,
             showHeader: true,
             showFooter: true,
             padding: EdgeInsets.zero,
-            child: ChoiceLearningMethodPage(tutor: tutor),
+            child: const ChoiceLearningMethodPage(),
           );
         },
       ),
@@ -283,13 +287,12 @@ class AppRouter {
         path: bookingSelectTimeSlot,
         name: 'bookingSelectTimeSlot',
         builder: (context, state) {
-          final booking = state.extra as BookingModel;
           return MainLayout(
             layoutType: LayoutType.normal,
             showHeader: true,
             showFooter: true,
             padding: EdgeInsets.zero,
-            child: SelectTimeSlotPage(booking: booking),
+            child: const SelectTimeSlotPage(),
           );
         },
       ),
@@ -297,14 +300,14 @@ class AppRouter {
         path: bookingRequestRequirement,
         name: 'bookingRequestRequirement',
         builder: (context, state) {
-          final booking = state.extra as BookingModel;
+          final colors = AppThemeConfig.colors;
           return MainLayout(
             layoutType: LayoutType.normal,
             showHeader: true,
             showFooter: true,
-            backgroundColor: AppColors.white,
+            backgroundColor: colors.white,
             padding: EdgeInsets.zero,
-            child: RequestLearningRequirementPage(booking: booking),
+            child: const RequestLearningRequirementPage(),
           );
         },
       ),
@@ -312,14 +315,14 @@ class AppRouter {
         path: bookingConfirmInfo,
         name: 'bookingConfirmInfo',
         builder: (context, state) {
-          final booking = state.extra as BookingModel;
+          final colors = AppThemeConfig.colors;
           return MainLayout(
             layoutType: LayoutType.normal,
             showHeader: true,
             showFooter: true,
-            backgroundColor: AppColors.white,
+            backgroundColor: colors.white,
             padding: EdgeInsets.zero,
-            child: ConfirmInfoBookingPage(booking: booking),
+            child: const ConfirmInfoBookingPage(),
           );
         },
       ),
@@ -327,14 +330,14 @@ class AppRouter {
         path: bookingPayment,
         name: 'bookingPayment',
         builder: (context, state) {
-          final booking = state.extra as BookingModel;
+          final colors = AppThemeConfig.colors;
           return MainLayout(
             layoutType: LayoutType.normal,
             showHeader: true,
             showFooter: true,
-            backgroundColor: AppColors.bgLight,
+            backgroundColor: colors.bgLight,
             padding: EdgeInsets.zero,
-            child: PaymentPage(booking: booking),
+            child: const PaymentPage(),
           );
         },
       ),
@@ -342,11 +345,12 @@ class AppRouter {
         path: bookingPaymentSuccess,
         name: 'bookingPaymentSuccess',
         builder: (context, state) {
+          final colors = AppThemeConfig.colors;
           return MainLayout(
             layoutType: LayoutType.normal,
             showHeader: true,
             showFooter: true,
-            backgroundColor: AppColors.bgLight,
+            backgroundColor: colors.bgLight,
             padding: EdgeInsets.zero,
             child: const PaymentSuccessfulPage(),
           );

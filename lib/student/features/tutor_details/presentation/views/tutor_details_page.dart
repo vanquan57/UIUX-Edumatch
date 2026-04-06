@@ -1,6 +1,6 @@
 ﻿import 'dart:math';
 
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/core/router/app_router.dart';
 import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:flutter/material.dart';
@@ -44,30 +44,16 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
   }
 
   Future<void> _loadTutorDetails() async {
-    try {
-      // Try to get tutor data from route extra first (passed via context.push)
-      final state = GoRouterState.of(context);
-      if (state.extra != null && state.extra is TutorModel) {
-        setState(() {
-          tutor = state.extra as TutorModel;
-          _nearbyTutorsCache = _generateNearbyTutors();
-          _isLoading = false;
-        });
-        return;
-      }
-    } catch (e) {
-      // Fallback if extra not available
-    }
-
-    // Fallback: fetch from mock data using ID
-    await Future.delayed(const Duration(milliseconds: 800));
+    // Simulate loading for better UX
+    await Future.delayed(const Duration(milliseconds: 500));
 
     if (mounted) {
       setState(() {
+        // Always use mock data for prototype
         final allTutors = TutorModel.mockTutors();
         final foundTutor = allTutors.firstWhere(
           (t) => t.id == widget.tutorId,
-          orElse: () => allTutors.first,
+          orElse: () => allTutors.first, // Use first tutor as fallback
         );
         tutor = foundTutor;
         _nearbyTutorsCache = _generateNearbyTutors();
@@ -98,8 +84,8 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
   }
 
   void _onBookingPressed() {
-    // Event: onClickBooking → navigate BookingFlow
-    context.push(AppRouter.bookingLearningMethod, extra: tutor);
+    // Event: onClickBooking → navigate BookingFlow (no extra data needed for prototype)
+    context.push(AppRouter.bookingLearningMethod);
   }
 
   void _onChatPressed() {
@@ -116,12 +102,249 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     if (_isLoading) {
       return Center(
-        child: CircularProgressIndicator(color: AppColors.primaryGreen),
+        child: CircularProgressIndicator(color: colors.primaryGreen),
       );
     }
 
+    return AppThemeConfig.isLowFidelityMode
+        ? _buildLowFiLayout(context, colors)
+        : _buildFullLayout();
+  }
+
+  Widget _buildLowFiLayout(BuildContext context, AppColorScheme colors) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Text(
+            'Chi tiết gia sư',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Tutor basic info
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '[AVATAR]',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  tutor.name,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textDark,
+                  ),
+                ),
+                Text(
+                  '${tutor.rating}⭐ (${tutor.reviewCount} đánh giá)',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+                Text(
+                  '${tutor.pricePerHour.toInt()}₫/giờ',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textDark,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // About
+          Text(
+            'Giới thiệu',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Text(
+              (tutor.bio?.isNotEmpty == true) ? tutor.bio! : '[GIỚI THIỆU GIA SƯ]',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: (tutor.bio?.isNotEmpty == true) ? colors.textDark : colors.textSecondary,
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Subjects
+          Text(
+            'Môn dạy',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Text(
+              tutor.subjects.isNotEmpty ? tutor.subjects.join(', ') : '[MÔN DẠY]',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: tutor.subjects.isNotEmpty ? colors.textDark : colors.textSecondary,
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Experience
+          Text(
+            'Kinh nghiệm',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Text(
+              tutor.experiences?.isNotEmpty == true 
+                ? '${tutor.experiences!.length} vị trí kinh nghiệm'
+                : 'Chưa có thông tin kinh nghiệm',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: colors.textDark,
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Reviews
+          Text(
+            'Đánh giá',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Text(
+              '[XEM TẤT CẢ ĐÁNH GIÁ]',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: colors.textSecondary,
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Availability
+          Text(
+            'Lịch rảnh',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Text(
+              '[LỊCH RẢNH CỦA GIA SƯ]',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: colors.textSecondary,
+              ),
+            ),
+          ),
+          SizedBox(height: 32.h),
+
+          // Book button
+          GestureDetector(
+            onTap: () => _onBookingPressed(),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.textDark, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+                color: colors.textDark,
+              ),
+              child: Center(
+                child: Text(
+                  'Đặt lịch học',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFullLayout() {
     return Stack(
       children: [
         // Main content
@@ -186,7 +409,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
   // ─────────────────────────────────────────────────────────────────────────────
   Widget _buildHeader() {
     return Container(
-      color: AppColors.white,
+      color: AppThemeConfig.colors.white,
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -204,12 +427,12 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                     child: Container(
                       padding: EdgeInsets.all(8.w),
                       decoration: BoxDecoration(
-                        color: AppColors.bgLight,
+                        color: AppThemeConfig.colors.bgLight,
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Icon(
                         Icons.arrow_back,
-                        color: AppColors.textDark,
+                        color: AppThemeConfig.colors.textDark,
                         size: 24.sp,
                       ),
                     ),
@@ -221,14 +444,14 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                         child: Container(
                           padding: EdgeInsets.all(8.w),
                           decoration: BoxDecoration(
-                            color: AppColors.bgLight,
+                            color: AppThemeConfig.colors.bgLight,
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             _isSaved ? Icons.favorite : Icons.favorite_border,
                             color: _isSaved
-                                ? AppColors.errorRed
-                                : AppColors.textGray,
+                                ? AppThemeConfig.colors.errorRed
+                                : AppThemeConfig.colors.textGray,
                             size: 24.sp,
                           ),
                         ),
@@ -239,12 +462,12 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                         child: Container(
                           padding: EdgeInsets.all(8.w),
                           decoration: BoxDecoration(
-                            color: AppColors.bgLight,
+                            color: AppThemeConfig.colors.bgLight,
                             borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.share_outlined,
-                            color: AppColors.textGray,
+                            color: AppThemeConfig.colors.textGray,
                             size: 24.sp,
                           ),
                         ),
@@ -267,12 +490,12 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: AppColors.borderColor,
+                        color: AppThemeConfig.colors.borderColor,
                         width: 2,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.shadowColor,
+                          color: AppThemeConfig.colors.shadowColor,
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -284,11 +507,11 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
-                            color: AppColors.lightGreen,
+                            color: AppThemeConfig.colors.lightGreen,
                             child: Icon(
                               Icons.person_rounded,
                               size: 50.sp,
-                              color: AppColors.primaryGreen,
+                              color: AppThemeConfig.colors.primaryGreen,
                             ),
                           );
                         },
@@ -303,7 +526,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                     style: GoogleFonts.roboto(
                       fontSize: 24.sp,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
+                      color: AppThemeConfig.colors.textDark,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -316,8 +539,8 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                     ),
                     decoration: BoxDecoration(
                       color: tutor.isOnline
-                          ? AppColors.lightGreen
-                          : AppColors.bgLight,
+                          ? AppThemeConfig.colors.lightGreen
+                          : AppThemeConfig.colors.bgLight,
                       borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: Text(
@@ -326,8 +549,8 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w500,
                         color: tutor.isOnline
-                            ? AppColors.primaryGreen
-                            : AppColors.textGray,
+                            ? AppThemeConfig.colors.primaryGreen
+                            : AppThemeConfig.colors.textGray,
                       ),
                     ),
                   ),
@@ -348,7 +571,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                         style: GoogleFonts.roboto(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
+                          color: AppThemeConfig.colors.textDark,
                         ),
                       ),
                       SizedBox(width: 8.w),
@@ -356,7 +579,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                         '(${tutor.reviewCount} đánh giá)',
                         style: GoogleFonts.roboto(
                           fontSize: 14.sp,
-                          color: AppColors.textGray,
+                          color: AppThemeConfig.colors.textGray,
                         ),
                       ),
                     ],
@@ -383,7 +606,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
           style: GoogleFonts.roboto(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 12.h),
@@ -391,15 +614,15 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
           width: double.infinity,
           padding: EdgeInsets.all(12.w),
           decoration: BoxDecoration(
-            color: AppColors.lightGreen,
+            color: AppThemeConfig.colors.lightGreen,
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: AppColors.borderColor),
+            border: Border.all(color: AppThemeConfig.colors.borderColor),
           ),
           child: Text(
             tutor.bio ?? 'Chưa có thông tin',
             style: GoogleFonts.roboto(
               fontSize: 14.sp,
-              color: AppColors.textDark,
+              color: AppThemeConfig.colors.textDark,
               height: 1.5,
             ),
           ),
@@ -422,7 +645,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
           style: GoogleFonts.roboto(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 12.h),
@@ -431,15 +654,15 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
             width: double.infinity,
             padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.borderColor),
+              border: Border.all(color: AppThemeConfig.colors.borderColor),
               borderRadius: BorderRadius.circular(12.r),
-              color: AppColors.bgLight,
+              color: AppThemeConfig.colors.bgLight,
             ),
             child: Text(
               'Chưa có thông tin kinh nghiệm',
               style: GoogleFonts.roboto(
                 fontSize: 12.sp,
-                color: AppColors.textGray,
+                color: AppThemeConfig.colors.textGray,
               ),
             ),
           )
@@ -452,7 +675,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                   width: double.infinity,
                   padding: EdgeInsets.all(12.w),
                   decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.borderColor),
+                    border: Border.all(color: AppThemeConfig.colors.borderColor),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Column(
@@ -463,7 +686,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                         style: GoogleFonts.roboto(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
+                          color: AppThemeConfig.colors.textDark,
                         ),
                       ),
                       SizedBox(height: 4.h),
@@ -471,7 +694,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                         exp.company,
                         style: GoogleFonts.roboto(
                           fontSize: 12.sp,
-                          color: AppColors.primaryGreen,
+                          color: AppThemeConfig.colors.primaryGreen,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -480,7 +703,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                         exp.duration,
                         style: GoogleFonts.roboto(
                           fontSize: 12.sp,
-                          color: AppColors.textGray,
+                          color: AppThemeConfig.colors.textGray,
                         ),
                       ),
                       SizedBox(height: 6.h),
@@ -488,7 +711,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                         exp.description,
                         style: GoogleFonts.roboto(
                           fontSize: 12.sp,
-                          color: AppColors.textDark,
+                          color: AppThemeConfig.colors.textDark,
                           height: 1.4,
                         ),
                       ),
@@ -516,7 +739,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
           style: GoogleFonts.roboto(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 12.h),
@@ -528,7 +751,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                 'Chưa có chứng chỉ',
                 style: GoogleFonts.roboto(
                   fontSize: 13.sp,
-                  color: AppColors.textGray,
+                  color: AppThemeConfig.colors.textGray,
                 ),
               ),
             ),
@@ -550,7 +773,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                         width: 140.w,
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: AppColors.borderColor,
+                            color: AppThemeConfig.colors.borderColor,
                             width: 1.5,
                           ),
                           borderRadius: BorderRadius.circular(12.r),
@@ -586,8 +809,8 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                     colors: [
-                                      AppColors.primaryGreen.withOpacity(0.3),
-                                      AppColors.lightGreen.withOpacity(0.2),
+                                      AppThemeConfig.colors.primaryGreen.withOpacity(0.3),
+                                      AppThemeConfig.colors.lightGreen.withOpacity(0.2),
                                     ],
                                   ),
                                 ),
@@ -595,7 +818,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                                   child: Icon(
                                     Icons.card_giftcard,
                                     size: 40.sp,
-                                    color: AppColors.primaryGreen,
+                                    color: AppThemeConfig.colors.primaryGreen,
                                   ),
                                 ),
                               ),
@@ -606,7 +829,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                               child: Container(
                                 padding: EdgeInsets.all(4.w),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primaryGreen,
+                                  color: AppThemeConfig.colors.primaryGreen,
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
@@ -692,7 +915,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
           style: GoogleFonts.roboto(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 12.h),
@@ -703,7 +926,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
             return Container(
               padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
               decoration: BoxDecoration(
-                color: AppColors.primaryGreen,
+                color: AppThemeConfig.colors.primaryGreen,
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Text(
@@ -711,7 +934,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                 style: GoogleFonts.roboto(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.white,
+                  color: AppThemeConfig.colors.white,
                 ),
               ),
             );
@@ -753,7 +976,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
           style: GoogleFonts.roboto(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 12.h),
@@ -768,9 +991,9 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
             return Container(
               padding: EdgeInsets.all(10.w),
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.borderColor),
+                border: Border.all(color: AppThemeConfig.colors.borderColor),
                 borderRadius: BorderRadius.circular(12.r),
-                color: AppColors.bgLight,
+                color: AppThemeConfig.colors.bgLight,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -781,7 +1004,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                     style: GoogleFonts.roboto(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
+                      color: AppThemeConfig.colors.textDark,
                     ),
                   ),
                   SizedBox(height: 6.h),
@@ -790,7 +1013,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                     style: GoogleFonts.roboto(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.primaryGreen,
+                      color: AppThemeConfig.colors.primaryGreen,
                     ),
                   ),
                   SizedBox(height: 4.h),
@@ -799,7 +1022,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                     textAlign: TextAlign.center,
                     style: GoogleFonts.roboto(
                       fontSize: 10.sp,
-                      color: AppColors.textGray,
+                      color: AppThemeConfig.colors.textGray,
                     ),
                   ),
                 ],
@@ -828,7 +1051,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
               style: GoogleFonts.roboto(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
+                color: AppThemeConfig.colors.textDark,
               ),
             ),
             GestureDetector(
@@ -843,7 +1066,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                 style: GoogleFonts.roboto(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.primaryGreen,
+                  color: AppThemeConfig.colors.primaryGreen,
                 ),
               ),
             ),
@@ -858,7 +1081,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                 'Chưa có đánh giá',
                 style: GoogleFonts.roboto(
                   fontSize: 13.sp,
-                  color: AppColors.textGray,
+                  color: AppThemeConfig.colors.textGray,
                 ),
               ),
             ),
@@ -871,7 +1094,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                 child: Container(
                   padding: EdgeInsets.all(12.w),
                   decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.borderColor),
+                    border: Border.all(color: AppThemeConfig.colors.borderColor),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Column(
@@ -885,14 +1108,14 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                             style: GoogleFonts.roboto(
                               fontSize: 13.sp,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
+                              color: AppThemeConfig.colors.textDark,
                             ),
                           ),
                           Text(
                             review.date,
                             style: GoogleFonts.roboto(
                               fontSize: 11.sp,
-                              color: AppColors.textGray,
+                              color: AppThemeConfig.colors.textGray,
                             ),
                           ),
                         ],
@@ -905,7 +1128,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                             size: 14.sp,
                             color: index < review.rating
                                 ? Colors.amber
-                                : AppColors.borderColor,
+                                : AppThemeConfig.colors.borderColor,
                           );
                         }),
                       ),
@@ -914,7 +1137,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                         review.text,
                         style: GoogleFonts.roboto(
                           fontSize: 12.sp,
-                          color: AppColors.textDark,
+                          color: AppThemeConfig.colors.textDark,
                           height: 1.4,
                         ),
                       ),
@@ -959,16 +1182,16 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
           style: GoogleFonts.roboto(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 12.h),
         Container(
           padding: EdgeInsets.all(12.w),
           decoration: BoxDecoration(
-            border: Border.all(color: AppColors.borderColor),
+            border: Border.all(color: AppThemeConfig.colors.borderColor),
             borderRadius: BorderRadius.circular(12.r),
-            color: AppColors.bgLight,
+            color: AppThemeConfig.colors.bgLight,
           ),
           child: Column(
             children: [
@@ -984,8 +1207,8 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                     ),
                     decoration: BoxDecoration(
                       color: isAvailable
-                          ? AppColors.primaryGreen
-                          : AppColors.disabledGray,
+                          ? AppThemeConfig.colors.primaryGreen
+                          : AppThemeConfig.colors.disabledGray,
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Text(
@@ -994,15 +1217,15 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w500,
                         color: isAvailable
-                            ? AppColors.white
-                            : AppColors.textGray,
+                            ? AppThemeConfig.colors.white
+                            : AppThemeConfig.colors.textGray,
                       ),
                     ),
                   );
                 }).toList(),
               ),
               SizedBox(height: 12.h),
-              Divider(color: AppColors.borderColor),
+              Divider(color: AppThemeConfig.colors.borderColor),
               SizedBox(height: 12.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1012,7 +1235,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                     style: GoogleFonts.roboto(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textDark,
+                      color: AppThemeConfig.colors.textDark,
                     ),
                   ),
                   Text(
@@ -1020,7 +1243,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                     style: GoogleFonts.roboto(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.primaryGreen,
+                      color: AppThemeConfig.colors.primaryGreen,
                     ),
                   ),
                 ],
@@ -1038,11 +1261,11 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
   Widget _buildStickyFooter() {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
-        border: Border(top: BorderSide(color: AppColors.borderColor, width: 1)),
+        color: AppThemeConfig.colors.white,
+        border: Border(top: BorderSide(color: AppThemeConfig.colors.borderColor, width: 1)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowColor,
+            color: AppThemeConfig.colors.shadowColor,
             blurRadius: 12,
             offset: const Offset(0, -2),
           ),
@@ -1057,8 +1280,8 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
               child: ElevatedButton(
                 onPressed: _onChatPressed,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.bgLight,
-                  foregroundColor: AppColors.primaryGreen,
+                  backgroundColor: AppThemeConfig.colors.bgLight,
+                  foregroundColor: AppThemeConfig.colors.primaryGreen,
                   padding: EdgeInsets.symmetric(vertical: 12.h),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.r),
@@ -1087,8 +1310,8 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
               child: ElevatedButton(
                 onPressed: _onBookingPressed,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryGreen,
-                  foregroundColor: AppColors.white,
+                  backgroundColor: AppThemeConfig.colors.primaryGreen,
+                  foregroundColor: AppThemeConfig.colors.white,
                   padding: EdgeInsets.symmetric(vertical: 12.h),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.r),
@@ -1133,7 +1356,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
           style: GoogleFonts.roboto(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 12.h),
@@ -1142,7 +1365,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
           height: 250.h,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: AppColors.borderColor),
+            border: Border.all(color: AppThemeConfig.colors.borderColor),
           ),
           clipBehavior: Clip.hardEdge,
           child: FlutterMap(
@@ -1174,14 +1397,14 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                           height: 45.w,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: AppColors.errorRed,
+                            color: AppThemeConfig.colors.errorRed,
                             border: Border.all(
-                              color: AppColors.white,
+                              color: AppThemeConfig.colors.white,
                               width: 2,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.errorRed.withOpacity(0.3),
+                                color: AppThemeConfig.colors.errorRed.withOpacity(0.3),
                                 blurRadius: 8,
                                 spreadRadius: 2,
                               ),
@@ -1190,7 +1413,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                           child: Center(
                             child: Icon(
                               Icons.star,
-                              color: AppColors.white,
+                              color: AppThemeConfig.colors.white,
                               size: 22.sp,
                             ),
                           ),
@@ -1224,14 +1447,14 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                               height: 40.w,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: AppColors.primaryGreen,
+                                color: AppThemeConfig.colors.primaryGreen,
                                 border: Border.all(
-                                  color: AppColors.white,
+                                  color: AppThemeConfig.colors.white,
                                   width: 2,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.primaryGreen.withOpacity(
+                                    color: AppThemeConfig.colors.primaryGreen.withOpacity(
                                       0.3,
                                     ),
                                     blurRadius: 8,
@@ -1242,7 +1465,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                               child: Center(
                                 child: Icon(
                                   Icons.person,
-                                  color: AppColors.white,
+                                  color: AppThemeConfig.colors.white,
                                   size: 18.sp,
                                 ),
                               ),
@@ -1261,7 +1484,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
         // Show nearby tutors count
         Text(
           'Tìm thấy ${nearbyTutors.length} gia sư gần đây',
-          style: GoogleFonts.roboto(fontSize: 12.sp, color: AppColors.textGray),
+          style: GoogleFonts.roboto(fontSize: 12.sp, color: AppThemeConfig.colors.textGray),
         ),
         SizedBox(height: 12.h),
         // Nearby tutors list
@@ -1292,9 +1515,9 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                       width: 140.w,
                       padding: EdgeInsets.all(10.w),
                       decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.borderColor),
+                        border: Border.all(color: AppThemeConfig.colors.borderColor),
                         borderRadius: BorderRadius.circular(10.r),
-                        color: AppColors.white,
+                        color: AppThemeConfig.colors.white,
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -1307,7 +1530,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                             style: GoogleFonts.roboto(
                               fontSize: 12.sp,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
+                              color: AppThemeConfig.colors.textDark,
                             ),
                           ),
                           SizedBox(height: 4.h),
@@ -1334,14 +1557,14 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                               Icon(
                                 Icons.location_on,
                                 size: 12.sp,
-                                color: AppColors.primaryGreen,
+                                color: AppThemeConfig.colors.primaryGreen,
                               ),
                               SizedBox(width: 2.w),
                               Text(
                                 '${distance.toStringAsFixed(1)}km',
                                 style: GoogleFonts.roboto(
                                   fontSize: 10.sp,
-                                  color: AppColors.textGray,
+                                  color: AppThemeConfig.colors.textGray,
                                 ),
                               ),
                             ],
@@ -1352,7 +1575,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                             style: GoogleFonts.roboto(
                               fontSize: 11.sp,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.primaryGreen,
+                              color: AppThemeConfig.colors.primaryGreen,
                             ),
                           ),
                         ],
@@ -1460,9 +1683,9 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                                               begin: Alignment.topLeft,
                                               end: Alignment.bottomRight,
                                               colors: [
-                                                AppColors.primaryGreen
+                                                AppThemeConfig.colors.primaryGreen
                                                     .withOpacity(0.3),
-                                                AppColors.lightGreen
+                                                AppThemeConfig.colors.lightGreen
                                                     .withOpacity(0.2),
                                               ],
                                             ),
@@ -1471,7 +1694,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                                             child: Icon(
                                               Icons.card_giftcard,
                                               size: 60.sp,
-                                              color: AppColors.primaryGreen,
+                                              color: AppThemeConfig.colors.primaryGreen,
                                             ),
                                           ),
                                         ),
@@ -1487,7 +1710,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                                   style: GoogleFonts.roboto(
                                     fontSize: 18.sp,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.textDark,
+                                    color: AppThemeConfig.colors.textDark,
                                   ),
                                 ),
                               ),
@@ -1505,7 +1728,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                                       vertical: 8.h,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: AppColors.lightGreen,
+                                      color: AppThemeConfig.colors.lightGreen,
                                       borderRadius: BorderRadius.circular(8.r),
                                     ),
                                     child: Row(
@@ -1514,7 +1737,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                                         Icon(
                                           Icons.verified,
                                           size: 16.sp,
-                                          color: AppColors.primaryGreen,
+                                          color: AppThemeConfig.colors.primaryGreen,
                                         ),
                                         SizedBox(width: 8.w),
                                         Expanded(
@@ -1526,7 +1749,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                                             style: GoogleFonts.roboto(
                                               fontSize: 13.sp,
                                               fontWeight: FontWeight.w500,
-                                              color: AppColors.primaryGreen,
+                                              color: AppThemeConfig.colors.primaryGreen,
                                             ),
                                           ),
                                         ),
@@ -1544,7 +1767,7 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                                     onPressed: () =>
                                         Navigator.of(context).pop(),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.primaryGreen,
+                                      backgroundColor: AppThemeConfig.colors.primaryGreen,
                                       padding: EdgeInsets.symmetric(
                                         vertical: 12.h,
                                       ),
@@ -1577,14 +1800,14 @@ class _TutorDetailsPageState extends State<TutorDetailsPage> {
                             onTap: () => Navigator.of(context).pop(),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: AppColors.bgLight,
+                                color: AppThemeConfig.colors.bgLight,
                                 shape: BoxShape.circle,
                               ),
                               padding: EdgeInsets.all(8.w),
                               child: Icon(
                                 Icons.close,
                                 size: 20.sp,
-                                color: AppColors.textDark,
+                                color: AppThemeConfig.colors.textDark,
                               ),
                             ),
                           ),

@@ -1,4 +1,5 @@
 import 'package:edu_match/core/config/constant.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/share/layouts/footer.dart';
 import 'package:edu_match/share/layouts/header.dart';
 import 'package:flutter/material.dart';
@@ -43,13 +44,14 @@ class MainLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
     final isMobile = MediaQuery.of(context).size.width < 600;
     final defaultPadding = EdgeInsets.symmetric(
       horizontal: isMobile ? 16.w : 24.w,
       vertical: isMobile ? 12.h : 16.h,
     );
 
-    final effectiveBgColor = backgroundColor ?? Colors.white;
+    final effectiveBgColor = backgroundColor ?? colors.white;
     final effectiveStatusBarColor = statusBarColor ?? effectiveBgColor;
 
     final overlayStyle = SystemUiOverlayStyle(

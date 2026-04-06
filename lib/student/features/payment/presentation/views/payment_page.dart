@@ -1,7 +1,8 @@
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/core/router/app_router.dart';
 import 'package:edu_match/student/data/models/booking_model.dart';
 import 'package:edu_match/student/data/models/student_model.dart';
+import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,9 +25,7 @@ const _kBankOwner = 'CONG TY TNHH EDUMATCH';
 const _kFakeBookingRef = 'EDUMATCH-BK20240402';
 
 class PaymentPage extends StatefulWidget {
-  final BookingModel booking;
-
-  const PaymentPage({super.key, required this.booking});
+  const PaymentPage({super.key});
 
   @override
   State<PaymentPage> createState() => _PaymentPageState();
@@ -36,6 +35,24 @@ class _PaymentPageState extends State<PaymentPage> {
   _PaymentState _paymentState = _PaymentState.idle;
   _PaymentMethod _selectedMethod = _PaymentMethod.bank;
   _BankOption _bankOption = _BankOption.internetBanking;
+  late BookingModel booking;
+
+  @override
+  void initState() {
+    super.initState();
+    // Use mock booking data for prototype
+    final mockTutor = TutorModel.mockTutors().first;
+    booking = BookingModel(
+      tutorId: mockTutor.id,
+      tutorName: mockTutor.name,
+      tutorAvatar: mockTutor.avatar,
+      tutorSubjects: mockTutor.subjects,
+      type: 'online',
+      selectedTimeSlot: '09:00 - 10:00',
+      subject: 'Toán',
+      sessionDuration: 60,
+    );
+  }
 
   static const double _pricePerSession = 250000;
   static const double _feeRate = 0.02;
@@ -61,18 +78,18 @@ class _PaymentPageState extends State<PaymentPage> {
       barrierColor: Colors.black.withValues(alpha: 0.45),
       builder: (ctx) {
         final lightScheme = ColorScheme.fromSeed(
-          seedColor: AppColors.primaryGreen,
+          seedColor: AppThemeConfig.colors.primaryGreen,
           brightness: Brightness.light,
-        ).copyWith(surface: AppColors.white);
+        ).copyWith(surface: AppThemeConfig.colors.white);
         return Theme(
           data: ThemeData(
             useMaterial3: true,
             brightness: Brightness.light,
             colorScheme: lightScheme,
-            dialogTheme: const DialogThemeData(backgroundColor: AppColors.white),
+            dialogTheme: DialogThemeData(backgroundColor: AppThemeConfig.colors.white),
           ),
           child: AlertDialog(
-            backgroundColor: AppColors.white,
+            backgroundColor: AppThemeConfig.colors.white,
             surfaceTintColor: Colors.transparent,
             elevation: 8,
             shadowColor: Colors.black26,
@@ -84,14 +101,14 @@ class _PaymentPageState extends State<PaymentPage> {
               style: GoogleFonts.inter(
                 fontSize: 17.sp,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textDark,
+                color: AppThemeConfig.colors.textDark,
               ),
             ),
             content: Text(
               'Bạn có chắc muốn thanh toán bằng Ví EduMatch?',
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
-                color: AppColors.textGray,
+                color: AppThemeConfig.colors.textGray,
                 height: 1.45,
               ),
             ),
@@ -104,14 +121,14 @@ class _PaymentPageState extends State<PaymentPage> {
                   'Không',
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textDark,
+                    color: AppThemeConfig.colors.textDark,
                   ),
                 ),
               ),
               FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primaryGreen,
-                  foregroundColor: AppColors.white,
+                  backgroundColor: AppThemeConfig.colors.primaryGreen,
+                  foregroundColor: AppThemeConfig.colors.white,
                   padding:
                       EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
                   shape: RoundedRectangleBorder(
@@ -157,14 +174,350 @@ class _PaymentPageState extends State<PaymentPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     switch (_paymentState) {
       case _PaymentState.processing:
         return _buildProcessingOverlay();
       case _PaymentState.failed:
         return _buildFailedScreen();
       case _PaymentState.idle:
-        return _buildIdleScreen();
+        return AppThemeConfig.isLowFidelityMode
+            ? _buildLowFiLayout(colors)
+            : _buildIdleScreen();
     }
+  }
+
+  Widget _buildLowFiLayout(AppColorScheme colors) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Text(
+            'Thanh toán',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Booking info
+          Text(
+            'Thông tin buổi học',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '[BOOKING INFO]',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  booking.tutorName ?? 'Gia sư',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textDark,
+                  ),
+                ),
+                Text(
+                  booking.selectedTimeSlot ?? 'Thời gian học',
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Payment method
+          Text(
+            'Phương thức thanh toán',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => _selectedMethod = _PaymentMethod.bank),
+                  child: Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedMethod == _PaymentMethod.bank ? colors.textDark : colors.borderColor,
+                        width: _selectedMethod == _PaymentMethod.bank ? 2 : 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: _selectedMethod == _PaymentMethod.bank ? colors.bgLight : colors.white,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Ngân hàng',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textDark,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => _selectedMethod = _PaymentMethod.wallet),
+                  child: Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedMethod == _PaymentMethod.wallet ? colors.textDark : colors.borderColor,
+                        width: _selectedMethod == _PaymentMethod.wallet ? 2 : 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: _selectedMethod == _PaymentMethod.wallet ? colors.bgLight : colors.white,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Ví EduMatch',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textDark,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16.h),
+
+          // Payment details
+          if (_selectedMethod == _PaymentMethod.bank) ...[
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '[BANK INFO]',
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    'Vietcombank (VCB)',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: colors.textDark,
+                    ),
+                  ),
+                  Text(
+                    'STK: 9901 2345 6789 0',
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    'Chủ TK: CONG TY TNHH EDUMATCH',
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ] else ...[
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '[WALLET INFO]',
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    'Ví EduMatch',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: colors.textDark,
+                    ),
+                  ),
+                  Text(
+                    'Số dư: ${_formatPrice(_walletBalance)}',
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          SizedBox(height: 16.h),
+
+          // Price summary
+          Text(
+            'Chi tiết thanh toán',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Giá buổi học:',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: colors.textDark,
+                      ),
+                    ),
+                    Text(
+                      _formatPrice(_pricePerSession),
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: colors.textDark,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 4.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Phí dịch vụ:',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: colors.textDark,
+                      ),
+                    ),
+                    Text(
+                      _formatPrice(_fee),
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: colors.textDark,
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(color: colors.borderColor),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Tổng cộng:',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textDark,
+                      ),
+                    ),
+                    Text(
+                      _formatPrice(_total),
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textDark,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 32.h),
+
+          // Pay button
+          GestureDetector(
+            onTap: _onPay,
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.textDark, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+                color: colors.textDark,
+              ),
+              child: Center(
+                child: Text(
+                  'Thanh toán ${_formatPrice(_total)}',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   // ─── Idle ─────────────────────────────────────────────────────────────────
@@ -220,10 +573,10 @@ class _PaymentPageState extends State<PaymentPage> {
           child: Container(
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
-              color: AppColors.bgLight,
+              color: AppThemeConfig.colors.bgLight,
               borderRadius: BorderRadius.circular(8.r),
             ),
-            child: Icon(Icons.arrow_back, color: AppColors.textDark, size: 22.sp),
+            child: Icon(Icons.arrow_back, color: AppThemeConfig.colors.textDark, size: 22.sp),
           ),
         ),
         SizedBox(width: 12.w),
@@ -232,7 +585,7 @@ class _PaymentPageState extends State<PaymentPage> {
           style: GoogleFonts.inter(
             fontSize: 20.sp,
             fontWeight: FontWeight.w600,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
       ],
@@ -245,7 +598,7 @@ class _PaymentPageState extends State<PaymentPage> {
       style: GoogleFonts.inter(
         fontSize: 14.sp,
         fontWeight: FontWeight.w600,
-        color: AppColors.textDark,
+        color: AppThemeConfig.colors.textDark,
       ),
     );
   }
@@ -253,7 +606,7 @@ class _PaymentPageState extends State<PaymentPage> {
   // ─── Booking Summary ───────────────────────────────────────────────────────
 
   Widget _buildBookingSummaryCard() {
-    final b = widget.booking;
+    final b = booking;
     final isOnline = b.type == 'online';
     final isMonthly = b.scheduleType == 'monthly';
     final weekdayNames = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'];
@@ -261,9 +614,9 @@ class _PaymentPageState extends State<PaymentPage> {
     return Container(
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderColor),
+        border: Border.all(color: AppThemeConfig.colors.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -275,11 +628,11 @@ class _PaymentPageState extends State<PaymentPage> {
                 width: 46.w,
                 height: 46.w,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryGreen,
+                  color: AppThemeConfig.colors.primaryGreen,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Center(
-                  child: Icon(Icons.person, color: AppColors.white, size: 26.sp),
+                  child: Icon(Icons.person, color: AppThemeConfig.colors.white, size: 26.sp),
                 ),
               ),
               SizedBox(width: 12.w),
@@ -292,20 +645,20 @@ class _PaymentPageState extends State<PaymentPage> {
                       style: GoogleFonts.inter(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
+                        color: AppThemeConfig.colors.textDark,
                       ),
                     ),
                     SizedBox(height: 3.h),
                     Row(
                       children: [
                         Icon(Icons.menu_book_outlined,
-                            size: 11.sp, color: AppColors.primaryGreen),
+                            size: 11.sp, color: AppThemeConfig.colors.primaryGreen),
                         SizedBox(width: 4.w),
                         Text(
                           b.subject ?? 'Gia sư dạy kèm',
                           style: GoogleFonts.inter(
                             fontSize: 11.sp,
-                            color: AppColors.primaryGreen,
+                            color: AppThemeConfig.colors.primaryGreen,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -317,13 +670,13 @@ class _PaymentPageState extends State<PaymentPage> {
               _buildBadge(
                 isOnline ? 'Online' : 'Offline',
                 isOnline ? Icons.videocam : Icons.location_on,
-                isOnline ? AppColors.primaryGreen : AppColors.warningOrange,
-                isOnline ? AppColors.lightGreen : const Color(0xFFFFF3E0),
+                isOnline ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.warningOrange,
+                isOnline ? AppThemeConfig.colors.lightGreen : const Color(0xFFFFF3E0),
               ),
             ],
           ),
           SizedBox(height: 12.h),
-          Divider(color: AppColors.dividerColor, height: 1),
+          Divider(color: AppThemeConfig.colors.dividerColor, height: 1),
           SizedBox(height: 12.h),
 
           // Learning method
@@ -401,13 +754,13 @@ class _PaymentPageState extends State<PaymentPage> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 14.sp, color: AppColors.textGray),
+        Icon(icon, size: 14.sp, color: AppThemeConfig.colors.textGray),
         SizedBox(width: 8.w),
         SizedBox(
           width: 72.w,
           child: Text(
             label,
-            style: GoogleFonts.inter(fontSize: 12.sp, color: AppColors.textGray),
+            style: GoogleFonts.inter(fontSize: 12.sp, color: AppThemeConfig.colors.textGray),
           ),
         ),
         Expanded(
@@ -416,7 +769,7 @@ class _PaymentPageState extends State<PaymentPage> {
             style: GoogleFonts.inter(
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,
-              color: AppColors.textDark,
+              color: AppThemeConfig.colors.textDark,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -455,9 +808,9 @@ class _PaymentPageState extends State<PaymentPage> {
     return Container(
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderColor),
+        border: Border.all(color: AppThemeConfig.colors.borderColor),
       ),
       child: Column(
         children: [
@@ -467,12 +820,12 @@ class _PaymentPageState extends State<PaymentPage> {
                 width: 42.w,
                 height: 42.w,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryGreen.withOpacity(0.12),
+                  color: AppThemeConfig.colors.primaryGreen.withOpacity(0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Icon(Icons.person_outline,
-                      color: AppColors.primaryGreen, size: 22.sp),
+                      color: AppThemeConfig.colors.primaryGreen, size: 22.sp),
                 ),
               ),
               SizedBox(width: 12.w),
@@ -485,13 +838,13 @@ class _PaymentPageState extends State<PaymentPage> {
                       style: GoogleFonts.inter(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textDark),
+                          color: AppThemeConfig.colors.textDark),
                     ),
                     SizedBox(height: 2.h),
                     Text(
                       'ID: ${s.id}',
                       style: GoogleFonts.inter(
-                          fontSize: 10.sp, color: AppColors.textLightGray),
+                          fontSize: 10.sp, color: AppThemeConfig.colors.textLightGray),
                     ),
                   ],
                 ),
@@ -499,7 +852,7 @@ class _PaymentPageState extends State<PaymentPage> {
             ],
           ),
           SizedBox(height: 12.h),
-          Divider(color: AppColors.dividerColor, height: 1),
+          Divider(color: AppThemeConfig.colors.dividerColor, height: 1),
           SizedBox(height: 12.h),
           _buildStudentRow(Icons.phone_outlined, 'Điện thoại', s.phone),
           SizedBox(height: 8.h),
@@ -518,13 +871,13 @@ class _PaymentPageState extends State<PaymentPage> {
       crossAxisAlignment:
           multiline ? CrossAxisAlignment.start : CrossAxisAlignment.center,
       children: [
-        Icon(icon, size: 14.sp, color: AppColors.primaryGreen),
+        Icon(icon, size: 14.sp, color: AppThemeConfig.colors.primaryGreen),
         SizedBox(width: 8.w),
         SizedBox(
           width: 72.w,
           child: Text(label,
               style: GoogleFonts.inter(
-                  fontSize: 12.sp, color: AppColors.textGray)),
+                  fontSize: 12.sp, color: AppThemeConfig.colors.textGray)),
         ),
         Expanded(
           child: Text(
@@ -532,7 +885,7 @@ class _PaymentPageState extends State<PaymentPage> {
             style: GoogleFonts.inter(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w500,
-                color: AppColors.textDark),
+                color: AppThemeConfig.colors.textDark),
             maxLines: multiline ? 2 : 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -561,12 +914,12 @@ class _PaymentPageState extends State<PaymentPage> {
               margin: EdgeInsets.only(right: i == 0 ? 10.w : 0),
               padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 6.w),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primaryGreen : AppColors.white,
+                color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.white,
                 borderRadius: BorderRadius.circular(10.r),
                 border: Border.all(
                   color: isSelected
-                      ? AppColors.primaryGreen
-                      : AppColors.borderColor,
+                      ? AppThemeConfig.colors.primaryGreen
+                      : AppThemeConfig.colors.borderColor,
                 ),
               ),
               child: Column(
@@ -574,8 +927,8 @@ class _PaymentPageState extends State<PaymentPage> {
                   Icon(icon,
                       size: 22.sp,
                       color: isSelected
-                          ? AppColors.white
-                          : AppColors.textGray),
+                          ? AppThemeConfig.colors.white
+                          : AppThemeConfig.colors.textGray),
                   SizedBox(height: 4.h),
                   Text(
                     label,
@@ -583,7 +936,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       fontSize: 11.sp,
                       fontWeight: FontWeight.w500,
                       color:
-                          isSelected ? AppColors.white : AppColors.textGray,
+                          isSelected ? AppThemeConfig.colors.white : AppThemeConfig.colors.textGray,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -645,10 +998,10 @@ class _PaymentPageState extends State<PaymentPage> {
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 8.w),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.lightGreen : AppColors.bgLight,
+            color: isSelected ? AppThemeConfig.colors.lightGreen : AppThemeConfig.colors.bgLight,
             borderRadius: BorderRadius.circular(8.r),
             border: Border.all(
-              color: isSelected ? AppColors.primaryGreen : AppColors.borderColor,
+              color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.borderColor,
               width: isSelected ? 1.5 : 1,
             ),
           ),
@@ -658,8 +1011,8 @@ class _PaymentPageState extends State<PaymentPage> {
               Icon(icon,
                   size: 16.sp,
                   color: isSelected
-                      ? AppColors.primaryGreen
-                      : AppColors.textGray),
+                      ? AppThemeConfig.colors.primaryGreen
+                      : AppThemeConfig.colors.textGray),
               SizedBox(width: 6.w),
               Text(
                 label,
@@ -668,8 +1021,8 @@ class _PaymentPageState extends State<PaymentPage> {
                   fontWeight:
                       isSelected ? FontWeight.w600 : FontWeight.w400,
                   color: isSelected
-                      ? AppColors.primaryGreen
-                      : AppColors.textGray,
+                      ? AppThemeConfig.colors.primaryGreen
+                      : AppThemeConfig.colors.textGray,
                 ),
               ),
             ],
@@ -684,9 +1037,9 @@ class _PaymentPageState extends State<PaymentPage> {
       key: const ValueKey('internet'),
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderColor),
+        border: Border.all(color: AppThemeConfig.colors.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -711,20 +1064,20 @@ class _PaymentPageState extends State<PaymentPage> {
                 style: GoogleFonts.inter(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textDark,
+                  color: AppThemeConfig.colors.textDark,
                 ),
               ),
             ],
           ),
           SizedBox(height: 14.h),
-          Divider(color: AppColors.dividerColor, height: 1),
+          Divider(color: AppThemeConfig.colors.dividerColor, height: 1),
           SizedBox(height: 14.h),
           _buildBankRow('Số tài khoản', _kBankAccount, copyable: true),
           SizedBox(height: 10.h),
           _buildBankRow('Chủ tài khoản', _kBankOwner),
           SizedBox(height: 10.h),
           _buildBankRow('Số tiền', _formatPrice(_total),
-              valueColor: AppColors.primaryGreen, bold: true),
+              valueColor: AppThemeConfig.colors.primaryGreen, bold: true),
           SizedBox(height: 10.h),
           _buildBankRow('Nội dung', _transferContent, copyable: true),
           SizedBox(height: 12.h),
@@ -733,19 +1086,19 @@ class _PaymentPageState extends State<PaymentPage> {
             decoration: BoxDecoration(
               color: const Color(0xFFFFF8E1),
               borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(color: AppColors.warningOrange.withOpacity(0.4)),
+              border: Border.all(color: AppThemeConfig.colors.warningOrange.withOpacity(0.4)),
             ),
             child: Row(
               children: [
                 Icon(Icons.info_outline,
-                    size: 14.sp, color: AppColors.warningOrange),
+                    size: 14.sp, color: AppThemeConfig.colors.warningOrange),
                 SizedBox(width: 8.w),
                 Expanded(
                   child: Text(
                     'Vui lòng chuyển đúng nội dung để hệ thống tự động xác nhận.',
                     style: GoogleFonts.inter(
                       fontSize: 11.sp,
-                      color: AppColors.warningOrange,
+                      color: AppThemeConfig.colors.warningOrange,
                     ),
                   ),
                 ),
@@ -772,7 +1125,7 @@ class _PaymentPageState extends State<PaymentPage> {
           child: Text(
             label,
             style: GoogleFonts.inter(
-                fontSize: 12.sp, color: AppColors.textGray),
+                fontSize: 12.sp, color: AppThemeConfig.colors.textGray),
           ),
         ),
         Expanded(
@@ -781,7 +1134,7 @@ class _PaymentPageState extends State<PaymentPage> {
             style: GoogleFonts.inter(
               fontSize: 12.sp,
               fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
-              color: valueColor ?? AppColors.textDark,
+              color: valueColor ?? AppThemeConfig.colors.textDark,
             ),
           ),
         ),
@@ -797,7 +1150,7 @@ class _PaymentPageState extends State<PaymentPage> {
               );
             },
             child: Icon(Icons.copy_outlined,
-                size: 14.sp, color: AppColors.primaryGreen),
+                size: 14.sp, color: AppThemeConfig.colors.primaryGreen),
           ),
       ],
     );
@@ -811,9 +1164,9 @@ class _PaymentPageState extends State<PaymentPage> {
       key: const ValueKey('vietqr'),
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderColor),
+        border: Border.all(color: AppThemeConfig.colors.borderColor),
       ),
       child: Column(
         children: [
@@ -821,12 +1174,12 @@ class _PaymentPageState extends State<PaymentPage> {
           Container(
             padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: AppThemeConfig.colors.white,
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: AppColors.borderColor),
+              border: Border.all(color: AppThemeConfig.colors.borderColor),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.shadowColor,
+                  color: AppThemeConfig.colors.shadowColor,
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -875,14 +1228,14 @@ class _PaymentPageState extends State<PaymentPage> {
             ),
           ),
           SizedBox(height: 16.h),
-          Divider(color: AppColors.dividerColor, height: 1),
+          Divider(color: AppThemeConfig.colors.dividerColor, height: 1),
           SizedBox(height: 14.h),
           _buildBankRow('Ngân hàng', _kBankName),
           SizedBox(height: 8.h),
           _buildBankRow('Số tài khoản', _kBankAccount, copyable: true),
           SizedBox(height: 8.h),
           _buildBankRow('Số tiền', _formatPrice(_total),
-              valueColor: AppColors.primaryGreen, bold: true),
+              valueColor: AppThemeConfig.colors.primaryGreen, bold: true),
           SizedBox(height: 8.h),
           _buildBankRow('Nội dung', _transferContent, copyable: true),
           SizedBox(height: 12.h),
@@ -891,19 +1244,19 @@ class _PaymentPageState extends State<PaymentPage> {
             decoration: BoxDecoration(
               color: const Color(0xFFFFF8E1),
               borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(color: AppColors.warningOrange.withOpacity(0.4)),
+              border: Border.all(color: AppThemeConfig.colors.warningOrange.withOpacity(0.4)),
             ),
             child: Row(
               children: [
                 Icon(Icons.info_outline,
-                    size: 14.sp, color: AppColors.warningOrange),
+                    size: 14.sp, color: AppThemeConfig.colors.warningOrange),
                 SizedBox(width: 8.w),
                 Expanded(
                   child: Text(
                     'Quét mã QR bằng app ngân hàng để chuyển khoản nhanh.',
                     style: GoogleFonts.inter(
                       fontSize: 11.sp,
-                      color: AppColors.warningOrange,
+                      color: AppThemeConfig.colors.warningOrange,
                     ),
                   ),
                 ),
@@ -921,10 +1274,10 @@ class _PaymentPageState extends State<PaymentPage> {
     return Container(
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
-          color: canPay ? AppColors.primaryGreen : AppColors.errorRed,
+          color: canPay ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.errorRed,
         ),
       ),
       child: Column(
@@ -936,12 +1289,12 @@ class _PaymentPageState extends State<PaymentPage> {
                 width: 40.w,
                 height: 40.w,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryGreen.withOpacity(0.1),
+                  color: AppThemeConfig.colors.primaryGreen.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Center(
                   child: Icon(Icons.account_balance_wallet_outlined,
-                      color: AppColors.primaryGreen, size: 22.sp),
+                      color: AppThemeConfig.colors.primaryGreen, size: 22.sp),
                 ),
               ),
               SizedBox(width: 12.w),
@@ -954,7 +1307,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       style: GoogleFonts.inter(
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
+                        color: AppThemeConfig.colors.textDark,
                       ),
                     ),
                     SizedBox(height: 2.h),
@@ -964,8 +1317,8 @@ class _PaymentPageState extends State<PaymentPage> {
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w500,
                         color: canPay
-                            ? AppColors.successGreen
-                            : AppColors.errorRed,
+                            ? AppThemeConfig.colors.successGreen
+                            : AppThemeConfig.colors.errorRed,
                       ),
                     ),
                   ],
@@ -973,7 +1326,7 @@ class _PaymentPageState extends State<PaymentPage> {
               ),
               Icon(
                 canPay ? Icons.check_circle : Icons.cancel,
-                color: canPay ? AppColors.successGreen : AppColors.errorRed,
+                color: canPay ? AppThemeConfig.colors.successGreen : AppThemeConfig.colors.errorRed,
                 size: 20.sp,
               ),
             ],
@@ -983,20 +1336,20 @@ class _PaymentPageState extends State<PaymentPage> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
               decoration: BoxDecoration(
-                color: AppColors.errorRed.withOpacity(0.06),
+                color: AppThemeConfig.colors.errorRed.withOpacity(0.06),
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Row(
                 children: [
                   Icon(Icons.warning_amber_rounded,
-                      size: 14.sp, color: AppColors.errorRed),
+                      size: 14.sp, color: AppThemeConfig.colors.errorRed),
                   SizedBox(width: 8.w),
                   Expanded(
                     child: Text(
                       'Số dư không đủ. Cần thêm ${_formatPrice(_total - _walletBalance)} để hoàn tất.',
                       style: GoogleFonts.inter(
                         fontSize: 11.sp,
-                        color: AppColors.errorRed,
+                        color: AppThemeConfig.colors.errorRed,
                       ),
                     ),
                   ),
@@ -1015,9 +1368,9 @@ class _PaymentPageState extends State<PaymentPage> {
     return Container(
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderColor),
+        border: Border.all(color: AppThemeConfig.colors.borderColor),
       ),
       child: Column(
         children: [
@@ -1026,7 +1379,7 @@ class _PaymentPageState extends State<PaymentPage> {
           _buildPriceRow('Phí dịch vụ (2%)', _formatPrice(_fee),
               subNote: 'Bao gồm VAT'),
           SizedBox(height: 12.h),
-          Divider(color: AppColors.dividerColor, height: 1),
+          Divider(color: AppThemeConfig.colors.dividerColor, height: 1),
           SizedBox(height: 12.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1036,7 +1389,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 style: GoogleFonts.inter(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textDark,
+                  color: AppThemeConfig.colors.textDark,
                 ),
               ),
               Text(
@@ -1044,7 +1397,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 style: GoogleFonts.inter(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primaryGreen,
+                  color: AppThemeConfig.colors.primaryGreen,
                 ),
               ),
             ],
@@ -1064,18 +1417,18 @@ class _PaymentPageState extends State<PaymentPage> {
           children: [
             Text(label,
                 style: GoogleFonts.inter(
-                    fontSize: 13.sp, color: AppColors.textGray)),
+                    fontSize: 13.sp, color: AppThemeConfig.colors.textGray)),
             if (subNote != null)
               Text(subNote,
                   style: GoogleFonts.inter(
-                      fontSize: 10.sp, color: AppColors.textLightGray)),
+                      fontSize: 10.sp, color: AppThemeConfig.colors.textLightGray)),
           ],
         ),
         Text(value,
             style: GoogleFonts.inter(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w500,
-                color: AppColors.textDark)),
+                color: AppThemeConfig.colors.textDark)),
       ],
     );
   }
@@ -1088,11 +1441,11 @@ class _PaymentPageState extends State<PaymentPage> {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
-        border: Border(top: BorderSide(color: AppColors.dividerColor)),
+        color: AppThemeConfig.colors.white,
+        border: Border(top: BorderSide(color: AppThemeConfig.colors.dividerColor)),
         boxShadow: [
           BoxShadow(
-              color: AppColors.shadowColor,
+              color: AppThemeConfig.colors.shadowColor,
               blurRadius: 10,
               offset: const Offset(0, -3)),
         ],
@@ -1106,12 +1459,12 @@ class _PaymentPageState extends State<PaymentPage> {
             children: [
               Text('Tổng tiền',
                   style: GoogleFonts.inter(
-                      fontSize: 12.sp, color: AppColors.textGray)),
+                      fontSize: 12.sp, color: AppThemeConfig.colors.textGray)),
               Text(_formatPrice(_total),
                   style: GoogleFonts.inter(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.primaryGreen)),
+                      color: AppThemeConfig.colors.primaryGreen)),
             ],
           ),
           SizedBox(height: 10.h),
@@ -1124,17 +1477,17 @@ class _PaymentPageState extends State<PaymentPage> {
                 gradient: walletInsufficient
                     ? null
                     : LinearGradient(
-                        colors: [AppColors.primaryGreen, AppColors.accentGreen],
+                        colors: [AppThemeConfig.colors.primaryGreen, AppThemeConfig.colors.accentGreen],
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                       ),
-                color: walletInsufficient ? AppColors.disabledGray : null,
+                color: walletInsufficient ? AppThemeConfig.colors.disabledGray : null,
                 borderRadius: BorderRadius.circular(10.r),
                 boxShadow: walletInsufficient
                     ? null
                     : [
                         BoxShadow(
-                          color: AppColors.primaryGreen.withOpacity(0.3),
+                          color: AppThemeConfig.colors.primaryGreen.withOpacity(0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -1148,7 +1501,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       walletInsufficient
                           ? Icons.block
                           : Icons.check_circle_outline,
-                      color: AppColors.white,
+                      color: AppThemeConfig.colors.white,
                       size: 16.sp,
                     ),
                     SizedBox(width: 8.w),
@@ -1161,7 +1514,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       style: GoogleFonts.inter(
                         fontSize: 15.sp,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.white,
+                        color: AppThemeConfig.colors.white,
                       ),
                     ),
                   ],
@@ -1185,7 +1538,7 @@ class _PaymentPageState extends State<PaymentPage> {
             width: 80.w,
             height: 80.w,
             decoration: BoxDecoration(
-                color: AppColors.lightGreen, shape: BoxShape.circle),
+                color: AppThemeConfig.colors.lightGreen, shape: BoxShape.circle),
             child: Center(
               child: SizedBox(
                 width: 36.w,
@@ -1193,7 +1546,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 child: CircularProgressIndicator(
                   strokeWidth: 3,
                   valueColor:
-                      AlwaysStoppedAnimation<Color>(AppColors.primaryGreen),
+                      AlwaysStoppedAnimation<Color>(AppThemeConfig.colors.primaryGreen),
                 ),
               ),
             ),
@@ -1203,11 +1556,11 @@ class _PaymentPageState extends State<PaymentPage> {
               style: GoogleFonts.inter(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textDark)),
+                  color: AppThemeConfig.colors.textDark)),
           SizedBox(height: 8.h),
           Text('Vui lòng không thoát khỏi màn hình này',
               style: GoogleFonts.inter(
-                  fontSize: 12.sp, color: AppColors.textGray)),
+                  fontSize: 12.sp, color: AppThemeConfig.colors.textGray)),
         ],
       ),
     );
@@ -1226,11 +1579,11 @@ class _PaymentPageState extends State<PaymentPage> {
               width: 90.w,
               height: 90.w,
               decoration: BoxDecoration(
-                  color: AppColors.errorRed.withOpacity(0.1),
+                  color: AppThemeConfig.colors.errorRed.withOpacity(0.1),
                   shape: BoxShape.circle),
               child: Center(
                 child: Icon(Icons.cancel,
-                    color: AppColors.errorRed, size: 52.sp),
+                    color: AppThemeConfig.colors.errorRed, size: 52.sp),
               ),
             ),
             SizedBox(height: 20.h),
@@ -1238,12 +1591,12 @@ class _PaymentPageState extends State<PaymentPage> {
                 style: GoogleFonts.inter(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textDark)),
+                    color: AppThemeConfig.colors.textDark)),
             SizedBox(height: 8.h),
             Text(
               'Giao dịch không thể hoàn tất.\nVui lòng thử lại hoặc chọn phương thức khác.',
               style: GoogleFonts.inter(
-                  fontSize: 13.sp, color: AppColors.textGray, height: 1.5),
+                  fontSize: 13.sp, color: AppThemeConfig.colors.textGray, height: 1.5),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 32.h),
@@ -1253,14 +1606,14 @@ class _PaymentPageState extends State<PaymentPage> {
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(vertical: 14.h),
                 decoration: BoxDecoration(
-                    color: AppColors.primaryGreen,
+                    color: AppThemeConfig.colors.primaryGreen,
                     borderRadius: BorderRadius.circular(10.r)),
                 child: Center(
                   child: Text('Thử Lại',
                       style: GoogleFonts.inter(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.white)),
+                          color: AppThemeConfig.colors.white)),
                 ),
               ),
             ),
@@ -1271,16 +1624,16 @@ class _PaymentPageState extends State<PaymentPage> {
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(vertical: 14.h),
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  color: AppThemeConfig.colors.white,
                   borderRadius: BorderRadius.circular(10.r),
-                  border: Border.all(color: AppColors.borderColor),
+                  border: Border.all(color: AppThemeConfig.colors.borderColor),
                 ),
                 child: Center(
                   child: Text('Quay Lại',
                       style: GoogleFonts.inter(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.textGray)),
+                          color: AppThemeConfig.colors.textGray)),
                 ),
               ),
             ),

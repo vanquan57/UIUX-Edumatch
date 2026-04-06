@@ -1,5 +1,6 @@
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/student/data/models/booking_model.dart';
+import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -7,9 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class ConfirmInfoBookingPage extends StatefulWidget {
-  final BookingModel booking;
-
-  const ConfirmInfoBookingPage({super.key, required this.booking});
+  const ConfirmInfoBookingPage({super.key});
 
   @override
   State<ConfirmInfoBookingPage> createState() => _ConfirmInfoBookingPageState();
@@ -24,11 +23,22 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
   @override
   void initState() {
     super.initState();
-    booking = widget.booking;
+    // Use mock booking data for prototype
+    final mockTutor = TutorModel.mockTutors().first;
+    booking = BookingModel(
+      tutorId: mockTutor.id,
+      tutorName: mockTutor.name,
+      tutorAvatar: mockTutor.avatar,
+      tutorSubjects: mockTutor.subjects,
+      type: 'online',
+      selectedTimeSlot: '09:00 - 10:00',
+      subject: 'Toán',
+      sessionDuration: 60,
+    );
   }
 
   void _onPaymentPressed() {
-    context.pushNamed('bookingPayment', extra: booking);
+    context.pushNamed('bookingPayment');
   }
 
   String _formatPrice(double price) {
@@ -48,6 +58,314 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
+    return AppThemeConfig.isLowFidelityMode
+        ? _buildLowFiLayout(colors)
+        : _buildFullLayout();
+  }
+
+  Widget _buildLowFiLayout(AppColorScheme colors) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Text(
+            'Xác Nhận Thông Tin',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Tutor info
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '[TUTOR INFO]',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  booking.tutorName ?? 'Gia sư',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textDark,
+                  ),
+                ),
+                if (booking.subject != null && booking.subject!.isNotEmpty)
+                  Text(
+                    booking.subject!,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Learning type
+          Text(
+            'Loại Buổi Học',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Text(
+              booking.type == 'online' ? 'Học Online (Video Call)' : 'Học Offline (Tại Địa Điểm)',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: colors.textDark,
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Location (if offline)
+          if (booking.type == 'offline') ...[
+            Text(
+              'Địa Điểm',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: colors.textDark,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Text(
+                booking.address ?? 'Chưa cập nhật',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: colors.textDark,
+                ),
+              ),
+            ),
+            SizedBox(height: 16.h),
+          ],
+
+          // Schedule
+          Text(
+            'Lịch Học',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '[SCHEDULE INFO]',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  booking.selectedTimeSlot ?? 'Chưa chọn',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: colors.textDark,
+                  ),
+                ),
+                if (booking.sessionDuration != null)
+                  Text(
+                    'Thời lượng: ${booking.sessionDuration} phút',
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Requirements
+          Text(
+            'Yêu Cầu Học Tập',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '[REQUIREMENTS]',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                if (booking.subject != null && booking.subject!.isNotEmpty)
+                  Text(
+                    'Môn: ${booking.subject!}',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: colors.textDark,
+                    ),
+                  ),
+                if (booking.metadata?['level'] != null)
+                  Text(
+                    'Trình độ: ${booking.metadata!['level']}',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: colors.textDark,
+                    ),
+                  ),
+                if (booking.metadata?['note'] != null && booking.metadata!['note'].toString().isNotEmpty)
+                  Text(
+                    'Ghi chú: ${booking.metadata!['note']}',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: colors.textDark,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Pricing
+          Text(
+            'Chi Phí',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '[PRICING]',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Tổng tiền:',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textDark,
+                      ),
+                    ),
+                    Text(
+                      _formatPrice(pricePerSession),
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textDark,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 32.h),
+
+          // Payment button
+          GestureDetector(
+            onTap: _onPaymentPressed,
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.textDark, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+                color: colors.textDark,
+              ),
+              child: Center(
+                child: Text(
+                  'Tiến Hành Thanh Toán',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFullLayout() {
     return Stack(
       children: [
         SingleChildScrollView(
@@ -102,12 +420,12 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
           child: Container(
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
-              color: AppColors.bgLight,
+              color: AppThemeConfig.colors.bgLight,
               borderRadius: BorderRadius.circular(8.r),
             ),
             child: Icon(
               Icons.arrow_back,
-              color: AppColors.textDark,
+              color: AppThemeConfig.colors.textDark,
               size: 24.sp,
             ),
           ),
@@ -119,7 +437,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
             style: GoogleFonts.inter(
               fontSize: 20.sp,
               fontWeight: FontWeight.w600,
-              color: AppColors.textDark,
+              color: AppThemeConfig.colors.textDark,
             ),
           ),
         ),
@@ -133,7 +451,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
       style: GoogleFonts.inter(
         fontSize: 14.sp,
         fontWeight: FontWeight.w600,
-        color: AppColors.textDark,
+        color: AppThemeConfig.colors.textDark,
       ),
     );
   }
@@ -142,9 +460,9 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.bgLight,
+        color: AppThemeConfig.colors.bgLight,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderColor, width: 1),
+        border: Border.all(color: AppThemeConfig.colors.borderColor, width: 1),
       ),
       child: Row(
         children: [
@@ -153,7 +471,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
             width: 60.w,
             height: 60.w,
             decoration: BoxDecoration(
-              color: AppColors.primaryGreen,
+              color: AppThemeConfig.colors.primaryGreen,
               borderRadius: BorderRadius.circular(8.r),
             ),
             child: booking.tutorAvatar != null
@@ -166,7 +484,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                         return Center(
                           child: Icon(
                             Icons.person,
-                            color: AppColors.white,
+                            color: AppThemeConfig.colors.white,
                             size: 32.sp,
                           ),
                         );
@@ -176,7 +494,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                 : Center(
                     child: Icon(
                       Icons.person,
-                      color: AppColors.white,
+                      color: AppThemeConfig.colors.white,
                       size: 32.sp,
                     ),
                   ),
@@ -191,7 +509,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                   style: GoogleFonts.inter(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textDark,
+                    color: AppThemeConfig.colors.textDark,
                   ),
                 ),
                 SizedBox(height: 4.h),
@@ -200,7 +518,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                     Icon(
                       Icons.menu_book_outlined,
                       size: 12.sp,
-                      color: AppColors.primaryGreen,
+                      color: AppThemeConfig.colors.primaryGreen,
                     ),
                     SizedBox(width: 4.w),
                     Text(
@@ -211,8 +529,8 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w500,
                         color: booking.subject != null
-                            ? AppColors.primaryGreen
-                            : AppColors.textGray,
+                            ? AppThemeConfig.colors.primaryGreen
+                            : AppThemeConfig.colors.textGray,
                       ),
                     ),
                   ],
@@ -233,20 +551,20 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: AppColors.borderColor, width: 1),
+        border: Border.all(color: AppThemeConfig.colors.borderColor, width: 1),
       ),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.primaryGreen, size: 22.sp),
+          Icon(icon, color: AppThemeConfig.colors.primaryGreen, size: 22.sp),
           SizedBox(width: 12.w),
           Text(
             methodLabel,
             style: GoogleFonts.inter(
               fontSize: 13.sp,
               fontWeight: FontWeight.w500,
-              color: AppColors.textDark,
+              color: AppThemeConfig.colors.textDark,
             ),
           ),
         ],
@@ -258,16 +576,16 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: AppColors.borderColor, width: 1),
+        border: Border.all(color: AppThemeConfig.colors.borderColor, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.location_on, color: AppColors.primaryGreen, size: 20.sp),
+              Icon(Icons.location_on, color: AppThemeConfig.colors.primaryGreen, size: 20.sp),
               SizedBox(width: 8.w),
               Expanded(
                 child: Text(
@@ -275,7 +593,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                   style: GoogleFonts.inter(
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.textDark,
+                    color: AppThemeConfig.colors.textDark,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -290,7 +608,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
               style: GoogleFonts.inter(
                 fontSize: 11.sp,
                 fontWeight: FontWeight.w400,
-                color: AppColors.textLightGray,
+                color: AppThemeConfig.colors.textLightGray,
               ),
             ),
           ]
@@ -321,17 +639,17 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
             decoration: BoxDecoration(
-              color: AppColors.lightGreen,
+              color: AppThemeConfig.colors.lightGreen,
               borderRadius: BorderRadius.circular(6.r),
               border: Border.all(
-                color: AppColors.primaryGreen.withValues(alpha: 0.4),
+                color: AppThemeConfig.colors.primaryGreen.withValues(alpha: 0.4),
               ),
             ),
             child: Row(
               children: [
                 Icon(
                   Icons.info_outline,
-                  color: AppColors.primaryGreen,
+                  color: AppThemeConfig.colors.primaryGreen,
                   size: 14.sp,
                 ),
                 SizedBox(width: 6.w),
@@ -341,7 +659,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                     style: GoogleFonts.inter(
                       fontSize: 11.sp,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.primaryGreen,
+                      color: AppThemeConfig.colors.primaryGreen,
                     ),
                   ),
                 ),
@@ -356,7 +674,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
             children: [
               Icon(
                 Icons.date_range,
-                color: AppColors.primaryGreen,
+                color: AppThemeConfig.colors.primaryGreen,
                 size: 20.sp,
               ),
               SizedBox(width: 8.w),
@@ -369,7 +687,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                       style: GoogleFonts.inter(
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.textLightGray,
+                        color: AppThemeConfig.colors.textLightGray,
                       ),
                     ),
                     SizedBox(height: 2.h),
@@ -378,7 +696,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                       style: GoogleFonts.inter(
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.textDark,
+                        color: AppThemeConfig.colors.textDark,
                       ),
                     ),
                   ],
@@ -393,7 +711,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
             children: [
               Icon(
                 Icons.calendar_month_outlined,
-                color: AppColors.primaryGreen,
+                color: AppThemeConfig.colors.primaryGreen,
                 size: 20.sp,
               ),
               SizedBox(width: 8.w),
@@ -406,7 +724,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                       style: GoogleFonts.inter(
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.textLightGray,
+                        color: AppThemeConfig.colors.textLightGray,
                       ),
                     ),
                     SizedBox(height: 2.h),
@@ -415,7 +733,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                       style: GoogleFonts.inter(
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.textDark,
+                        color: AppThemeConfig.colors.textDark,
                       ),
                     ),
                   ],
@@ -434,7 +752,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
           style: GoogleFonts.inter(
             fontSize: 13.sp,
             fontWeight: FontWeight.w500,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         );
       } else if (dates.length == 1) {
@@ -443,7 +761,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
           style: GoogleFonts.inter(
             fontSize: 13.sp,
             fontWeight: FontWeight.w500,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         );
       } else {
@@ -455,7 +773,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
               style: GoogleFonts.inter(
                 fontSize: 11.sp,
                 fontWeight: FontWeight.w400,
-                color: AppColors.textLightGray,
+                color: AppThemeConfig.colors.textLightGray,
               ),
             ),
             SizedBox(height: 4.h),
@@ -466,16 +784,16 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                   decoration: BoxDecoration(
-                    color: AppColors.lightGreen,
+                    color: AppThemeConfig.colors.lightGreen,
                     borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(color: AppColors.primaryGreen, width: 1),
+                    border: Border.all(color: AppThemeConfig.colors.primaryGreen, width: 1),
                   ),
                   child: Text(
                     DateFormat('dd/MM').format(d),
                     style: GoogleFonts.inter(
                       fontSize: 11.sp,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primaryGreen,
+                      color: AppThemeConfig.colors.primaryGreen,
                     ),
                   ),
                 );
@@ -488,7 +806,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
       dateSection = Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.calendar_today, color: AppColors.primaryGreen, size: 20.sp),
+          Icon(Icons.calendar_today, color: AppThemeConfig.colors.primaryGreen, size: 20.sp),
           SizedBox(width: 8.w),
           Expanded(child: datesWidget),
         ],
@@ -498,9 +816,9 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: AppColors.borderColor, width: 1),
+        border: Border.all(color: AppThemeConfig.colors.borderColor, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -509,7 +827,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
           SizedBox(height: 12.h),
           Row(
             children: [
-              Icon(Icons.access_time, color: AppColors.primaryGreen, size: 20.sp),
+              Icon(Icons.access_time, color: AppThemeConfig.colors.primaryGreen, size: 20.sp),
               SizedBox(width: 8.w),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -519,7 +837,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                     style: GoogleFonts.inter(
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textDark,
+                      color: AppThemeConfig.colors.textDark,
                     ),
                   ),
                   if (booking.sessionDuration != null)
@@ -528,7 +846,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                       style: GoogleFonts.inter(
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.textLightGray,
+                        color: AppThemeConfig.colors.textLightGray,
                       ),
                     ),
                 ],
@@ -552,9 +870,9 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: AppColors.borderColor, width: 1),
+        border: Border.all(color: AppThemeConfig.colors.borderColor, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -595,7 +913,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                   style: GoogleFonts.inter(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.textGray,
+                    color: AppThemeConfig.colors.textGray,
                   ),
                 ),
                 SizedBox(height: 6.h),
@@ -608,7 +926,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                         children: [
                           Icon(
                             _getFileIcon(uploadedFiles[index]),
-                            color: AppColors.primaryGreen,
+                            color: AppThemeConfig.colors.primaryGreen,
                             size: 16.sp,
                           ),
                           SizedBox(width: 6.w),
@@ -618,7 +936,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                               style: GoogleFonts.inter(
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w400,
-                                color: AppColors.textDark,
+                                color: AppThemeConfig.colors.textDark,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -648,7 +966,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
             style: GoogleFonts.inter(
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,
-              color: AppColors.textGray,
+              color: AppThemeConfig.colors.textGray,
             ),
           ),
         ),
@@ -658,7 +976,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
             style: GoogleFonts.inter(
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,
-              color: AppColors.textDark,
+              color: AppThemeConfig.colors.textDark,
             ),
             maxLines: isMultiline ? 3 : 1,
             overflow: TextOverflow.ellipsis,
@@ -689,9 +1007,9 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.lightGreen,
+        color: AppThemeConfig.colors.lightGreen,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: AppColors.primaryGreen, width: 1),
+        border: Border.all(color: AppThemeConfig.colors.primaryGreen, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -704,7 +1022,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                 style: GoogleFonts.inter(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textDark,
+                  color: AppThemeConfig.colors.textDark,
                 ),
               ),
               Text(
@@ -712,13 +1030,13 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                 style: GoogleFonts.inter(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textDark,
+                  color: AppThemeConfig.colors.textDark,
                 ),
               ),
             ],
           ),
           SizedBox(height: 8.h),
-          Divider(color: AppColors.textGray, height: 1),
+          Divider(color: AppThemeConfig.colors.textGray, height: 1),
           SizedBox(height: 8.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -728,7 +1046,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                 style: GoogleFonts.inter(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.primaryGreen,
+                  color: AppThemeConfig.colors.primaryGreen,
                 ),
               ),
               Text(
@@ -736,7 +1054,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
                 style: GoogleFonts.inter(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primaryGreen,
+                  color: AppThemeConfig.colors.primaryGreen,
                 ),
               ),
             ],
@@ -749,13 +1067,13 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
   Widget _buildStickyButton() {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         border: Border(
-          top: BorderSide(color: AppColors.dividerColor, width: 1),
+          top: BorderSide(color: AppThemeConfig.colors.dividerColor, width: 1),
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowColor,
+            color: AppThemeConfig.colors.shadowColor,
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -767,7 +1085,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 14.h),
           decoration: BoxDecoration(
-            color: AppColors.primaryGreen,
+            color: AppThemeConfig.colors.primaryGreen,
             borderRadius: BorderRadius.circular(8.r),
           ),
           child: Center(
@@ -776,7 +1094,7 @@ class _ConfirmInfoBookingPageState extends State<ConfirmInfoBookingPage> {
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
-                color: AppColors.white,
+                color: AppThemeConfig.colors.white,
               ),
             ),
           ),

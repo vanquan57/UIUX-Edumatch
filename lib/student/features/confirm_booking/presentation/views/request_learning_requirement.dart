@@ -1,17 +1,13 @@
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/student/data/models/booking_model.dart';
+import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RequestLearningRequirementPage extends StatefulWidget {
-  final BookingModel booking;
-
-  const RequestLearningRequirementPage({
-    super.key,
-    required this.booking,
-  });
+  const RequestLearningRequirementPage({super.key});
 
   @override
   State<RequestLearningRequirementPage> createState() =>
@@ -61,7 +57,18 @@ class _RequestLearningRequirementPageState
   @override
   void initState() {
     super.initState();
-    booking = widget.booking;
+    // Use mock booking data for prototype
+    final mockTutor = TutorModel.mockTutors().first;
+    booking = BookingModel(
+      tutorId: mockTutor.id,
+      tutorName: mockTutor.name,
+      tutorAvatar: mockTutor.avatar,
+      tutorSubjects: mockTutor.subjects,
+      type: 'online',
+      selectedTimeSlot: '09:00 - 10:00',
+      subject: 'Toán',
+      sessionDuration: 60,
+    );
     // Auto-select subject if tutor only teaches one subject
     final subjects = booking.tutorSubjects ?? [];
     if (subjects.length == 1) {
@@ -106,11 +113,36 @@ class _RequestLearningRequirementPageState
     return true;
   }
 
+  bool _isFormValid() {
+    final subjects = booking.tutorSubjects ?? [];
+    if (subjects.isNotEmpty && (selectedSubject == null || selectedSubject!.isEmpty)) {
+      return false;
+    }
+
+    if (selectedSessionType == null || selectedSessionType!.isEmpty) {
+      return false;
+    }
+
+    if (selectedLevel == null || selectedLevel!.isEmpty) {
+      return false;
+    }
+
+    if (hasHomework == null) {
+      return false;
+    }
+
+    if (teachInEnglish == null) {
+      return false;
+    }
+
+    return true;
+  }
+
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: AppColors.errorRed,
+        backgroundColor: AppThemeConfig.colors.errorRed,
         duration: const Duration(milliseconds: 1500),
       ),
     );
@@ -136,7 +168,7 @@ class _RequestLearningRequirementPageState
 
       // Navigate to next step (or summary/confirmation)
       if (mounted) {
-        context.pushNamed('bookingConfirmInfo', extra: booking);
+        context.pushNamed('bookingConfirmInfo');
       }
     } catch (e) {
       if (mounted) {
@@ -151,6 +183,378 @@ class _RequestLearningRequirementPageState
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
+    return AppThemeConfig.isLowFidelityMode
+        ? _buildLowFiLayout(colors)
+        : _buildFullLayout();
+  }
+
+  Widget _buildLowFiLayout(AppColorScheme colors) {
+    final subjects = booking.tutorSubjects ?? [];
+    
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Text(
+            'Yêu cầu học tập',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Tutor info
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '[TUTOR INFO]',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  booking.tutorName ?? 'Gia sư',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textDark,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Subject selection (if multiple subjects)
+          if (subjects.isNotEmpty) ...[
+            Text(
+              'Môn học *',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: colors.textDark,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Text(
+                selectedSubject ?? '[CHỌN MÔN HỌC]',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: selectedSubject != null ? colors.textDark : colors.textSecondary,
+                ),
+              ),
+            ),
+            SizedBox(height: 16.h),
+          ],
+
+          // Session type
+          Text(
+            'Loại buổi học *',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Text(
+              selectedSessionType ?? '[CHỌN LOẠI BUỔI HỌC]',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: selectedSessionType != null ? colors.textDark : colors.textSecondary,
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Level
+          Text(
+            'Trình độ *',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Text(
+              selectedLevel ?? '[CHỌN TRÌNH ĐỘ]',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: selectedLevel != null ? colors.textDark : colors.textSecondary,
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Note
+          Text(
+            'Ghi chú thêm',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            height: 80.h,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Text(
+              _noteController.text.isEmpty ? '[GHI CHÚ THÊM]' : _noteController.text,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: _noteController.text.isEmpty ? colors.textSecondary : colors.textDark,
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // File upload
+          Text(
+            'Tải lên file',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Text(
+              uploadedFiles.isEmpty ? '[CHỌN FILE]' : '${uploadedFiles.length} file đã chọn',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: uploadedFiles.isEmpty ? colors.textSecondary : colors.textDark,
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Homework option
+          Text(
+            'Có bài tập về nhà *',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => hasHomework = true),
+                  child: Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: hasHomework == true ? colors.textDark : colors.borderColor,
+                        width: hasHomework == true ? 2 : 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: hasHomework == true ? colors.bgLight : colors.white,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Có',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textDark,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => hasHomework = false),
+                  child: Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: hasHomework == false ? colors.textDark : colors.borderColor,
+                        width: hasHomework == false ? 2 : 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: hasHomework == false ? colors.bgLight : colors.white,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Không',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textDark,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16.h),
+
+          // English teaching option
+          Text(
+            'Dạy bằng tiếng Anh *',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => teachInEnglish = true),
+                  child: Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: teachInEnglish == true ? colors.textDark : colors.borderColor,
+                        width: teachInEnglish == true ? 2 : 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: teachInEnglish == true ? colors.bgLight : colors.white,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Có',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textDark,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => teachInEnglish = false),
+                  child: Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: teachInEnglish == false ? colors.textDark : colors.borderColor,
+                        width: teachInEnglish == false ? 2 : 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: teachInEnglish == false ? colors.bgLight : colors.white,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Không',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textDark,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 32.h),
+
+          // Continue button
+          GestureDetector(
+            onTap: _isFormValid() ? _onContinuePressed : null,
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.textDark, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+                color: _isFormValid() ? colors.textDark : colors.disabledGray,
+              ),
+              child: Center(
+                child: isLoading
+                    ? SizedBox(
+                        height: 16.h,
+                        width: 16.h,
+                        child: const CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Text(
+                        'Tiếp tục',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.white,
+                        ),
+                      ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFullLayout() {
     return Stack(
       children: [
         SingleChildScrollView(
@@ -190,7 +594,7 @@ class _RequestLearningRequirementPageState
           child: Icon(
             Icons.arrow_back,
             size: 24.sp,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(width: 12.w),
@@ -200,7 +604,7 @@ class _RequestLearningRequirementPageState
             style: GoogleFonts.inter(
               fontSize: 18.sp,
               fontWeight: FontWeight.w600,
-              color: AppColors.textDark,
+              color: AppThemeConfig.colors.textDark,
             ),
           ),
         ),
@@ -212,9 +616,9 @@ class _RequestLearningRequirementPageState
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.bgLight,
+        color: AppThemeConfig.colors.bgLight,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderColor, width: 1),
+        border: Border.all(color: AppThemeConfig.colors.borderColor, width: 1),
       ),
       child: Row(
         children: [
@@ -223,7 +627,7 @@ class _RequestLearningRequirementPageState
             height: 56.w,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.primaryGreen,
+              color: AppThemeConfig.colors.primaryGreen,
             ),
             child: ClipOval(
               child: Image.asset(
@@ -233,7 +637,7 @@ class _RequestLearningRequirementPageState
                   return Center(
                     child: Icon(
                       Icons.person,
-                      color: AppColors.white,
+                      color: AppThemeConfig.colors.white,
                       size: 28.sp,
                     ),
                   );
@@ -251,7 +655,7 @@ class _RequestLearningRequirementPageState
                   style: GoogleFonts.inter(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textDark,
+                    color: AppThemeConfig.colors.textDark,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -261,7 +665,7 @@ class _RequestLearningRequirementPageState
                   style: GoogleFonts.inter(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w400,
-                    color: AppColors.textGray,
+                    color: AppThemeConfig.colors.textGray,
                   ),
                 ),
               ],
@@ -281,7 +685,7 @@ class _RequestLearningRequirementPageState
           style: GoogleFonts.inter(
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 8.h),
@@ -290,7 +694,7 @@ class _RequestLearningRequirementPageState
           style: GoogleFonts.inter(
             fontSize: 13.sp,
             fontWeight: FontWeight.w400,
-            color: AppColors.textGray,
+            color: AppThemeConfig.colors.textGray,
           ),
         ),
       ],
@@ -360,7 +764,7 @@ class _RequestLearningRequirementPageState
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
-                color: AppColors.textDark,
+                color: AppThemeConfig.colors.textDark,
               ),
             ),
             if (required)
@@ -369,7 +773,7 @@ class _RequestLearningRequirementPageState
                 style: GoogleFonts.inter(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.errorRed,
+                  color: AppThemeConfig.colors.errorRed,
                 ),
               ),
           ],
@@ -391,10 +795,10 @@ class _RequestLearningRequirementPageState
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primaryGreen : AppColors.white,
+              color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.white,
               borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
-                color: isSelected ? AppColors.primaryGreen : AppColors.borderColor,
+                color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.borderColor,
                 width: isSelected ? 2 : 1,
               ),
             ),
@@ -403,7 +807,7 @@ class _RequestLearningRequirementPageState
               style: GoogleFonts.inter(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w600,
-                color: isSelected ? AppColors.white : AppColors.textDark,
+                color: isSelected ? AppThemeConfig.colors.white : AppThemeConfig.colors.textDark,
               ),
             ),
           ),
@@ -419,11 +823,11 @@ class _RequestLearningRequirementPageState
         borderRadius: BorderRadius.circular(8.r),
         border: Border.all(
           color: selectedSessionType != null
-              ? AppColors.primaryGreen
-              : AppColors.borderColor,
+              ? AppThemeConfig.colors.primaryGreen
+              : AppThemeConfig.colors.borderColor,
           width: selectedSessionType != null ? 2 : 1,
         ),
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
       ),
       child: DropdownButton<String>(
         value: selectedSessionType,
@@ -432,7 +836,7 @@ class _RequestLearningRequirementPageState
           style: GoogleFonts.inter(
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,
-            color: AppColors.textLightGray,
+            color: AppThemeConfig.colors.textLightGray,
           ),
         ),
         isExpanded: true,
@@ -440,9 +844,9 @@ class _RequestLearningRequirementPageState
         style: GoogleFonts.inter(
           fontSize: 14.sp,
           fontWeight: FontWeight.w400,
-          color: AppColors.textDark,
+          color: AppThemeConfig.colors.textDark,
         ),
-        dropdownColor: AppColors.white,
+        dropdownColor: AppThemeConfig.colors.white,
         items: sessionTypeOptions.map((type) {
           return DropdownMenuItem<String>(
             value: type,
@@ -451,7 +855,7 @@ class _RequestLearningRequirementPageState
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
-                color: AppColors.textDark,
+                color: AppThemeConfig.colors.textDark,
               ),
             ),
           );
@@ -470,11 +874,11 @@ class _RequestLearningRequirementPageState
         borderRadius: BorderRadius.circular(8.r),
         border: Border.all(
           color: selectedLevel != null
-              ? AppColors.primaryGreen
-              : AppColors.borderColor,
+              ? AppThemeConfig.colors.primaryGreen
+              : AppThemeConfig.colors.borderColor,
           width: selectedLevel != null ? 2 : 1,
         ),
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
       ),
       child: DropdownButton<String>(
         value: selectedLevel,
@@ -483,7 +887,7 @@ class _RequestLearningRequirementPageState
           style: GoogleFonts.inter(
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,
-            color: AppColors.textLightGray,
+            color: AppThemeConfig.colors.textLightGray,
           ),
         ),
         isExpanded: true,
@@ -491,9 +895,9 @@ class _RequestLearningRequirementPageState
         style: GoogleFonts.inter(
           fontSize: 14.sp,
           fontWeight: FontWeight.w400,
-          color: AppColors.textDark,
+          color: AppThemeConfig.colors.textDark,
         ),
-        dropdownColor: AppColors.white,
+        dropdownColor: AppThemeConfig.colors.white,
         items: levelOptions.map((level) {
           return DropdownMenuItem<String>(
             value: level,
@@ -502,7 +906,7 @@ class _RequestLearningRequirementPageState
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
-                color: AppColors.textDark,
+                color: AppThemeConfig.colors.textDark,
               ),
             ),
           );
@@ -525,29 +929,29 @@ class _RequestLearningRequirementPageState
         hintStyle: GoogleFonts.inter(
           fontSize: 13.sp,
           fontWeight: FontWeight.w400,
-          color: AppColors.textLightGray,
+          color: AppThemeConfig.colors.textLightGray,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.r),
-          borderSide: const BorderSide(color: AppColors.borderColor),
+          borderSide: BorderSide(color: AppThemeConfig.colors.borderColor),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.r),
-          borderSide: const BorderSide(color: AppColors.borderColor),
+          borderSide: BorderSide(color: AppThemeConfig.colors.borderColor),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.r),
           borderSide:
-              const BorderSide(color: AppColors.primaryGreen, width: 2),
+              BorderSide(color: AppThemeConfig.colors.primaryGreen, width: 2),
         ),
         contentPadding: EdgeInsets.all(12.w),
         filled: true,
-        fillColor: AppColors.white,
+        fillColor: AppThemeConfig.colors.white,
       ),
       style: GoogleFonts.inter(
         fontSize: 14.sp,
         fontWeight: FontWeight.w400,
-        color: AppColors.textDark,
+        color: AppThemeConfig.colors.textDark,
       ),
     );
   }
@@ -561,7 +965,7 @@ class _RequestLearningRequirementPageState
           style: GoogleFonts.inter(
             fontSize: 14.sp,
             fontWeight: FontWeight.w500,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 8.h),
@@ -570,7 +974,7 @@ class _RequestLearningRequirementPageState
           style: GoogleFonts.inter(
             fontSize: 12.sp,
             fontWeight: FontWeight.w400,
-            color: AppColors.textGray,
+            color: AppThemeConfig.colors.textGray,
           ),
         ),
         SizedBox(height: 12.h),
@@ -581,19 +985,19 @@ class _RequestLearningRequirementPageState
             padding: EdgeInsets.symmetric(vertical: 24.h),
             decoration: BoxDecoration(
               border: Border.all(
-                color: AppColors.borderColor,
+                color: AppThemeConfig.colors.borderColor,
                 width: 2,
                 style: BorderStyle.solid,
               ),
               borderRadius: BorderRadius.circular(8.r),
-              color: AppColors.bgLight,
+              color: AppThemeConfig.colors.bgLight,
             ),
             child: Column(
               children: [
                 Icon(
                   Icons.cloud_upload_outlined,
                   size: 32.sp,
-                  color: AppColors.primaryGreen,
+                  color: AppThemeConfig.colors.primaryGreen,
                 ),
                 SizedBox(height: 8.h),
                 Text(
@@ -601,7 +1005,7 @@ class _RequestLearningRequirementPageState
                   style: GoogleFonts.inter(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.primaryGreen,
+                    color: AppThemeConfig.colors.primaryGreen,
                   ),
                 ),
                 SizedBox(height: 4.h),
@@ -610,7 +1014,7 @@ class _RequestLearningRequirementPageState
                   style: GoogleFonts.inter(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w400,
-                    color: AppColors.textGray,
+                    color: AppThemeConfig.colors.textGray,
                   ),
                 ),
               ],
@@ -634,7 +1038,7 @@ class _RequestLearningRequirementPageState
           style: GoogleFonts.inter(
             fontSize: 12.sp,
             fontWeight: FontWeight.w500,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 8.h),
@@ -646,16 +1050,16 @@ class _RequestLearningRequirementPageState
             child: Container(
               padding: EdgeInsets.all(10.w),
               decoration: BoxDecoration(
-                color: AppColors.bgLight,
+                color: AppThemeConfig.colors.bgLight,
                 borderRadius: BorderRadius.circular(6.r),
-                border: Border.all(color: AppColors.borderColor),
+                border: Border.all(color: AppThemeConfig.colors.borderColor),
               ),
               child: Row(
                 children: [
                   Icon(
                     _getFileIcon(file),
                     size: 20.sp,
-                    color: AppColors.primaryGreen,
+                    color: AppThemeConfig.colors.primaryGreen,
                   ),
                   SizedBox(width: 10.w),
                   Expanded(
@@ -664,7 +1068,7 @@ class _RequestLearningRequirementPageState
                       style: GoogleFonts.inter(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.textDark,
+                        color: AppThemeConfig.colors.textDark,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -676,7 +1080,7 @@ class _RequestLearningRequirementPageState
                     child: Icon(
                       Icons.close,
                       size: 18.sp,
-                      color: AppColors.errorRed,
+                      color: AppThemeConfig.colors.errorRed,
                     ),
                   ),
                 ],
@@ -716,12 +1120,12 @@ class _RequestLearningRequirementPageState
               style: GoogleFonts.inter(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textDark,
+                color: AppThemeConfig.colors.textDark,
               ),
             ),
             SizedBox(height: 12.h),
             ListTile(
-              leading: Icon(Icons.image, color: AppColors.primaryGreen),
+              leading: Icon(Icons.image, color: AppThemeConfig.colors.primaryGreen),
               title: Text('Hình ảnh (JPG, PNG)'),
               onTap: () {
                 setState(() {
@@ -731,7 +1135,7 @@ class _RequestLearningRequirementPageState
               },
             ),
             ListTile(
-              leading: Icon(Icons.picture_as_pdf, color: AppColors.primaryGreen),
+              leading: Icon(Icons.picture_as_pdf, color: AppThemeConfig.colors.primaryGreen),
               title: Text('PDF'),
               onTap: () {
                 setState(() {
@@ -741,7 +1145,7 @@ class _RequestLearningRequirementPageState
               },
             ),
             ListTile(
-              leading: Icon(Icons.description, color: AppColors.primaryGreen),
+              leading: Icon(Icons.description, color: AppThemeConfig.colors.primaryGreen),
               title: Text('Word (DOC, DOCX)'),
               onTap: () {
                 setState(() {
@@ -769,7 +1173,7 @@ class _RequestLearningRequirementPageState
           style: GoogleFonts.inter(
             fontSize: 14.sp,
             fontWeight: FontWeight.w500,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 12.h),
@@ -813,10 +1217,10 @@ class _RequestLearningRequirementPageState
           borderRadius: BorderRadius.circular(6.r),
           border: Border.all(
             color:
-                isSelected ? AppColors.primaryGreen : AppColors.borderColor,
+                isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.borderColor,
             width: isSelected ? 2 : 1,
           ),
-          color: isSelected ? AppColors.lightGreen : AppColors.white,
+          color: isSelected ? AppThemeConfig.colors.lightGreen : AppThemeConfig.colors.white,
         ),
         child: Row(
           children: [
@@ -827,8 +1231,8 @@ class _RequestLearningRequirementPageState
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: isSelected
-                      ? AppColors.primaryGreen
-                      : AppColors.borderColor,
+                      ? AppThemeConfig.colors.primaryGreen
+                      : AppThemeConfig.colors.borderColor,
                   width: 2,
                 ),
               ),
@@ -839,7 +1243,7 @@ class _RequestLearningRequirementPageState
                         height: 8.w,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColors.primaryGreen,
+                          color: AppThemeConfig.colors.primaryGreen,
                         ),
                       ),
                     )
@@ -852,7 +1256,7 @@ class _RequestLearningRequirementPageState
                 style: GoogleFonts.inter(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
-                  color: AppColors.textDark,
+                  color: AppThemeConfig.colors.textDark,
                 ),
               ),
             ),
@@ -873,9 +1277,9 @@ class _RequestLearningRequirementPageState
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         border: Border(
-          top: BorderSide(color: AppColors.borderColor, width: 1),
+          top: BorderSide(color: AppThemeConfig.colors.borderColor, width: 1),
         ),
       ),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -885,7 +1289,7 @@ class _RequestLearningRequirementPageState
           width: double.infinity,
           padding: EdgeInsets.symmetric(vertical: 14.h),
           decoration: BoxDecoration(
-            color: isDisabled ? AppColors.disabledGray : AppColors.primaryGreen,
+            color: isDisabled ? AppThemeConfig.colors.disabledGray : AppThemeConfig.colors.primaryGreen,
             borderRadius: BorderRadius.circular(8.r),
           ),
           child: Center(
@@ -896,7 +1300,7 @@ class _RequestLearningRequirementPageState
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        isDisabled ? AppColors.textGray : AppColors.white,
+                        isDisabled ? AppThemeConfig.colors.textGray : AppThemeConfig.colors.white,
                       ),
                     ),
                   )
@@ -905,7 +1309,7 @@ class _RequestLearningRequirementPageState
                     style: GoogleFonts.inter(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.white,
+                      color: AppThemeConfig.colors.white,
                     ),
                   ),
           ),

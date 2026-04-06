@@ -1,6 +1,8 @@
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/core/router/app_router.dart';
 import 'package:edu_match/share/components/tutor_card.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_button.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_card.dart';
 import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -124,6 +126,264 @@ class _TutorListPageState extends State<TutorListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
+    return AppThemeConfig.isLowFidelityMode
+        ? _buildLowFiLayout(colors)
+        : _buildFullLayout();
+  }
+
+  Widget _buildLowFiLayout(AppColorScheme colors) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Text(
+            'Danh sách gia sư',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Search
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Text(
+              _searchController.text.isEmpty ? '[TÌM KIẾM GIA SƯ]' : _searchController.text,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: _searchController.text.isEmpty ? colors.textSecondary : colors.textDark,
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Sort and filter
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.all(12.w),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: colors.borderColor, width: 1.5),
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                  child: Text(
+                    '[SẮP XẾP: ${_getSortLabel()}]',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Container(
+                padding: EdgeInsets.all(12.w),
+                decoration: BoxDecoration(
+                  border: Border.all(color: colors.borderColor, width: 1.5),
+                  borderRadius: BorderRadius.circular(4.r),
+                ),
+                child: Text(
+                  '[BỘ LỌC]',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16.h),
+
+          // Tutor list
+          if (_allTutors.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(32.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Center(
+                child: Text(
+                  '[KHÔNG TÌM THẤY GIA SƯ]',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ),
+            )
+          else ...[
+            Text(
+              'Gia sư (${_allTutors.length})',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: colors.textDark,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisSpacing: 8.w,
+              mainAxisSpacing: 8.h,
+              childAspectRatio: 0.8,
+              children: List.generate(_tutors.length, (index) {
+                final tutor = _tutors[index];
+                return GestureDetector(
+                  onTap: () {
+                    context.push(
+                      AppRouter.marketplaceTutorDetails.replaceFirst(':tutorId', tutor.id),
+                      extra: tutor,
+                    );
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: colors.borderColor, width: 1.5),
+                      borderRadius: BorderRadius.circular(4.r),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '[GIA SƯ ${index + 1}]',
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          tutor.name,
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w600,
+                            color: colors.textDark,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          tutor.subjects.isNotEmpty ? tutor.subjects.first : 'Gia sư',
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                        const Spacer(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${tutor.rating}⭐',
+                              style: TextStyle(
+                                fontSize: 10.sp,
+                                color: colors.textSecondary,
+                              ),
+                            ),
+                            Text(
+                              '${tutor.pricePerHour.toInt()}₫/h',
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w600,
+                                color: colors.textDark,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ),
+            SizedBox(height: 16.h),
+            
+            // Pagination
+            if (_totalPages > 1) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: _currentPage > 1 ? _goToPreviousPage : null,
+                    child: Container(
+                      padding: EdgeInsets.all(8.w),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: colors.borderColor, width: 1.5),
+                        borderRadius: BorderRadius.circular(4.r),
+                        color: _currentPage > 1 ? colors.white : colors.disabledGray,
+                      ),
+                      child: Text(
+                        '← Trước',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: _currentPage > 1 ? colors.textDark : colors.textLightGray,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'Trang $_currentPage/$_totalPages',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: colors.textDark,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: _currentPage < _totalPages ? _goToNextPage : null,
+                    child: Container(
+                      padding: EdgeInsets.all(8.w),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: colors.borderColor, width: 1.5),
+                        borderRadius: BorderRadius.circular(4.r),
+                        color: _currentPage < _totalPages ? colors.white : colors.disabledGray,
+                      ),
+                      child: Text(
+                        'Sau →',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: _currentPage < _totalPages ? colors.textDark : colors.textLightGray,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _getSortLabel() {
+    switch (_sortBy) {
+      case 'priceAsc':
+        return 'Giá tăng dần';
+      case 'ratingDesc':
+        return 'Đánh giá cao';
+      case 'popular':
+      default:
+        return 'Phổ biến';
+    }
+  }
+
+  Widget _buildFullLayout() {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,7 +403,7 @@ class _TutorListPageState extends State<TutorListPage> {
                   'Không tìm thấy gia sư',
                   style: GoogleFonts.poppins(
                     fontSize: 14.sp,
-                    color: AppColors.textGray,
+                    color: AppThemeConfig.colors.textGray,
                   ),
                 ),
             )
@@ -241,12 +501,12 @@ class _TutorListPageState extends State<TutorListPage> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(
-                  color: AppColors.borderColor,
+                  color: AppThemeConfig.colors.borderColor,
                   width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.shadowColor,
+                    color: AppThemeConfig.colors.shadowColor,
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -263,7 +523,7 @@ class _TutorListPageState extends State<TutorListPage> {
                     child: Container(
                       width: 100.w,
                       height: 100.h,
-                      color: AppColors.bgLight,
+                      color: AppThemeConfig.colors.bgLight,
                       child: Image.asset(
                         tutor.avatar,
                         fit: BoxFit.cover,
@@ -299,7 +559,7 @@ class _TutorListPageState extends State<TutorListPage> {
                                   style: GoogleFonts.poppins(
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w600,
-                                    color: AppColors.textDark,
+                                    color: AppThemeConfig.colors.textDark,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -312,7 +572,7 @@ class _TutorListPageState extends State<TutorListPage> {
                                     vertical: 2.h,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.successGreen,
+                                    color: AppThemeConfig.colors.successGreen,
                                     borderRadius: BorderRadius.circular(10.r),
                                   ),
                                   child: Text(
@@ -332,7 +592,7 @@ class _TutorListPageState extends State<TutorListPage> {
                             children: [
                               Icon(
                                 Icons.star,
-                                color: AppColors.warningOrange,
+                                color: AppThemeConfig.colors.warningOrange,
                                 size: 14.sp,
                               ),
                               SizedBox(width: 4.w),
@@ -340,7 +600,7 @@ class _TutorListPageState extends State<TutorListPage> {
                                 '${tutor.rating} (${tutor.reviewCount} reviews)',
                                 style: GoogleFonts.poppins(
                                   fontSize: 11.sp,
-                                  color: AppColors.textGray,
+                                  color: AppThemeConfig.colors.textGray,
                                 ),
                               ),
                             ],
@@ -391,7 +651,7 @@ class _TutorListPageState extends State<TutorListPage> {
                     padding: EdgeInsets.symmetric(horizontal: 12.w),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: AppColors.primaryGreen,
+                        color: AppThemeConfig.colors.primaryGreen,
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Material(
@@ -444,7 +704,7 @@ class _TutorListPageState extends State<TutorListPage> {
           style: GoogleFonts.poppins(
             fontSize: 18.sp,
             fontWeight: FontWeight.w600,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 12.h),
@@ -453,9 +713,9 @@ class _TutorListPageState extends State<TutorListPage> {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: AppColors.bgLight,
+                  color: AppThemeConfig.colors.bgLight,
                   borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: AppColors.borderColor),
+                  border: Border.all(color: AppThemeConfig.colors.borderColor),
                 ),
                 child: TextField(
                   controller: _searchController,
@@ -463,7 +723,7 @@ class _TutorListPageState extends State<TutorListPage> {
                     hintText: 'Tên gia sư, môn học...',
                     hintStyle: GoogleFonts.poppins(
                       fontSize: 13.sp,
-                      color: AppColors.textLightGray,
+                      color: AppThemeConfig.colors.textLightGray,
                     ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
@@ -472,7 +732,7 @@ class _TutorListPageState extends State<TutorListPage> {
                     ),
                     prefixIcon: Icon(
                       Icons.search,
-                      color: AppColors.textGray,
+                      color: AppThemeConfig.colors.textGray,
                       size: 20.sp,
                     ),
                   ),
@@ -491,12 +751,12 @@ class _TutorListPageState extends State<TutorListPage> {
                 width: 48.w,
                 height: 48.w,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryGreen,
+                  color: AppThemeConfig.colors.primaryGreen,
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Icon(
                   _isGridView ? Icons.view_list : Icons.grid_view,
-                  color: AppColors.white,
+                  color: AppThemeConfig.colors.white,
                   size: 22.sp,
                 ),
               ),
@@ -508,12 +768,12 @@ class _TutorListPageState extends State<TutorListPage> {
                 width: 48.w,
                 height: 48.w,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryGreen,
+                  color: AppThemeConfig.colors.primaryGreen,
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Icon(
                   Icons.tune,
-                  color: AppColors.white,
+                  color: AppThemeConfig.colors.white,
                   size: 22.sp,
                 ),
               ),
@@ -554,10 +814,10 @@ class _TutorListPageState extends State<TutorListPage> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryGreen : AppColors.bgLight,
+          color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.bgLight,
           borderRadius: BorderRadius.circular(20.r),
           border: Border.all(
-            color: isSelected ? AppColors.primaryGreen : AppColors.borderColor,
+            color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.borderColor,
           ),
         ),
         child: Text(
@@ -565,7 +825,7 @@ class _TutorListPageState extends State<TutorListPage> {
           style: GoogleFonts.poppins(
             fontSize: 12.sp,
             fontWeight: FontWeight.w500,
-            color: isSelected ? AppColors.white : AppColors.textGray,
+            color: isSelected ? AppThemeConfig.colors.white : AppThemeConfig.colors.textGray,
           ),
         ),
       ),
@@ -578,7 +838,7 @@ class _TutorListPageState extends State<TutorListPage> {
   Widget _buildFilterBottomSheet(StateSetter setModalState) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(24.r),
           topRight: Radius.circular(24.r),
@@ -600,14 +860,14 @@ class _TutorListPageState extends State<TutorListPage> {
                     style: GoogleFonts.poppins(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textDark,
+                      color: AppThemeConfig.colors.textDark,
                     ),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Icon(
                       Icons.close,
-                      color: AppColors.textGray,
+                      color: AppThemeConfig.colors.textGray,
                       size: 22.sp,
                     ),
                   ),
@@ -662,7 +922,7 @@ class _TutorListPageState extends State<TutorListPage> {
                         );
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: AppColors.borderColor),
+                        side: BorderSide(color: AppThemeConfig.colors.borderColor),
                         padding: EdgeInsets.symmetric(vertical: 12.h),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.r),
@@ -673,7 +933,7 @@ class _TutorListPageState extends State<TutorListPage> {
                         style: GoogleFonts.poppins(
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textGray,
+                          color: AppThemeConfig.colors.textGray,
                         ),
                       ),
                     ),
@@ -689,7 +949,7 @@ class _TutorListPageState extends State<TutorListPage> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryGreen,
+                        backgroundColor: AppThemeConfig.colors.primaryGreen,
                         padding: EdgeInsets.symmetric(vertical: 12.h),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.r),
@@ -700,7 +960,7 @@ class _TutorListPageState extends State<TutorListPage> {
                         style: GoogleFonts.poppins(
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.white,
+                          color: AppThemeConfig.colors.white,
                         ),
                       ),
                     ),
@@ -728,7 +988,7 @@ class _TutorListPageState extends State<TutorListPage> {
           style: GoogleFonts.poppins(
             fontSize: 13.sp,
             fontWeight: FontWeight.w500,
-            color: AppColors.textGray,
+            color: AppThemeConfig.colors.textGray,
           ),
         ),
         SizedBox(height: 12.h),
@@ -742,9 +1002,9 @@ class _TutorListPageState extends State<TutorListPage> {
               onPressed: _currentPage > 1 ? _goToPreviousPage : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: _currentPage > 1 
-                    ? AppColors.primaryGreen 
-                    : AppColors.textLightGray,
-                disabledBackgroundColor: AppColors.borderColor,
+                    ? AppThemeConfig.colors.primaryGreen 
+                    : AppThemeConfig.colors.textLightGray,
+                disabledBackgroundColor: AppThemeConfig.colors.borderColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r),
                 ),
@@ -782,13 +1042,13 @@ class _TutorListPageState extends State<TutorListPage> {
                             height: 32.h,
                             decoration: BoxDecoration(
                               color: isCurrentPage 
-                                  ? AppColors.primaryGreen 
-                                  : AppColors.bgLight,
+                                  ? AppThemeConfig.colors.primaryGreen 
+                                  : AppThemeConfig.colors.bgLight,
                               borderRadius: BorderRadius.circular(6.r),
                               border: Border.all(
                                 color: isCurrentPage
-                                    ? AppColors.primaryGreen
-                                    : AppColors.borderColor,
+                                    ? AppThemeConfig.colors.primaryGreen
+                                    : AppThemeConfig.colors.borderColor,
                               ),
                             ),
                             child: Center(
@@ -799,7 +1059,7 @@ class _TutorListPageState extends State<TutorListPage> {
                                   fontWeight: FontWeight.w600,
                                   color: isCurrentPage
                                       ? Colors.white
-                                      : AppColors.textGray,
+                                      : AppThemeConfig.colors.textGray,
                                 ),
                               ),
                             ),
@@ -818,9 +1078,9 @@ class _TutorListPageState extends State<TutorListPage> {
               onPressed: _currentPage < _totalPages ? _goToNextPage : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: _currentPage < _totalPages
-                    ? AppColors.primaryGreen
-                    : AppColors.textLightGray,
-                disabledBackgroundColor: AppColors.borderColor,
+                    ? AppThemeConfig.colors.primaryGreen
+                    : AppThemeConfig.colors.textLightGray,
+                disabledBackgroundColor: AppThemeConfig.colors.borderColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r),
                 ),
@@ -854,7 +1114,7 @@ class _TutorListPageState extends State<TutorListPage> {
           style: GoogleFonts.poppins(
             fontSize: 13.sp,
             fontWeight: FontWeight.w600,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 12.h),
@@ -883,10 +1143,10 @@ class _TutorListPageState extends State<TutorListPage> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.lightGreen : AppColors.bgLight,
+              color: isSelected ? AppThemeConfig.colors.lightGreen : AppThemeConfig.colors.bgLight,
               borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
-                color: isSelected ? AppColors.primaryGreen : AppColors.borderColor,
+                color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.borderColor,
               ),
             ),
             child: Text(
@@ -894,7 +1154,7 @@ class _TutorListPageState extends State<TutorListPage> {
               style: GoogleFonts.poppins(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w500,
-                color: isSelected ? AppColors.primaryGreen : AppColors.textGray,
+                color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.textGray,
               ),
             ),
           ),
@@ -910,8 +1170,8 @@ class _TutorListPageState extends State<TutorListPage> {
           values: _priceRange,
           min: 0,
           max: 1000000,
-          activeColor: AppColors.primaryGreen,
-          inactiveColor: AppColors.borderColor,
+          activeColor: AppThemeConfig.colors.primaryGreen,
+          inactiveColor: AppThemeConfig.colors.borderColor,
           onChanged: (RangeValues values) {
             setModalState(() {
               _priceRange = values;
@@ -928,7 +1188,7 @@ class _TutorListPageState extends State<TutorListPage> {
                 style: GoogleFonts.poppins(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textGray,
+                  color: AppThemeConfig.colors.textGray,
                 ),
               ),
               Text(
@@ -936,7 +1196,7 @@ class _TutorListPageState extends State<TutorListPage> {
                 style: GoogleFonts.poppins(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textGray,
+                  color: AppThemeConfig.colors.textGray,
                 ),
               ),
             ],
@@ -963,7 +1223,7 @@ class _TutorListPageState extends State<TutorListPage> {
               padding: EdgeInsets.only(right: 4.w),
               child: Icon(
                 isSelected ? Icons.star : Icons.star_border,
-                color: AppColors.warningOrange,
+                color: AppThemeConfig.colors.warningOrange,
                 size: 24.sp,
               ),
             ),
@@ -989,10 +1249,10 @@ class _TutorListPageState extends State<TutorListPage> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.lightGreen : AppColors.bgLight,
+              color: isSelected ? AppThemeConfig.colors.lightGreen : AppThemeConfig.colors.bgLight,
               borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
-                color: isSelected ? AppColors.primaryGreen : AppColors.borderColor,
+                color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.borderColor,
               ),
             ),
             child: Text(
@@ -1000,7 +1260,7 @@ class _TutorListPageState extends State<TutorListPage> {
               style: GoogleFonts.poppins(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w500,
-                color: isSelected ? AppColors.primaryGreen : AppColors.textGray,
+                color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.textGray,
               ),
             ),
           ),

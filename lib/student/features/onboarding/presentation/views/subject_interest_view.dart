@@ -1,5 +1,7 @@
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/core/router/app_router.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_button.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -60,11 +62,12 @@ class _SubjectInterestPageState extends State<SubjectInterestPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
     final filtered = _filteredSubjects;
     final canContinue = _selectedSubjects.isNotEmpty;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: colors.white,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +95,7 @@ class _SubjectInterestPageState extends State<SubjectInterestPage> {
                     style: GoogleFonts.poppins(
                       fontSize: 26.sp,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textDark,
+                      color: colors.textDark,
                       height: 1.3,
                     ),
                   ),
@@ -101,7 +104,7 @@ class _SubjectInterestPageState extends State<SubjectInterestPage> {
                     'Chọn ít nhất 1 môn để nhận gợi ý gia sư phù hợp.',
                     style: GoogleFonts.poppins(
                       fontSize: 13.sp,
-                      color: AppColors.textGray,
+                      color: colors.textGray,
                       height: 1.5,
                     ),
                   ),
@@ -111,18 +114,20 @@ class _SubjectInterestPageState extends State<SubjectInterestPage> {
                     controller: _searchController,
                     onChanged: (v) => setState(() => _searchQuery = v),
                     style: GoogleFonts.poppins(
-                        fontSize: 14.sp, color: AppColors.textDark),
+                        fontSize: 14.sp, color: colors.textDark),
                     decoration: InputDecoration(
                       hintText: 'Tìm kiếm môn học...',
                       hintStyle: GoogleFonts.poppins(
                         fontSize: 14.sp,
-                        color: AppColors.textLightGray,
+                        color: colors.textLightGray,
                       ),
-                      prefixIcon: Icon(
-                        Icons.search_rounded,
-                        color: AppColors.primaryGreen,
-                        size: 22.sp,
-                      ),
+                      prefixIcon: AppThemeConfig.isLowFidelityMode 
+                          ? null 
+                          : Icon(
+                              Icons.search_rounded,
+                              color: colors.primaryGreen,
+                              size: 22.sp,
+                            ),
                       suffixIcon: _searchQuery.isNotEmpty
                           ? GestureDetector(
                               onTap: () {
@@ -131,27 +136,43 @@ class _SubjectInterestPageState extends State<SubjectInterestPage> {
                               },
                               child: Icon(
                                 Icons.close_rounded,
-                                color: AppColors.textGray,
+                                color: colors.textGray,
                                 size: 18.sp,
                               ),
                             )
                           : null,
                       filled: true,
-                      fillColor: AppColors.bgLight,
+                      fillColor: AppThemeConfig.isLowFidelityMode 
+                          ? colors.white 
+                          : colors.bgLight,
                       contentPadding: EdgeInsets.symmetric(
                           horizontal: 16.w, vertical: 12.h),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(
+                          AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+                        ),
+                        borderSide: AppThemeConfig.isLowFidelityMode 
+                            ? BorderSide(color: colors.borderColor, width: 1.5)
+                            : BorderSide.none,
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(
+                          AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+                        ),
+                        borderSide: AppThemeConfig.isLowFidelityMode 
+                            ? BorderSide(color: colors.borderColor, width: 1.5)
+                            : BorderSide.none,
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: const BorderSide(
-                            color: AppColors.primaryGreen, width: 1.5),
+                        borderRadius: BorderRadius.circular(
+                          AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+                        ),
+                        borderSide: BorderSide(
+                          color: AppThemeConfig.isLowFidelityMode 
+                              ? colors.textDark 
+                              : colors.primaryGreen, 
+                          width: AppThemeConfig.isLowFidelityMode ? 2 : 1.5,
+                        ),
                       ),
                     ),
                   ),
@@ -169,13 +190,13 @@ class _SubjectInterestPageState extends State<SubjectInterestPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.search_off_rounded,
-                              size: 48.sp, color: AppColors.textLightGray),
+                              size: 48.sp, color: colors.textLightGray),
                           SizedBox(height: 12.h),
                           Text(
                             'Không tìm thấy môn học',
                             style: GoogleFonts.poppins(
                               fontSize: 14.sp,
-                              color: AppColors.textGray,
+                              color: colors.textGray,
                             ),
                           ),
                         ],
@@ -208,14 +229,19 @@ class _SubjectInterestPageState extends State<SubjectInterestPage> {
             // Bottom area
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.shadowColor,
-                    blurRadius: 12,
-                    offset: const Offset(0, -4),
-                  ),
-                ],
+                color: colors.white,
+                border: AppThemeConfig.isLowFidelityMode 
+                    ? Border(top: BorderSide(color: colors.borderColor, width: 1.5))
+                    : null,
+                boxShadow: AppThemeConfig.isLowFidelityMode 
+                    ? null 
+                    : [
+                        BoxShadow(
+                          color: colors.shadowColor,
+                          blurRadius: 12,
+                          offset: const Offset(0, -4),
+                        ),
+                      ],
               ),
               padding: EdgeInsets.all(24.w),
               child: Column(
@@ -230,14 +256,21 @@ class _SubjectInterestPageState extends State<SubjectInterestPage> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 10.w, vertical: 4.h),
                             decoration: BoxDecoration(
-                              color: AppColors.lightGreen,
-                              borderRadius: BorderRadius.circular(20.r),
+                              color: AppThemeConfig.isLowFidelityMode 
+                                  ? colors.bgLight 
+                                  : colors.lightGreen,
+                              borderRadius: BorderRadius.circular(
+                                AppThemeConfig.isLowFidelityMode ? 4.r : 20.r,
+                              ),
+                              border: AppThemeConfig.isLowFidelityMode 
+                                  ? Border.all(color: colors.borderColor, width: 1)
+                                  : null,
                             ),
                             child: Text(
                               'Đã chọn ${_selectedSubjects.length} môn học',
                               style: GoogleFonts.poppins(
                                 fontSize: 12.sp,
-                                color: AppColors.primaryGreen,
+                                color: colors.primaryGreen,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -245,51 +278,13 @@ class _SubjectInterestPageState extends State<SubjectInterestPage> {
                         ],
                       ),
                     ),
-                  SizedBox(
+                  LowFiButton(
+                    text: 'Tiếp tục',
+                    onTap: canContinue ? _continue : null,
+                    type: LowFiButtonType.primary,
+                    size: LowFiButtonSize.large,
                     width: double.infinity,
-                    height: 54.h,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: canContinue
-                            ? const LinearGradient(
-                                colors: [
-                                  AppColors.primaryGreen,
-                                  AppColors.accentGreen,
-                                ],
-                              )
-                            : null,
-                        color: canContinue ? null : AppColors.disabledGray,
-                        borderRadius: BorderRadius.circular(14.r),
-                        boxShadow: canContinue
-                            ? [
-                                BoxShadow(
-                                  color:
-                                      AppColors.primaryGreen.withOpacity(0.35),
-                                  blurRadius: 16,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(14.r),
-                        child: InkWell(
-                          onTap: canContinue ? _continue : null,
-                          borderRadius: BorderRadius.circular(14.r),
-                          child: Center(
-                            child: Text(
-                              'Tiếp tục',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    isEnabled: canContinue,
                   ),
                 ],
               ),
@@ -316,49 +311,55 @@ class _SubjectChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
         decoration: BoxDecoration(
-          gradient: isSelected
-              ? const LinearGradient(
-                  colors: [AppColors.primaryGreen, AppColors.accentGreen],
-                )
-              : null,
-          color: isSelected ? null : AppColors.white,
-          borderRadius: BorderRadius.circular(40.r),
-          border: Border.all(
-            color: isSelected ? AppColors.primaryGreen : AppColors.borderColor,
-            width: 1.5,
+          color: isSelected 
+              ? (AppThemeConfig.isLowFidelityMode ? colors.textDark : colors.primaryGreen)
+              : colors.white,
+          borderRadius: BorderRadius.circular(
+            AppThemeConfig.isLowFidelityMode ? 4.r : 40.r,
           ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.primaryGreen.withOpacity(0.25),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ]
-              : null,
+          border: Border.all(
+            color: isSelected 
+                ? (AppThemeConfig.isLowFidelityMode ? colors.textDark : colors.primaryGreen)
+                : colors.borderColor,
+            width: AppThemeConfig.isLowFidelityMode ? 1.5 : 1.5,
+          ),
+          boxShadow: AppThemeConfig.isLowFidelityMode 
+              ? null 
+              : isSelected
+                  ? [
+                      BoxShadow(
+                        color: colors.primaryGreen.withOpacity(0.25),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ]
+                  : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              isSelected ? Icons.check_circle_rounded : icon,
-              size: 16.sp,
-              color: isSelected ? AppColors.white : AppColors.textGray,
-            ),
-            SizedBox(width: 6.w),
+            if (!AppThemeConfig.isLowFidelityMode)
+              Icon(
+                isSelected ? Icons.check_circle_rounded : icon,
+                size: 16.sp,
+                color: isSelected ? colors.white : colors.textGray,
+              ),
+            if (!AppThemeConfig.isLowFidelityMode) SizedBox(width: 6.w),
             Text(
               name,
               style: GoogleFonts.poppins(
                 fontSize: 13.sp,
                 fontWeight:
                     isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? AppColors.white : AppColors.textDark,
+                color: isSelected ? colors.white : colors.textDark,
               ),
             ),
           ],
@@ -376,32 +377,43 @@ class _ProgressDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     Color color;
     if (isDone) {
-      color = AppColors.primaryGreen;
+      color = colors.primaryGreen;
     } else if (isActive) {
-      color = AppColors.primaryGreen;
+      color = colors.primaryGreen;
     } else {
-      color = AppColors.disabledGray;
+      color = colors.disabledGray;
     }
 
     return Container(
       width: 28.w,
       height: 28.w,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: (isActive || isDone) ? color : AppColors.white,
-        border: Border.all(color: color, width: 2),
+        shape: AppThemeConfig.isLowFidelityMode ? BoxShape.rectangle : BoxShape.circle,
+        borderRadius: AppThemeConfig.isLowFidelityMode ? BorderRadius.circular(4.r) : null,
+        color: (isActive || isDone) ? color : colors.white,
+        border: Border.all(
+          color: color, 
+          width: AppThemeConfig.isLowFidelityMode ? 1.5 : 2,
+        ),
       ),
       child: isDone
-          ? Icon(Icons.check_rounded, color: AppColors.white, size: 14.sp)
+          ? Icon(
+              AppThemeConfig.isLowFidelityMode ? Icons.check : Icons.check_rounded, 
+              color: colors.white, 
+              size: 14.sp,
+            )
           : Center(
               child: Container(
                 width: 8.w,
                 height: 8.w,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isActive ? AppColors.white : color,
+                  shape: AppThemeConfig.isLowFidelityMode ? BoxShape.rectangle : BoxShape.circle,
+                  borderRadius: AppThemeConfig.isLowFidelityMode ? BorderRadius.circular(2.r) : null,
+                  color: isActive ? colors.white : color,
                 ),
               ),
             ),
@@ -414,10 +426,12 @@ class _ProgressLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     return Expanded(
       child: Container(
-        height: 2,
-        color: AppColors.primaryGreen.withOpacity(0.3),
+        height: AppThemeConfig.isLowFidelityMode ? 1.5 : 2,
+        color: colors.primaryGreen.withOpacity(0.3),
       ),
     );
   }

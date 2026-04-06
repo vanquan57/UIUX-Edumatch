@@ -1,5 +1,7 @@
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/core/router/app_router.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_button.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -20,21 +22,18 @@ class _OnboardingWelcomePageState extends State<OnboardingWelcomePage> {
   static const List<_OnboardingSlide> _slides = [
     _OnboardingSlide(
       icon: Icons.school_rounded,
-      gradientColors: [AppColors.primaryGreen, AppColors.accentGreen],
       title: 'Tìm gia sư phù hợp',
       description:
           'Kết nối với hàng ngàn gia sư chất lượng cao, phù hợp với nhu cầu và ngân sách của bạn.',
     ),
     _OnboardingSlide(
       icon: Icons.laptop_mac_rounded,
-      gradientColors: [AppColors.accentGreen, AppColors.primaryGreenLight],
       title: 'Học online mọi lúc mọi nơi',
       description:
           'Linh hoạt học tập theo lịch trình của bạn, bất cứ đâu chỉ với một chiếc điện thoại.',
     ),
     _OnboardingSlide(
       icon: Icons.menu_book_rounded,
-      gradientColors: [AppColors.primaryGreenDark, AppColors.primaryGreen],
       title: 'Nhiều hình thức học đa dạng',
       description:
           'Chọn học 1-1, học nhóm, học online hoặc tại nhà — tất cả trong một ứng dụng.',
@@ -64,8 +63,10 @@ class _OnboardingWelcomePageState extends State<OnboardingWelcomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -75,24 +76,11 @@ class _OnboardingWelcomePageState extends State<OnboardingWelcomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(
-                    onPressed: _skip,
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16.w, vertical: 8.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.r),
-                        side: const BorderSide(color: AppColors.borderColor),
-                      ),
-                    ),
-                    child: Text(
-                      'Bỏ qua',
-                      style: GoogleFonts.poppins(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textGray,
-                      ),
-                    ),
+                  LowFiButton(
+                    text: 'Bỏ qua',
+                    onTap: _skip,
+                    type: LowFiButtonType.secondary,
+                    size: LowFiButtonSize.small,
                   ),
                 ],
               ),
@@ -126,55 +114,30 @@ class _OnboardingWelcomePageState extends State<OnboardingWelcomePage> {
                         height: 8.h,
                         decoration: BoxDecoration(
                           color: isActive
-                              ? AppColors.primaryGreen
-                              : AppColors.disabledGray,
-                          borderRadius: BorderRadius.circular(4.r),
+                              ? colors.primaryGreen
+                              : colors.disabledGray,
+                          borderRadius: BorderRadius.circular(
+                            AppThemeConfig.isLowFidelityMode ? 2.r : 4.r,
+                          ),
+                          border: AppThemeConfig.isLowFidelityMode 
+                              ? Border.all(
+                                  color: colors.borderColor,
+                                  width: 1,
+                                )
+                              : null,
                         ),
                       );
                     }),
                   ),
                   SizedBox(height: 28.h),
-                  SizedBox(
+                  LowFiButton(
+                    text: _currentPage == _slides.length - 1
+                        ? 'Bắt đầu'
+                        : 'Tiếp theo',
+                    onTap: _goNext,
+                    type: LowFiButtonType.primary,
+                    size: LowFiButtonSize.large,
                     width: double.infinity,
-                    height: 54.h,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            AppColors.primaryGreen,
-                            AppColors.accentGreen,
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(14.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primaryGreen.withOpacity(0.35),
-                            blurRadius: 16,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(14.r),
-                        child: InkWell(
-                          onTap: _goNext,
-                          borderRadius: BorderRadius.circular(14.r),
-                          child: Center(
-                            child: Text(
-                              _currentPage == _slides.length - 1
-                                  ? 'Bắt đầu'
-                                  : 'Tiếp theo',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                   ),
                 ],
               ),
@@ -192,51 +155,45 @@ class _SlideWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 32.w),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration circle
-          Container(
-            width: 220.w,
-            height: 220.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  slide.gradientColors[0].withOpacity(0.12),
-                  slide.gradientColors[1].withOpacity(0.04),
-                ],
-              ),
-            ),
-            child: Center(
-              child: Container(
-                width: 150.w,
-                height: 150.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: slide.gradientColors,
+          // Illustration - Low-fi version
+          AppThemeConfig.isLowFidelityMode
+              ? LowFiImagePlaceholder(
+                  width: 220.w,
+                  height: 220.w,
+                  icon: slide.icon,
+                  text: 'ILLUSTRATION',
+                  borderRadius: BorderRadius.circular(110.r),
+                )
+              : Container(
+                  width: 220.w,
+                  height: 220.w,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colors.bgLight,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: slide.gradientColors[0].withOpacity(0.4),
-                      blurRadius: 30,
-                      offset: const Offset(0, 10),
+                  child: Center(
+                    child: Container(
+                      width: 150.w,
+                      height: 150.w,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: colors.primaryGreen,
+                      ),
+                      child: Icon(
+                        slide.icon,
+                        size: 72.sp,
+                        color: colors.white,
+                      ),
                     ),
-                  ],
+                  ),
                 ),
-                child: Icon(
-                  slide.icon,
-                  size: 72.sp,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
           SizedBox(height: 48.h),
           Text(
             slide.title,
@@ -244,7 +201,7 @@ class _SlideWidget extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 24.sp,
               fontWeight: FontWeight.w700,
-              color: AppColors.textDark,
+              color: colors.textDark,
               height: 1.3,
             ),
           ),
@@ -255,7 +212,7 @@ class _SlideWidget extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
-              color: AppColors.textGray,
+              color: colors.textGray,
               height: 1.65,
             ),
           ),
@@ -267,13 +224,11 @@ class _SlideWidget extends StatelessWidget {
 
 class _OnboardingSlide {
   final IconData icon;
-  final List<Color> gradientColors;
   final String title;
   final String description;
 
   const _OnboardingSlide({
     required this.icon,
-    required this.gradientColors,
     required this.title,
     required this.description,
   });

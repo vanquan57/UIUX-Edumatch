@@ -1,6 +1,7 @@
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/student/data/models/booking_model.dart';
 import 'package:edu_match/student/data/models/time_slot_model.dart';
+import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -8,9 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class SelectTimeSlotPage extends StatefulWidget {
-  final BookingModel booking;
-
-  const SelectTimeSlotPage({super.key, required this.booking});
+  const SelectTimeSlotPage({super.key});
 
   @override
   State<SelectTimeSlotPage> createState() => _SelectTimeSlotPageState();
@@ -36,7 +35,18 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
   @override
   void initState() {
     super.initState();
-    booking = widget.booking;
+    // Use mock booking data for prototype
+    final mockTutor = TutorModel.mockTutors().first;
+    booking = BookingModel(
+      tutorId: mockTutor.id,
+      tutorName: mockTutor.name,
+      tutorAvatar: mockTutor.avatar,
+      tutorSubjects: mockTutor.subjects,
+      type: 'online',
+      selectedTimeSlot: '09:00 - 10:00',
+      subject: 'Toán',
+      sessionDuration: 60,
+    );
     availableSlots = DayAvailabilityModel.mockAvailability();
     selectedDate = availableSlots.first.date;
     currentDaySlots = availableSlots.first;
@@ -156,19 +166,9 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
       await Future.delayed(const Duration(seconds: 1));
 
       if (mounted) {
-        final isMonthly = booking.scheduleType == 'monthly';
-        final updatedBooking = booking.copyWith(
-          selectedDate: isMonthly
-              ? monthlyStartDate
-              : (selectedDates.isNotEmpty ? selectedDates.first : null),
-          selectedDates: isMonthly ? [] : selectedDates,
-          selectedWeekdays: isMonthly ? selectedWeekdays : [],
-          monthlyStartDate: isMonthly ? monthlyStartDate : null,
-        );
-
         await Future.delayed(const Duration(milliseconds: 500));
         if (mounted) {
-          context.pushNamed('bookingRequestRequirement', extra: updatedBooking);
+          context.pushNamed('bookingRequestRequirement');
         }
       }
     } catch (e) {
@@ -176,7 +176,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Lỗi: $e'),
-            backgroundColor: AppColors.errorRed,
+            backgroundColor: AppThemeConfig.colors.errorRed,
           ),
         );
       }
@@ -189,6 +189,323 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
+    return AppThemeConfig.isLowFidelityMode
+        ? _buildLowFiLayout(colors)
+        : _buildFullLayout();
+  }
+
+  Widget _buildLowFiLayout(AppColorScheme colors) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Text(
+            'Chọn thời gian',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Tutor info
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '[TUTOR INFO]',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  booking.tutorName ?? 'Gia sư',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textDark,
+                  ),
+                ),
+                Text(
+                  booking.type == 'online' ? 'Học trực tuyến' : 'Học trực tiếp',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Schedule type
+          Text(
+            'Loại học',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      booking = booking.copyWith(scheduleType: 'daily');
+                      selectedSlot = null;
+                    });
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: booking.scheduleType != 'monthly' ? colors.textDark : colors.borderColor,
+                        width: booking.scheduleType != 'monthly' ? 2 : 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: booking.scheduleType != 'monthly' ? colors.bgLight : colors.white,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Học theo ngày',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textDark,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      booking = booking.copyWith(scheduleType: 'monthly');
+                      selectedSlot = null;
+                    });
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: booking.scheduleType == 'monthly' ? colors.textDark : colors.borderColor,
+                        width: booking.scheduleType == 'monthly' ? 2 : 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: booking.scheduleType == 'monthly' ? colors.bgLight : colors.white,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Học theo tháng',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textDark,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16.h),
+
+          // Date/Schedule selection
+          if (booking.scheduleType == 'monthly') ...[
+            Text(
+              'Chọn ngày trong tuần',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: colors.textDark,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Text(
+                selectedWeekdays.isEmpty ? '[CHỌN NGÀY TRONG TUẦN]' : '${selectedWeekdays.length} ngày đã chọn',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: selectedWeekdays.isEmpty ? colors.textSecondary : colors.textDark,
+                ),
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Text(
+                monthlyStartDate != null 
+                    ? DateFormat('dd/MM/yyyy').format(monthlyStartDate!)
+                    : '[CHỌN NGÀY BẮT ĐẦU]',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: monthlyStartDate != null ? colors.textDark : colors.textSecondary,
+                ),
+              ),
+            ),
+          ] else ...[
+            Text(
+              'Chọn ngày học',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: colors.textDark,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Text(
+                selectedDates.isEmpty 
+                    ? '[CHỌN NGÀY HỌC]' 
+                    : selectedDates.length == 1
+                        ? DateFormat('dd/MM/yyyy').format(selectedDates.first)
+                        : '${selectedDates.length} ngày đã chọn',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: selectedDates.isEmpty ? colors.textSecondary : colors.textDark,
+                ),
+              ),
+            ),
+          ],
+          SizedBox(height: 16.h),
+
+          // Time slots
+          Text(
+            'Chọn thời gian học',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 8.w,
+            mainAxisSpacing: 8.h,
+            childAspectRatio: 2.5,
+            children: List.generate(4, (index) {
+              final timeSlots = ['08:00-09:30', '10:00-11:30', '13:00-14:30', '15:00-16:30'];
+              final isSelected = selectedSlot?.id == '${index + 1}';
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedSlot = TimeSlotModel(
+                      id: '${index + 1}',
+                      startTime: timeSlots[index].split('-')[0],
+                      endTime: timeSlots[index].split('-')[1],
+                      isAvailable: true,
+                      isBooked: false,
+                    );
+                    booking = booking.copyWith(
+                      selectedTimeSlot: timeSlots[index],
+                      selectedDate: selectedDates.isNotEmpty ? selectedDates.first : selectedDate,
+                    );
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: isSelected ? colors.textDark : colors.borderColor,
+                      width: isSelected ? 2 : 1.5,
+                    ),
+                    borderRadius: BorderRadius.circular(4.r),
+                    color: isSelected ? colors.bgLight : colors.white,
+                  ),
+                  child: Center(
+                    child: Text(
+                      timeSlots[index],
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textDark,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+          SizedBox(height: 32.h),
+
+          // Continue button
+          GestureDetector(
+            onTap: selectedSlot != null ? _onContinuePressed : null,
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.textDark, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+                color: selectedSlot != null ? colors.textDark : colors.disabledGray,
+              ),
+              child: Center(
+                child: isLocking
+                    ? SizedBox(
+                        height: 16.h,
+                        width: 16.h,
+                        child: const CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Text(
+                        'Tiếp tục',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.white,
+                        ),
+                      ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFullLayout() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
@@ -212,7 +529,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
             style: GoogleFonts.inter(
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,
-              color: AppColors.textDark,
+              color: AppThemeConfig.colors.textDark,
             ),
           ),
           SizedBox(height: 12.h),
@@ -249,7 +566,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
             child: Icon(
               Icons.arrow_back_ios_new,
               size: 24.sp,
-              color: AppColors.textDark,
+              color: AppThemeConfig.colors.textDark,
             ),
           ),
           SizedBox(width: 12.w),
@@ -259,7 +576,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
               style: GoogleFonts.inter(
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textDark,
+                color: AppThemeConfig.colors.textDark,
               ),
             ),
           ),
@@ -272,9 +589,9 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.bgLight,
+        color: AppThemeConfig.colors.bgLight,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderColor, width: 1),
+        border: Border.all(color: AppThemeConfig.colors.borderColor, width: 1),
       ),
       child: Row(
         children: [
@@ -284,7 +601,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
             height: 56.w,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.primaryGreen,
+              color: AppThemeConfig.colors.primaryGreen,
             ),
             child: ClipOval(
               child: Image.asset(
@@ -294,7 +611,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                   return Center(
                     child: Icon(
                       Icons.person,
-                      color: AppColors.white,
+                      color: AppThemeConfig.colors.white,
                       size: 28.sp,
                     ),
                   );
@@ -314,7 +631,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                   style: GoogleFonts.inter(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textDark,
+                    color: AppThemeConfig.colors.textDark,
                   ),
                 ),
                 SizedBox(height: 4.h),
@@ -325,7 +642,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                   style: GoogleFonts.inter(
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w400,
-                    color: AppColors.textGray,
+                    color: AppThemeConfig.colors.textGray,
                   ),
                 ),
               ],
@@ -347,7 +664,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
           style: GoogleFonts.inter(
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 8.h),
@@ -381,7 +698,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
           style: GoogleFonts.inter(
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 12.h),
@@ -393,15 +710,15 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: AppThemeConfig.colors.white,
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: AppColors.borderColor, width: 1),
+              border: Border.all(color: AppThemeConfig.colors.borderColor, width: 1),
             ),
             child: Row(
               children: [
                 Icon(
                   Icons.calendar_today,
-                  color: AppColors.primaryGreen,
+                  color: AppThemeConfig.colors.primaryGreen,
                   size: 20.sp,
                 ),
                 SizedBox(width: 12.w),
@@ -411,13 +728,13 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                     style: GoogleFonts.inter(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textDark,
+                      color: AppThemeConfig.colors.textDark,
                     ),
                   ),
                 ),
                 Icon(
                   Icons.arrow_drop_down,
-                  color: AppColors.textGray,
+                  color: AppThemeConfig.colors.textGray,
                   size: 24.sp,
                 ),
               ],
@@ -441,7 +758,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                       vertical: 8.h,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryGreen,
+                      color: AppThemeConfig.colors.primaryGreen,
                       borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: Row(
@@ -452,7 +769,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                           style: GoogleFonts.inter(
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.white,
+                            color: AppThemeConfig.colors.white,
                           ),
                         ),
                         SizedBox(width: 6.w),
@@ -460,7 +777,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                           onTap: () => _onDateSelected(date),
                           child: Icon(
                             Icons.close,
-                            color: AppColors.white,
+                            color: AppThemeConfig.colors.white,
                             size: 16.sp,
                           ),
                         ),
@@ -497,10 +814,10 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
         Container(
           padding: EdgeInsets.all(12.w),
           decoration: BoxDecoration(
-            color: AppColors.lightGreen,
+            color: AppThemeConfig.colors.lightGreen,
             borderRadius: BorderRadius.circular(8.r),
             border: Border.all(
-              color: AppColors.primaryGreen.withValues(alpha: 0.4),
+              color: AppThemeConfig.colors.primaryGreen.withValues(alpha: 0.4),
             ),
           ),
           child: Row(
@@ -508,7 +825,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
             children: [
               Icon(
                 Icons.info_outline,
-                color: AppColors.primaryGreen,
+                color: AppThemeConfig.colors.primaryGreen,
                 size: 16.sp,
               ),
               SizedBox(width: 8.w),
@@ -518,7 +835,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                   style: GoogleFonts.inter(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w400,
-                    color: AppColors.primaryGreen,
+                    color: AppThemeConfig.colors.primaryGreen,
                   ),
                 ),
               ),
@@ -533,7 +850,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
           style: GoogleFonts.inter(
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 12.h),
@@ -548,12 +865,12 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                 width: 60.w,
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primaryGreen : AppColors.white,
+                  color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.white,
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
                     color: isSelected
-                        ? AppColors.primaryGreen
-                        : AppColors.borderColor,
+                        ? AppThemeConfig.colors.primaryGreen
+                        : AppThemeConfig.colors.borderColor,
                     width: 1,
                   ),
                 ),
@@ -564,7 +881,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                     style: GoogleFonts.inter(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? AppColors.white : AppColors.textDark,
+                      color: isSelected ? AppThemeConfig.colors.white : AppThemeConfig.colors.textDark,
                     ),
                   ),
                 ),
@@ -580,7 +897,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
           style: GoogleFonts.inter(
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
-            color: AppColors.textDark,
+            color: AppThemeConfig.colors.textDark,
           ),
         ),
         SizedBox(height: 4.h),
@@ -589,7 +906,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
           style: GoogleFonts.inter(
             fontSize: 12.sp,
             fontWeight: FontWeight.w400,
-            color: AppColors.textGray,
+            color: AppThemeConfig.colors.textGray,
           ),
         ),
         SizedBox(height: 8.h),
@@ -599,12 +916,12 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: AppThemeConfig.colors.white,
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(
                 color: monthlyStartDate != null
-                    ? AppColors.primaryGreen
-                    : AppColors.borderColor,
+                    ? AppThemeConfig.colors.primaryGreen
+                    : AppThemeConfig.colors.borderColor,
                 width: monthlyStartDate != null ? 2 : 1,
               ),
             ),
@@ -613,8 +930,8 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                 Icon(
                   Icons.calendar_month_outlined,
                   color: monthlyStartDate != null
-                      ? AppColors.primaryGreen
-                      : AppColors.textGray,
+                      ? AppThemeConfig.colors.primaryGreen
+                      : AppThemeConfig.colors.textGray,
                   size: 20.sp,
                 ),
                 SizedBox(width: 12.w),
@@ -627,14 +944,14 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                           ? FontWeight.w600
                           : FontWeight.w400,
                       color: monthlyStartDate != null
-                          ? AppColors.textDark
-                          : AppColors.textLightGray,
+                          ? AppThemeConfig.colors.textDark
+                          : AppThemeConfig.colors.textLightGray,
                     ),
                   ),
                 ),
                 Icon(
                   Icons.arrow_drop_down,
-                  color: AppColors.textGray,
+                  color: AppThemeConfig.colors.textGray,
                   size: 24.sp,
                 ),
               ],
@@ -660,10 +977,10 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 12.h),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryGreen : AppColors.white,
+          color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.white,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: isSelected ? AppColors.primaryGreen : AppColors.borderColor,
+            color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.borderColor,
             width: 1,
           ),
         ),
@@ -673,7 +990,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
             style: GoogleFonts.inter(
               fontSize: 13.sp,
               fontWeight: FontWeight.w600,
-              color: isSelected ? AppColors.white : AppColors.textDark,
+              color: isSelected ? AppThemeConfig.colors.white : AppThemeConfig.colors.textDark,
             ),
           ),
         ),
@@ -694,10 +1011,10 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: AppColors.primaryGreen,
-              onPrimary: AppColors.white,
-              surface: AppColors.white,
-              onSurface: AppColors.textDark,
+              primary: AppThemeConfig.colors.primaryGreen,
+              onPrimary: AppThemeConfig.colors.white,
+              surface: AppThemeConfig.colors.white,
+              onSurface: AppThemeConfig.colors.textDark,
             ),
           ),
           child: child!,
@@ -726,10 +1043,10 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: AppColors.primaryGreen,
-              onPrimary: AppColors.white,
-              surface: AppColors.white,
-              onSurface: AppColors.textDark,
+              primary: AppThemeConfig.colors.primaryGreen,
+              onPrimary: AppThemeConfig.colors.white,
+              surface: AppThemeConfig.colors.white,
+              onSurface: AppThemeConfig.colors.textDark,
             ),
           ),
           child: child!,
@@ -772,17 +1089,17 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
       child: Container(
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primaryGreen
+              ? AppThemeConfig.colors.primaryGreen
               : isDisabled
-              ? AppColors.disabledGray
-              : AppColors.white,
+              ? AppThemeConfig.colors.disabledGray
+              : AppThemeConfig.colors.white,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: isSelected
-                ? AppColors.primaryGreen
+                ? AppThemeConfig.colors.primaryGreen
                 : isDisabled
-                ? AppColors.borderColor
-                : AppColors.borderColor,
+                ? AppThemeConfig.colors.borderColor
+                : AppThemeConfig.colors.borderColor,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -795,7 +1112,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
-                color: isSelected ? AppColors.white : AppColors.textDark,
+                color: isSelected ? AppThemeConfig.colors.white : AppThemeConfig.colors.textDark,
               ),
             ),
             SizedBox(height: 8.h),
@@ -806,8 +1123,8 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 decoration: BoxDecoration(
                   color: slot.isBooked
-                      ? AppColors.errorRed
-                      : AppColors.warningOrange,
+                      ? AppThemeConfig.colors.errorRed
+                      : AppThemeConfig.colors.warningOrange,
                   borderRadius: BorderRadius.circular(6.r),
                 ),
                 child: Text(
@@ -815,7 +1132,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                   style: GoogleFonts.inter(
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.white,
+                    color: AppThemeConfig.colors.white,
                   ),
                 ),
               )
@@ -823,7 +1140,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  color: AppColors.white.withValues(alpha: 0.3),
+                  color: AppThemeConfig.colors.white.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(6.r),
                 ),
                 child: Text(
@@ -831,7 +1148,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                   style: GoogleFonts.inter(
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.white,
+                    color: AppThemeConfig.colors.white,
                   ),
                 ),
               )
@@ -839,7 +1156,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryGreen.withValues(alpha: 0.1),
+                  color: AppThemeConfig.colors.primaryGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6.r),
                 ),
                 child: Text(
@@ -847,7 +1164,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                   style: GoogleFonts.inter(
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.primaryGreen,
+                    color: AppThemeConfig.colors.primaryGreen,
                   ),
                 ),
               ),
@@ -867,7 +1184,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         borderRadius: BorderRadius.circular(8.r),
       ),
       padding: EdgeInsets.symmetric(vertical: 12.h),
@@ -877,7 +1194,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
           width: double.infinity,
           padding: EdgeInsets.symmetric(vertical: 14.h),
           decoration: BoxDecoration(
-            color: isDisabled ? AppColors.disabledGray : AppColors.primaryGreen,
+            color: isDisabled ? AppThemeConfig.colors.disabledGray : AppThemeConfig.colors.primaryGreen,
             borderRadius: BorderRadius.circular(8.r),
           ),
           child: Center(
@@ -895,7 +1212,7 @@ class _SelectTimeSlotPageState extends State<SelectTimeSlotPage> {
                     style: GoogleFonts.inter(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
-                      color: isDisabled ? AppColors.textGray : AppColors.white,
+                      color: isDisabled ? AppThemeConfig.colors.textGray : AppThemeConfig.colors.white,
                     ),
                   ),
           ),

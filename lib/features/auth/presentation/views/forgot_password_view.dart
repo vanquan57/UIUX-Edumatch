@@ -1,5 +1,8 @@
 import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/core/router/app_router.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_button.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -46,6 +49,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
     return SingleChildScrollView(
       padding: EdgeInsets.all(15.w),
       child: Column(
@@ -68,7 +73,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           Icon(
                             Icons.arrow_back_ios_new_rounded,
                             size: 16.sp,
-                            color: AppColors.primaryGreen,
+                            color: colors.primaryGreen,
                           ),
                           SizedBox(width: 4.w),
                           Text(
@@ -76,7 +81,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             style: GoogleFonts.poppins(
                               fontSize: 13.sp,
                               fontWeight: FontWeight.w500,
-                              color: AppColors.primaryGreen,
+                              color: colors.primaryGreen,
                             ),
                           ),
                         ],
@@ -88,7 +93,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       style: GoogleFonts.poppins(
                         fontSize: 28.sp,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textDark,
+                        color: colors.textDark,
                       ),
                     ),
                     SizedBox(height: 8.h),
@@ -99,35 +104,42 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       style: GoogleFonts.poppins(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.textGray,
+                        color: colors.textGray,
                       ),
                     ),
                   ],
                 ),
               ),
               SizedBox(width: 16.w),
-              // Logo
-              Container(
-                height: 60.h,
-                width: 60.w,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryGreen.withOpacity(0.15),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
+              // Logo - Low-fi version
+              AppThemeConfig.isLowFidelityMode
+                  ? LowFiImagePlaceholder(
+                      width: 60.w,
+                      height: 60.h,
+                      icon: Icons.school_outlined,
+                      text: 'LOGO',
+                    )
+                  : Container(
+                      height: 60.h,
+                      width: 60.w,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colors.primaryGreen.withOpacity(0.15),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12.r),
+                        child: Image.asset(
+                          'assets/images/logo.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12.r),
-                  child: Image.asset(
-                    'assets/images/logo.jpg',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
             ],
           ),
 
@@ -146,7 +158,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     style: GoogleFonts.poppins(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textDark,
+                      color: colors.textDark,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -168,90 +180,79 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       hintText: 'Nhập email của bạn',
                       hintStyle: GoogleFonts.poppins(
                         fontSize: 14.sp,
-                        color: AppColors.textLightGray,
+                        color: colors.textLightGray,
                       ),
-                      prefixIcon: Padding(
-                        padding: EdgeInsets.only(left: 12.w),
-                        child: Icon(
-                          Icons.email_outlined,
-                          color: AppColors.primaryGreen,
-                          size: 20.sp,
-                        ),
-                      ),
+                      prefixIcon: AppThemeConfig.isLowFidelityMode 
+                          ? null 
+                          : Padding(
+                              padding: EdgeInsets.only(left: 12.w),
+                              child: Icon(
+                                Icons.email_outlined,
+                                color: colors.primaryGreen,
+                                size: 20.sp,
+                              ),
+                            ),
                       filled: true,
-                      fillColor: AppColors.white,
+                      fillColor: colors.white,
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 16.w,
                         vertical: 14.h,
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: const BorderSide(
-                          color: AppColors.borderColor,
-                          width: 1,
+                        borderRadius: BorderRadius.circular(
+                          AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+                        ),
+                        borderSide: BorderSide(
+                          color: colors.borderColor,
+                          width: AppThemeConfig.isLowFidelityMode ? 1.5 : 1,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: const BorderSide(
-                          color: AppColors.borderColor,
-                          width: 1,
+                        borderRadius: BorderRadius.circular(
+                          AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+                        ),
+                        borderSide: BorderSide(
+                          color: colors.borderColor,
+                          width: AppThemeConfig.isLowFidelityMode ? 1.5 : 1,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: const BorderSide(
-                          color: AppColors.primaryGreen,
+                        borderRadius: BorderRadius.circular(
+                          AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+                        ),
+                        borderSide: BorderSide(
+                          color: AppThemeConfig.isLowFidelityMode 
+                              ? colors.textDark 
+                              : colors.primaryGreen,
                           width: 2,
                         ),
                       ),
                       errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: const BorderSide(
-                          color: AppColors.errorRed,
-                          width: 1,
+                        borderRadius: BorderRadius.circular(
+                          AppThemeConfig.isLowFidelityMode ? 4.r : 12.r,
+                        ),
+                        borderSide: BorderSide(
+                          color: colors.errorRed,
+                          width: AppThemeConfig.isLowFidelityMode ? 1.5 : 1,
                         ),
                       ),
                     ),
                     style: GoogleFonts.poppins(
                       fontSize: 14.sp,
-                      color: AppColors.textDark,
+                      color: colors.textDark,
                     ),
                   ),
                   SizedBox(height: 32.h),
 
                   // Submit Button
-                  SizedBox(
+                  LowFiButton(
+                    text: 'Gửi yêu cầu',
+                    onTap: _isLoading ? null : _handleSubmit,
+                    type: LowFiButtonType.primary,
+                    size: LowFiButtonSize.large,
                     width: double.infinity,
-                    height: 54.h,
-                    child: Material(
-                      color: AppColors.primaryGreen,
-                      borderRadius: BorderRadius.circular(12.r),
-                      child: InkWell(
-                        onTap: _isLoading ? null : _handleSubmit,
-                        borderRadius: BorderRadius.circular(12.r),
-                        child: Center(
-                          child: _isLoading
-                              ? SizedBox(
-                                  height: 24.h,
-                                  width: 24.w,
-                                  child: const CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        AppColors.white),
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : Text(
-                                  'Gửi yêu cầu',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.white,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ),
+                    isLoading: _isLoading,
+                    isEnabled: !_isLoading,
                   ),
                 ],
               ),
@@ -261,26 +262,34 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             Center(
               child: Column(
                 children: [
-                  Container(
-                    width: 96.w,
-                    height: 96.h,
-                    decoration: BoxDecoration(
-                      color: AppColors.lightGreen,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.mark_email_read_outlined,
-                      size: 48.sp,
-                      color: AppColors.primaryGreen,
-                    ),
-                  ),
+                  AppThemeConfig.isLowFidelityMode
+                      ? LowFiImagePlaceholder(
+                          width: 96.w,
+                          height: 96.h,
+                          icon: Icons.mark_email_read_outlined,
+                          text: 'EMAIL',
+                          borderRadius: BorderRadius.circular(48.r),
+                        )
+                      : Container(
+                          width: 96.w,
+                          height: 96.h,
+                          decoration: BoxDecoration(
+                            color: colors.lightGreen,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.mark_email_read_outlined,
+                            size: 48.sp,
+                            color: colors.primaryGreen,
+                          ),
+                        ),
                   SizedBox(height: 24.h),
                   Text(
                     'Kiểm tra email!',
                     style: GoogleFonts.poppins(
                       fontSize: 22.sp,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textDark,
+                      color: colors.textDark,
                     ),
                   ),
                   SizedBox(height: 12.h),
@@ -290,32 +299,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     style: GoogleFonts.poppins(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
-                      color: AppColors.textGray,
+                      color: colors.textGray,
                       height: 1.6,
                     ),
                   ),
                   SizedBox(height: 32.h),
-                  SizedBox(
+                  LowFiButton(
+                    text: 'Về trang đăng nhập',
+                    onTap: () => context.go(AppRouter.login),
+                    type: LowFiButtonType.primary,
+                    size: LowFiButtonSize.large,
                     width: double.infinity,
-                    height: 54.h,
-                    child: Material(
-                      color: AppColors.primaryGreen,
-                      borderRadius: BorderRadius.circular(12.r),
-                      child: InkWell(
-                        onTap: () => context.go(AppRouter.login),
-                        borderRadius: BorderRadius.circular(12.r),
-                        child: Center(
-                          child: Text(
-                            'Về trang đăng nhập',
-                            style: GoogleFonts.poppins(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                   ),
                   SizedBox(height: 20.h),
                   GestureDetector(
@@ -330,9 +324,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       style: GoogleFonts.poppins(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.primaryGreen,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.primaryGreen,
+                        color: colors.primaryGreen,
+                        decoration: AppThemeConfig.isLowFidelityMode 
+                            ? null 
+                            : TextDecoration.underline,
+                        decorationColor: colors.primaryGreen,
                       ),
                     ),
                   ),

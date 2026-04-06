@@ -1,7 +1,10 @@
 import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/core/router/app_router.dart';
 import 'package:edu_match/share/components/course_card.dart';
 import 'package:edu_match/share/components/empty_state.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_card.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_tutor_card.dart';
 import 'package:edu_match/share/components/online_tutor_item.dart';
 import 'package:edu_match/share/components/quick_action_item.dart';
 import 'package:edu_match/share/components/section_title.dart';
@@ -116,6 +119,199 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
+    return AppThemeConfig.isLowFidelityMode
+        ? _buildLowFiLayout(colors)
+        : _buildFullLayout();
+  }
+
+  Widget _buildLowFiLayout(AppColorScheme colors) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Welcome section
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '[WELCOME BANNER]',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  'Xin chào EduMatch!',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textDark,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Tutors section
+          Text(
+            'Gia sư phù hợp',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          SizedBox(
+            height: 120.h,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 3,
+              itemBuilder: (context, index) => SizedBox(
+                width: 100.w,
+                child: LowFiTutorCard(
+                  tutor: _recommendedTutors.isNotEmpty 
+                      ? _recommendedTutors[index % _recommendedTutors.length]
+                      : TutorModel.empty(),
+                  showFullInfo: false,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Promotions section
+          Text(
+            'Khuyến mãi',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            width: double.infinity,
+            height: 80.h,
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Center(
+              child: Text(
+                '[BANNER SLIDER]',
+                style: TextStyle(
+                  fontSize: 10.sp,
+                  color: colors.textSecondary,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Courses section
+          Text(
+            'Khóa học',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 8.w,
+            mainAxisSpacing: 8.h,
+            childAspectRatio: 2.5,
+            children: List.generate(4, (index) => Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Center(
+                child: Text(
+                  '[KHÓA HỌC ${index + 1}]',
+                  style: TextStyle(
+                    fontSize: 9.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ),
+            )),
+          ),
+          SizedBox(height: 16.h),
+
+          // Quick actions
+          Text(
+            'Thao tác nhanh',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 8.w,
+            mainAxisSpacing: 8.h,
+            childAspectRatio: 1.2,
+            children: [
+              'Tìm gia sư',
+              'Học online',
+              'Lịch học',
+              'Tin nhắn',
+              'Ưa thích',
+              'Hồ sơ',
+            ].map((label) => Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.crop_square,
+                    size: 20.sp,
+                    color: colors.textLightGray,
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 8.sp,
+                      color: colors.textSecondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFullLayout() {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,38 +348,94 @@ class _StudentHomePageState extends State<StudentHomePage> {
   // Welcome Banner
   // ─────────────────────────────────────────────────────────────────────────────
   Widget _buildWelcomeBanner() {
-    return Container(
-      padding: EdgeInsets.all(10.w),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.primaryGreen, AppColors.primaryGreenDark],
-        ),
-        borderRadius: BorderRadius.circular(16.r),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Xin chào đến EduMatch!',
-            style: GoogleFonts.poppins(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w700,
-              color: AppColors.white,
+    final colors = AppThemeConfig.colors;
+    
+    return LowFiCard(
+      padding: EdgeInsets.all(16.w),
+      backgroundColor: AppThemeConfig.isLowFidelityMode 
+          ? colors.bgLight 
+          : null,
+      child: AppThemeConfig.isLowFidelityMode
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: colors.borderColor),
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                  child: Text(
+                    '[WELCOME BANNER]',
+                    style: GoogleFonts.poppins(
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w500,
+                      color: colors.textGray,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  'Xin chào đến EduMatch!',
+                  style: GoogleFonts.poppins(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w700,
+                    color: colors.textDark,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  'Tìm gia sư phù hợp hoặc tham gia khóa học yêu thích',
+                  style: GoogleFonts.poppins(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w400,
+                    color: colors.textGray,
+                  ),
+                ),
+              ],
+            )
+          : Container(
+              decoration: BoxDecoration(
+                color: AppThemeConfig.isLowFidelityMode 
+                    ? colors.primaryGreen 
+                    : null,
+                gradient: AppThemeConfig.isLowFidelityMode 
+                    ? null 
+                    : const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [AppColors.primaryGreen, AppColors.primaryGreenDark],
+                      ),
+                borderRadius: BorderRadius.circular(
+                  AppThemeConfig.isLowFidelityMode ? 4.r : 16.r,
+                ),
+                border: AppThemeConfig.isLowFidelityMode 
+                    ? Border.all(color: colors.borderColor, width: 1.5)
+                    : null,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Xin chào đến EduMatch!',
+                    style: GoogleFonts.poppins(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w700,
+                      color: colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Tìm gia sư phù hợp hoặc tham gia khóa học yêu thích',
+                    style: GoogleFonts.poppins(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            'Tìm gia sư phù hợp hoặc tham gia khóa học yêu thích',
-            style: GoogleFonts.poppins(
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w400,
-              color: Colors.white.withOpacity(0.9),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -228,7 +480,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   Widget _buildTutorsList() {
     return SizedBox(
-      height: 320.h,
+      height: AppThemeConfig.isLowFidelityMode ? 120.h : 320.h,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: _recommendedTutors.length,
@@ -237,26 +489,40 @@ class _StudentHomePageState extends State<StudentHomePage> {
           return Padding(
             padding: EdgeInsets.only(right: 12.w),
             child: SizedBox(
-              width: 200.w,
-              child: TutorCard(
-                id: tutor.id,
-                name: tutor.name,
-                avatar: tutor.avatar,
-                rating: tutor.rating,
-                reviewCount: tutor.reviewCount,
-                pricePerHour: tutor.pricePerHour,
-                subjects: tutor.subjects,
-                isOnline: tutor.isOnline,
-                onViewProfile: () {
-                  context.push(
-                    AppRouter.marketplaceTutorDetails.replaceFirst(
-                      ':tutorId',
-                      tutor.id,
+              width: AppThemeConfig.isLowFidelityMode ? 100.w : 200.w,
+              child: AppThemeConfig.isLowFidelityMode
+                  ? LowFiTutorCard(
+                      tutor: tutor,
+                      showFullInfo: false,
+                      onTap: () {
+                        context.push(
+                          AppRouter.marketplaceTutorDetails.replaceFirst(
+                            ':tutorId',
+                            tutor.id,
+                          ),
+                          extra: tutor,
+                        );
+                      },
+                    )
+                  : TutorCard(
+                      id: tutor.id,
+                      name: tutor.name,
+                      avatar: tutor.avatar,
+                      rating: tutor.rating,
+                      reviewCount: tutor.reviewCount,
+                      pricePerHour: tutor.pricePerHour,
+                      subjects: tutor.subjects,
+                      isOnline: tutor.isOnline,
+                      onViewProfile: () {
+                        context.push(
+                          AppRouter.marketplaceTutorDetails.replaceFirst(
+                            ':tutorId',
+                            tutor.id,
+                          ),
+                          extra: tutor,
+                        );
+                      },
                     ),
-                    extra: tutor,
-                  );
-                },
-              ),
             ),
           );
         },
@@ -516,19 +782,107 @@ class _StudentHomePageState extends State<StudentHomePage> {
   }
 
   Widget _buildBannerItem(BannerModel banner) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.r),
-        color: Colors.grey[300],
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Stack(
+    final colors = AppThemeConfig.colors;
+    
+    return AppThemeConfig.isLowFidelityMode
+        ? LowFiCard(
+            padding: EdgeInsets.all(16.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: colors.borderColor),
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                      child: Text(
+                        '[BANNER]',
+                        style: GoogleFonts.poppins(
+                          fontSize: 8.sp,
+                          color: colors.textGray,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    if (banner.badge != null)
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                        decoration: BoxDecoration(
+                          color: colors.textDark,
+                          borderRadius: BorderRadius.circular(2.r),
+                        ),
+                        child: Text(
+                          banner.badge!,
+                          style: GoogleFonts.poppins(
+                            fontSize: 8.sp,
+                            fontWeight: FontWeight.w600,
+                            color: colors.white,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  banner.title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                    color: colors.textDark,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  banner.subtitle,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w400,
+                    color: colors.textGray,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const Spacer(),
+                if (banner.ctaText != null)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: colors.textDark, width: 1.5),
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                      child: Text(
+                        banner.ctaText!,
+                        style: GoogleFonts.poppins(
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textDark,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          )
+        : Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.r),
+              color: Colors.grey[300],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Stack(
         children: [
           // Background image with gradient overlay
           Container(
@@ -585,15 +939,20 @@ class _StudentHomePageState extends State<StudentHomePage> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  color: AppColors.errorRed,
-                  borderRadius: BorderRadius.circular(6.r),
+                  color: colors.errorRed,
+                  borderRadius: BorderRadius.circular(
+                    AppThemeConfig.isLowFidelityMode ? 2.r : 6.r,
+                  ),
+                  border: AppThemeConfig.isLowFidelityMode 
+                      ? Border.all(color: colors.borderColor, width: 1)
+                      : null,
                 ),
                 child: Text(
                   banner.badge!,
                   style: GoogleFonts.poppins(
                     fontSize: 10.sp,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.white,
+                    color: colors.white,
                   ),
                 ),
               ),
@@ -611,7 +970,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                   style: GoogleFonts.poppins(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.white,
+                    color: colors.white,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -650,15 +1009,22 @@ class _StudentHomePageState extends State<StudentHomePage> {
                             vertical: 6.h,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryGreenLight,
-                            borderRadius: BorderRadius.circular(6.r),
+                            color: AppThemeConfig.isLowFidelityMode 
+                                ? colors.primaryGreen 
+                                : AppColors.primaryGreenLight,
+                            borderRadius: BorderRadius.circular(
+                              AppThemeConfig.isLowFidelityMode ? 2.r : 6.r,
+                            ),
+                            border: AppThemeConfig.isLowFidelityMode 
+                                ? Border.all(color: colors.borderColor, width: 1)
+                                : null,
                           ),
                           child: Text(
                             banner.ctaText!,
                             style: GoogleFonts.poppins(
                               fontSize: 10.sp,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.white,
+                              color: colors.white,
                             ),
                           ),
                         ),
@@ -674,6 +1040,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
   }
 
   Widget _buildBannerIndicators() {
+    final colors = AppThemeConfig.colors;
+    
     return Center(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -682,12 +1050,17 @@ class _StudentHomePageState extends State<StudentHomePage> {
           (index) => Container(
             margin: EdgeInsets.symmetric(horizontal: 4.w),
             width: _currentBannerIndex == index ? 24.w : 8.w,
-            height: 8.h,
+            height: AppThemeConfig.isLowFidelityMode ? 6.h : 8.h,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4.r),
+              borderRadius: BorderRadius.circular(
+                AppThemeConfig.isLowFidelityMode ? 2.r : 4.r,
+              ),
               color: _currentBannerIndex == index
-                  ? AppColors.primaryGreen
-                  : Colors.grey[300],
+                  ? (AppThemeConfig.isLowFidelityMode ? colors.textDark : colors.primaryGreen)
+                  : colors.borderColor,
+              border: AppThemeConfig.isLowFidelityMode 
+                  ? Border.all(color: colors.borderColor, width: 1)
+                  : null,
             ),
           ),
         ),
@@ -716,6 +1089,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
   // Quick Actions Section
   // ─────────────────────────────────────────────────────────────────────────────
   Widget _buildQuickActionsSection() {
+    final colors = AppThemeConfig.colors;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -724,7 +1099,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
           style: GoogleFonts.poppins(
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
-            color: AppColors.textDark,
+            color: colors.textDark,
           ),
         ),
         SizedBox(height: 16.h),

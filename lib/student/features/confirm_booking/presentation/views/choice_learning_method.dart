@@ -1,4 +1,4 @@
-import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
 import 'package:edu_match/student/data/models/booking_model.dart';
 import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 
 class ChoiceLearningMethodPage extends StatefulWidget {
-  final TutorModel tutor;
-
-  const ChoiceLearningMethodPage({super.key, required this.tutor});
+  const ChoiceLearningMethodPage({super.key});
 
   @override
   State<ChoiceLearningMethodPage> createState() =>
@@ -20,16 +18,19 @@ class ChoiceLearningMethodPage extends StatefulWidget {
 
 class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
   late BookingModel booking;
+  late TutorModel mockTutor;
   final TextEditingController _addressController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    // Use mock tutor data for prototype
+    mockTutor = TutorModel.mockTutors().first;
     booking = BookingModel(
-      tutorId: widget.tutor.id,
-      tutorName: widget.tutor.name,
-      tutorAvatar: widget.tutor.avatar,
-      tutorSubjects: widget.tutor.subjects,
+      tutorId: mockTutor.id,
+      tutorName: mockTutor.name,
+      tutorAvatar: mockTutor.avatar,
+      tutorSubjects: mockTutor.subjects,
       type: 'online',
     );
   }
@@ -76,15 +77,234 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
       return;
     }
 
-    // Navigate to next step (select date/time) with booking data
-    context.pushNamed(
-      'bookingSelectTimeSlot',
-      extra: booking,
-    );
+    // Navigate to next step (select date/time) - no data needed for prototype
+    context.pushNamed('bookingSelectTimeSlot');
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppThemeConfig.colors;
+    
+    return AppThemeConfig.isLowFidelityMode
+        ? _buildLowFiLayout(colors)
+        : _buildFullLayout();
+  }
+
+  Widget _buildLowFiLayout(AppColorScheme colors) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Tutor info
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4.r),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '[TUTOR INFO]',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: colors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  mockTutor.name,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textDark,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16.h),
+
+          // Title
+          Text(
+            'Chọn hình thức học',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: colors.textDark,
+            ),
+          ),
+          SizedBox(height: 8.h),
+
+          // Options
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _onSelectType('online'),
+                  child: Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: booking.type == 'online' ? colors.textDark : colors.borderColor,
+                        width: booking.type == 'online' ? 2 : 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: booking.type == 'online' ? colors.bgLight : colors.white,
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.crop_square,
+                          size: 20.sp,
+                          color: colors.textLightGray,
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          'Online',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w600,
+                            color: colors.textDark,
+                          ),
+                        ),
+                        Text(
+                          'Video call',
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _onSelectType('offline'),
+                  child: Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: booking.type == 'offline' ? colors.textDark : colors.borderColor,
+                        width: booking.type == 'offline' ? 2 : 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: booking.type == 'offline' ? colors.bgLight : colors.white,
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.crop_square,
+                          size: 20.sp,
+                          color: colors.textLightGray,
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          'Offline',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w600,
+                            color: colors.textDark,
+                          ),
+                        ),
+                        Text(
+                          'Địa điểm',
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16.h),
+
+          // Address section for offline
+          if (booking.type == 'offline') ...[
+            Text(
+              'Địa chỉ dạy học',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: colors.textDark,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Text(
+                booking.address?.isEmpty ?? true ? '[NHẬP ĐỊA CHỈ]' : booking.address!,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: booking.address?.isEmpty ?? true ? colors.textSecondary : colors.textDark,
+                ),
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.borderColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+              child: Text(
+                '[CHỌN VỊ TRÍ TRÊN BẢN ĐỒ]',
+                style: TextStyle(
+                  fontSize: 10.sp,
+                  color: colors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: 16.h),
+          ],
+
+          // Continue button
+          SizedBox(height: 32.h),
+          GestureDetector(
+            onTap: _onContinuePressed,
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.textDark, width: 1.5),
+                borderRadius: BorderRadius.circular(4.r),
+                color: colors.textDark,
+              ),
+              child: Center(
+                child: Text(
+                  'Tiếp tục',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFullLayout() {
     return Stack(
       children: [
         SingleChildScrollView(
@@ -106,7 +326,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                         style: GoogleFonts.inter(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textDark,
+                          color: AppThemeConfig.colors.textDark,
                         ),
                       ),
                     ),
@@ -120,7 +340,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                         style: GoogleFonts.inter(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
-                          color: AppColors.textGray,
+                          color: AppThemeConfig.colors.textGray,
                         ),
                       ),
                     ),
@@ -161,7 +381,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                           style: GoogleFonts.inter(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textDark,
+                            color: AppThemeConfig.colors.textDark,
                           ),
                         ),
                       ),
@@ -193,9 +413,9 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: AppColors.bgLight,
+        color: AppThemeConfig.colors.bgLight,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderColor, width: 1),
+        border: Border.all(color: AppThemeConfig.colors.borderColor, width: 1),
       ),
       child: Row(
         children: [
@@ -205,19 +425,19 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
             height: 56.w,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.primaryGreen,
+              color: AppThemeConfig.colors.primaryGreen,
             ),
             child: ClipOval(
               child: Image.asset(
-                widget.tutor.avatar,
+                mockTutor.avatar,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
-                    color: AppColors.primaryGreen,
+                    color: AppThemeConfig.colors.primaryGreen,
                     child: Center(
                       child: Icon(
                         Icons.person,
-                        color: AppColors.white,
+                        color: AppThemeConfig.colors.white,
                         size: 28.sp,
                       ),
                     ),
@@ -234,11 +454,11 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.tutor.name,
+                  mockTutor.name,
                   style: GoogleFonts.inter(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textDark,
+                    color: AppThemeConfig.colors.textDark,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -248,16 +468,16 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                   children: [
                     Icon(
                       Icons.star_rounded,
-                      color: AppColors.warningOrange,
+                      color: AppThemeConfig.colors.warningOrange,
                       size: 14.sp,
                     ),
                     SizedBox(width: 4.w),
                     Text(
-                      '${widget.tutor.rating} (${widget.tutor.reviewCount} đánh giá)',
+                      '${mockTutor.rating} (${mockTutor.reviewCount} đánh giá)',
                       style: GoogleFonts.inter(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.textGray,
+                        color: AppThemeConfig.colors.textGray,
                       ),
                     ),
                   ],
@@ -282,10 +502,10 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
       child: Container(
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.lightGreen : AppColors.white,
+          color: isSelected ? AppThemeConfig.colors.lightGreen : AppThemeConfig.colors.white,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: isSelected ? AppColors.primaryGreen : AppColors.borderColor,
+            color: isSelected ? AppThemeConfig.colors.primaryGreen : AppThemeConfig.colors.borderColor,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -296,13 +516,13 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
               height: 48.w,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? AppColors.primaryGreen
-                    : AppColors.bgLight,
+                    ? AppThemeConfig.colors.primaryGreen
+                    : AppThemeConfig.colors.bgLight,
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Icon(
                 icon,
-                color: isSelected ? AppColors.white : AppColors.textGray,
+                color: isSelected ? AppThemeConfig.colors.white : AppThemeConfig.colors.textGray,
                 size: 24.sp,
               ),
             ),
@@ -312,7 +532,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textDark,
+                color: AppThemeConfig.colors.textDark,
               ),
             ),
             SizedBox(height: 4.h),
@@ -321,7 +541,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
               style: GoogleFonts.inter(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w400,
-                color: AppColors.textGray,
+                color: AppThemeConfig.colors.textGray,
               ),
             ),
           ],
@@ -339,33 +559,33 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
         hintStyle: GoogleFonts.inter(
           fontSize: 14.sp,
           fontWeight: FontWeight.w400,
-          color: AppColors.textLightGray,
+          color: AppThemeConfig.colors.textLightGray,
         ),
         prefixIcon: Icon(
           Icons.location_on_outlined,
-          color: AppColors.textGray,
+          color: AppThemeConfig.colors.textGray,
           size: 20.sp,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.r),
-          borderSide: const BorderSide(color: AppColors.borderColor),
+          borderSide: BorderSide(color: AppThemeConfig.colors.borderColor),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.r),
-          borderSide: const BorderSide(color: AppColors.borderColor),
+          borderSide: BorderSide(color: AppThemeConfig.colors.borderColor),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.r),
-          borderSide: const BorderSide(color: AppColors.primaryGreen, width: 2),
+          borderSide: BorderSide(color: AppThemeConfig.colors.primaryGreen, width: 2),
         ),
         contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         filled: true,
-        fillColor: AppColors.white,
+        fillColor: AppThemeConfig.colors.white,
       ),
       style: GoogleFonts.inter(
         fontSize: 14.sp,
         fontWeight: FontWeight.w400,
-        color: AppColors.textDark,
+        color: AppThemeConfig.colors.textDark,
       ),
     );
   }
@@ -377,16 +597,16 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
         width: double.infinity,
         padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
-          color: AppColors.bgLight,
+          color: AppThemeConfig.colors.bgLight,
           borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(color: AppColors.borderColor),
+          border: Border.all(color: AppThemeConfig.colors.borderColor),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.map_outlined,
-              color: AppColors.primaryGreen,
+              color: AppThemeConfig.colors.primaryGreen,
               size: 20.sp,
             ),
             SizedBox(width: 8.w),
@@ -395,7 +615,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
-                color: AppColors.primaryGreen,
+                color: AppThemeConfig.colors.primaryGreen,
               ),
             ),
           ],
@@ -407,13 +627,13 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
   Widget _buildStickyButton() {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppThemeConfig.colors.white,
         border: Border(
-          top: BorderSide(color: AppColors.dividerColor, width: 1),
+          top: BorderSide(color: AppThemeConfig.colors.dividerColor, width: 1),
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowColor,
+            color: AppThemeConfig.colors.shadowColor,
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -426,7 +646,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
           width: double.infinity,
           padding: EdgeInsets.symmetric(vertical: 14.h),
           decoration: BoxDecoration(
-            color: AppColors.primaryGreen,
+            color: AppThemeConfig.colors.primaryGreen,
             borderRadius: BorderRadius.circular(8.r),
           ),
           child: Center(
@@ -435,7 +655,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
               style: GoogleFonts.inter(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
-                color: AppColors.white,
+                color: AppThemeConfig.colors.white,
               ),
             ),
           ),
@@ -511,7 +731,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
           builder: (context, scrollController) {
             return Container(
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: AppThemeConfig.colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20.r),
                   topRight: Radius.circular(20.r),
@@ -524,7 +744,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                     decoration: BoxDecoration(
                       border: Border(
-                        bottom: BorderSide(color: AppColors.dividerColor, width: 1),
+                        bottom: BorderSide(color: AppThemeConfig.colors.dividerColor, width: 1),
                       ),
                     ),
                     child: Row(
@@ -534,7 +754,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                           style: GoogleFonts.inter(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textDark,
+                            color: AppThemeConfig.colors.textDark,
                           ),
                         ),
                         const Spacer(),
@@ -542,7 +762,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                           onTap: () => Navigator.pop(context),
                           child: Icon(
                             Icons.close,
-                            color: AppColors.textGray,
+                            color: AppThemeConfig.colors.textGray,
                             size: 24.sp,
                           ),
                         ),
@@ -578,15 +798,15 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                                   child: Container(
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: AppColors.primaryGreen,
+                                      color: AppThemeConfig.colors.primaryGreen,
                                       border: Border.all(
-                                        color: AppColors.white,
+                                        color: AppThemeConfig.colors.white,
                                         width: 2,
                                       ),
                                     ),
                                     child: Icon(
                                       Icons.location_on,
-                                      color: AppColors.white,
+                                      color: AppThemeConfig.colors.white,
                                       size: 20.sp,
                                     ),
                                   ),
@@ -604,12 +824,12 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                           child: Container(
                             padding: EdgeInsets.all(12.w),
                             decoration: BoxDecoration(
-                              color: AppColors.white,
+                              color: AppThemeConfig.colors.white,
                               borderRadius: BorderRadius.circular(8.r),
-                              border: Border.all(color: AppColors.borderColor),
+                              border: Border.all(color: AppThemeConfig.colors.borderColor),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.shadowColor,
+                                  color: AppThemeConfig.colors.shadowColor,
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
                                 ),
@@ -620,7 +840,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                               style: GoogleFonts.inter(
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w500,
-                                color: AppColors.primaryGreen,
+                                color: AppThemeConfig.colors.primaryGreen,
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -635,7 +855,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                     padding: EdgeInsets.all(16.w),
                     decoration: BoxDecoration(
                       border: Border(
-                        top: BorderSide(color: AppColors.dividerColor, width: 1),
+                        top: BorderSide(color: AppThemeConfig.colors.dividerColor, width: 1),
                       ),
                     ),
                     child: Column(
@@ -646,7 +866,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                           style: GoogleFonts.inter(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textDark,
+                            color: AppThemeConfig.colors.textDark,
                           ),
                         ),
                         SizedBox(height: 12.h),
@@ -663,7 +883,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                                     style: GoogleFonts.inter(
                                       fontSize: 12.sp,
                                       fontWeight: FontWeight.w500,
-                                      color: AppColors.textGray,
+                                      color: AppThemeConfig.colors.textGray,
                                     ),
                                   ),
                                   SizedBox(height: 6.h),
@@ -680,24 +900,24 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                                       hintStyle: GoogleFonts.inter(
                                         fontSize: 12.sp,
                                         fontWeight: FontWeight.w400,
-                                        color: AppColors.textLightGray,
+                                        color: AppThemeConfig.colors.textLightGray,
                                       ),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8.r),
-                                        borderSide: const BorderSide(
-                                          color: AppColors.borderColor,
+                                        borderSide: BorderSide(
+                                          color: AppThemeConfig.colors.borderColor,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8.r),
-                                        borderSide: const BorderSide(
-                                          color: AppColors.borderColor,
+                                        borderSide: BorderSide(
+                                          color: AppThemeConfig.colors.borderColor,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8.r),
-                                        borderSide: const BorderSide(
-                                          color: AppColors.primaryGreen,
+                                        borderSide: BorderSide(
+                                          color: AppThemeConfig.colors.primaryGreen,
                                           width: 2,
                                         ),
                                       ),
@@ -706,12 +926,12 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                                         vertical: 10.h,
                                       ),
                                       filled: true,
-                                      fillColor: AppColors.white,
+                                      fillColor: AppThemeConfig.colors.white,
                                     ),
                                     style: GoogleFonts.inter(
                                       fontSize: 12.sp,
                                       fontWeight: FontWeight.w400,
-                                      color: AppColors.textDark,
+                                      color: AppThemeConfig.colors.textDark,
                                     ),
                                   ),
                                 ],
@@ -729,7 +949,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                                     style: GoogleFonts.inter(
                                       fontSize: 12.sp,
                                       fontWeight: FontWeight.w500,
-                                      color: AppColors.textGray,
+                                      color: AppThemeConfig.colors.textGray,
                                     ),
                                   ),
                                   SizedBox(height: 6.h),
@@ -746,24 +966,24 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                                       hintStyle: GoogleFonts.inter(
                                         fontSize: 12.sp,
                                         fontWeight: FontWeight.w400,
-                                        color: AppColors.textLightGray,
+                                        color: AppThemeConfig.colors.textLightGray,
                                       ),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8.r),
-                                        borderSide: const BorderSide(
-                                          color: AppColors.borderColor,
+                                        borderSide: BorderSide(
+                                          color: AppThemeConfig.colors.borderColor,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8.r),
-                                        borderSide: const BorderSide(
-                                          color: AppColors.borderColor,
+                                        borderSide: BorderSide(
+                                          color: AppThemeConfig.colors.borderColor,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8.r),
-                                        borderSide: const BorderSide(
-                                          color: AppColors.primaryGreen,
+                                        borderSide: BorderSide(
+                                          color: AppThemeConfig.colors.primaryGreen,
                                           width: 2,
                                         ),
                                       ),
@@ -772,12 +992,12 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                                         vertical: 10.h,
                                       ),
                                       filled: true,
-                                      fillColor: AppColors.white,
+                                      fillColor: AppThemeConfig.colors.white,
                                     ),
                                     style: GoogleFonts.inter(
                                       fontSize: 12.sp,
                                       fontWeight: FontWeight.w400,
-                                      color: AppColors.textDark,
+                                      color: AppThemeConfig.colors.textDark,
                                     ),
                                   ),
                                 ],
@@ -794,7 +1014,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                             width: double.infinity,
                             padding: EdgeInsets.symmetric(vertical: 12.h),
                             decoration: BoxDecoration(
-                              color: AppColors.primaryGreen,
+                              color: AppThemeConfig.colors.primaryGreen,
                               borderRadius: BorderRadius.circular(8.r),
                             ),
                             child: Center(
@@ -803,7 +1023,7 @@ class _ChoiceLearningMethodPageState extends State<ChoiceLearningMethodPage> {
                                 style: GoogleFonts.inter(
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.white,
+                                  color: AppThemeConfig.colors.white,
                                 ),
                               ),
                             ),

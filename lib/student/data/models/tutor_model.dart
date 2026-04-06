@@ -67,6 +67,23 @@ class TutorModel {
     required this.longitude,
   });
 
+  // Empty constructor for placeholders
+  TutorModel.empty()
+      : id = '',
+        name = '',
+        avatar = '',
+        rating = 0.0,
+        reviewCount = 0,
+        pricePerHour = 0.0,
+        subjects = const [],
+        isOnline = false,
+        bio = null,
+        certifications = null,
+        experiences = null,
+        reviews = null,
+        latitude = 0.0,
+        longitude = 0.0;
+
   // Mock data for UI development
   static List<TutorModel> mockTutors() {
     return [

@@ -1,5 +1,8 @@
 import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/config/app_theme_config.dart';
+import 'package:edu_match/share/components/lowfi/lowfi_tutor_card.dart';
 import 'package:edu_match/share/components/rating_display.dart';
+import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,19 +35,43 @@ class TutorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Use Low-Fidelity version if enabled
+    if (AppThemeConfig.isLowFidelityMode) {
+      final tutor = TutorModel(
+        id: id,
+        name: name,
+        avatar: avatar,
+        rating: rating,
+        reviewCount: reviewCount,
+        pricePerHour: pricePerHour,
+        subjects: subjects,
+        isOnline: isOnline,
+        latitude: 16.0544, // Default Đà Nẵng coordinates
+        longitude: 108.2022,
+      );
+      
+      return LowFiTutorCard(
+        tutor: tutor,
+        onTap: onTap ?? onViewProfile,
+      );
+    }
+    
+    // Original full-design version
+    final colors = AppThemeConfig.colors;
+    
     return GestureDetector(
       onTap: onTap ?? onViewProfile,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: colors.white,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: AppColors.borderColor,
+            color: colors.borderColor,
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadowColor,
+              color: colors.shadowColor,
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -63,7 +90,7 @@ class TutorCard extends StatelessWidget {
                   ),
                   child: Container(
                     height: 120.h,
-                    color: AppColors.bgLight,
+                    color: colors.bgLight,
                     child: Image.asset(
                       avatar,
                       fit: BoxFit.cover,
@@ -94,7 +121,7 @@ class TutorCard extends StatelessWidget {
                         vertical: 4.h,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.successGreen,
+                        color: colors.successGreen,
                         borderRadius: BorderRadius.circular(12.r),
                       ),
                       child: Text(
@@ -123,7 +150,7 @@ class TutorCard extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
+                        color: colors.textDark,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
