@@ -313,7 +313,7 @@ class CourseListViewCard extends StatelessWidget {
         ),
         // View Details Button
         GestureDetector(
-          onTap: onViewDetails,
+          onTap: onViewDetails ?? onTap,
           child: Container(
             padding: EdgeInsets.symmetric(
               horizontal: 12.w,

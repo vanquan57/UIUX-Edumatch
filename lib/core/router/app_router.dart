@@ -17,6 +17,8 @@ import 'package:edu_match/student/features/confirm_booking/presentation/views/se
 import 'package:edu_match/student/features/home/presentation/views/student_home_page.dart';
 import 'package:edu_match/student/features/list_tutor/presentation/views/tutor_list_page.dart';
 import 'package:edu_match/student/features/list_courses/presentation/views/list_course_page.dart';
+import 'package:edu_match/student/features/course_details/presentation/views/course_details_page.dart';
+import 'package:edu_match/student/features/feedback/presentation/views/list_feedback_course.dart';
 import 'package:edu_match/student/features/feedback/presentation/views/list_feedback.dart';
 import 'package:edu_match/student/features/tutor_details/presentation/views/tutor_details_page.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/profile_welcome_view.dart';
@@ -40,6 +42,8 @@ class AppRouter {
   static const String marketplaceTutorList = '/marketplace/tutors';
   static const String marketplaceTutorDetails = '/marketplace/tutor-details/:tutorId';
   static const String courseList = '/courses';
+  static const String courseDetails = '/courses/:courseId';
+  static const String courseFeedbackList = '/courses/:courseId/feedback';
   static const String feedbackList = '/tutor/:tutorId/feedback';
   static const String bookingLearningMethod = '/booking/learning-method';
   static const String bookingSelectTimeSlot = '/booking/select-time-slot';
@@ -226,6 +230,42 @@ class AppRouter {
             showHeader: true,
             showFooter: true,
             child: const CourseListPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: courseDetails,
+        name: 'courseDetails',
+        builder: (context, state) {
+          final courseId = state.pathParameters['courseId']!;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            padding: EdgeInsets.zero,
+            child: CourseDetailsPage(courseId: courseId),
+          );
+        },
+      ),
+      GoRoute(
+        path: courseFeedbackList,
+        name: 'courseFeedbackList',
+        builder: (context, state) {
+          final courseId = state.pathParameters['courseId']!;
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final courseName = extra['courseName'] as String? ?? 'Khóa học';
+          final courseRating = extra['courseRating'] as double? ?? 0.0;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            backgroundColor: AppColors.bgLight,
+            padding: EdgeInsets.zero,
+            child: CourseFeedbackListPage(
+              courseId: courseId,
+              courseName: courseName,
+              courseRating: courseRating,
+            ),
           );
         },
       ),

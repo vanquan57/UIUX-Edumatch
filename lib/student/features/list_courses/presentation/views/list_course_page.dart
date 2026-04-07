@@ -4,6 +4,8 @@ import 'package:edu_match/student/data/models/course_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
+import 'package:edu_match/core/router/app_router.dart';
 
 class CourseListPage extends StatefulWidget {
   const CourseListPage({super.key});
@@ -184,18 +186,10 @@ class _CourseListPageState extends State<CourseListPage> {
           totalHours: course.totalHours,
           totalLectures: course.totalLectures,
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Xem khóa học: ${course.title}'),
-              ),
-            );
+            context.push('/courses/${course.id}');
           },
           onViewDetails: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Xem chi tiết khóa học: ${course.title}'),
-              ),
-            );
+            context.push('/courses/${course.id}');
           },
         );
       },
