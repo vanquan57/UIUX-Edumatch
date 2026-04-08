@@ -29,7 +29,7 @@ class _BlogPageState extends State<BlogPage> {
     _BlogStep(
       title: 'Xây dựng lộ trình học tập cá nhân',
       description:
-          'Dựa trên mục tiêu và kết quả đánh giá, BIT thiết kế lộ trình Scaffolded Learning theo từng cấp độ để học viên phát triển toàn diện qua từng giai đoạn.',
+          'Dựa trên mục tiêu và kết quả đánh giá, EDUMATCH thiết kế lộ trình Scaffolded Learning theo từng cấp độ để học viên phát triển toàn diện qua từng giai đoạn.',
     ),
     _BlogStep(
       title: 'Học và điều chỉnh liên tục',
@@ -49,7 +49,7 @@ class _BlogPageState extends State<BlogPage> {
       bullets: [
         'Trang bị vững chắc kiến thức nền tảng các môn học',
         'Sử dụng mindmap để hệ thống kiến thức tránh bỏ sót',
-        'Tiếp cận tài liệu độc quyền từ BIT EDUCATION',
+        'Tiếp cận tài liệu độc quyền từ EDUMATCH',
       ],
     ),
     _BlogStep(
@@ -71,7 +71,7 @@ class _BlogPageState extends State<BlogPage> {
     _BlogStep(
       title: 'Thi thử và làm đề ngẫu nhiên',
       bullets: [
-        'Làm đề từ ngân hàng đề thi tại BIT EDUCATION',
+        'Làm đề từ ngân hàng đề thi tại EDUMATCH',
         'Bấm giờ mô phỏng áp lực như thi thật',
         'Phân tích kết quả và đưa ra hướng cải thiện điểm',
       ],
@@ -106,7 +106,7 @@ class _BlogPageState extends State<BlogPage> {
 
   final List<_BlogStep> _benefits = const [
     _BlogStep(
-      title: 'Lộ trình học tập cá nhân hóa tại BIT',
+      title: 'Lộ trình học tập cá nhân hóa tại EDUMATCH',
       description:
           'Tập trung đúng phần kiến thức học viên còn yếu, từ đó tiến dần từ cơ bản đến nâng cao một cách vững chắc.',
     ),
@@ -161,7 +161,7 @@ class _BlogPageState extends State<BlogPage> {
         _buildStepGrid(_scoreRoadmap),
         SizedBox(height: 32.h),
         _buildSectionTitle(
-          title: 'Điểm Đặc Biệt Của BIT EDUCATION',
+          title: 'Điểm Đặc Biệt Của EDUMATCH',
           subtitle:
               'Tập trung cá nhân hóa, theo dõi sát sao và hỗ trợ toàn diện cho học viên.',
         ),
@@ -169,7 +169,7 @@ class _BlogPageState extends State<BlogPage> {
         _buildStepGrid(_specialValues),
         SizedBox(height: 32.h),
         _buildSectionTitle(
-          title: 'Phụ Huynh - Học Sinh BIT Nói Gì',
+          title: 'Phụ Huynh - Học Sinh EDUMATCH Nói Gì',
           subtitle:
               'Cảm nhận thực tế từ học viên và phụ huynh qua những phản hồi trực quan.',
         ),
@@ -177,7 +177,7 @@ class _BlogPageState extends State<BlogPage> {
         _buildImageSlider(),
         SizedBox(height: 32.h),
         _buildSectionTitle(
-          title: 'Quyền Lợi Khi Học Tại BIT EDUCATION',
+          title: 'Quyền Lợi Khi Học Tại EDUMATCH',
         ),
         SizedBox(height: 14.h),
         ClipRRect(
@@ -206,7 +206,7 @@ class _BlogPageState extends State<BlogPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'BLOG GIÁO DỤC BIT',
+            'BLOG GIÁO DỤC EDUMATCH',
             style: TextStyle(
               fontSize: 12.sp,
               color: AppColors.primaryGreenDark,
