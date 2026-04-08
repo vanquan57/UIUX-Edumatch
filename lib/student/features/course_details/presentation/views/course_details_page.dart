@@ -546,10 +546,7 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
             color: AppColors.textGray,
           ),
         ),
-        children: section.lectures.asMap().entries.map((entry) {
-          final index = entry.key;
-          final lecture = entry.value;
-          final isPreviewAvailable = index < 3; // First 3 lectures have preview
+        children: section.lectures.map((lecture) {
           
           return ListTile(
             leading: Icon(
@@ -568,16 +565,20 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                     color: AppColors.textDark,
                   ),
                 ),
-                if (isPreviewAvailable && lecture.type == 'video')
+                if (lecture.hasPreview && lecture.type == 'video')
                   Padding(
                     padding: EdgeInsets.only(top: 4.h),
                     child: GestureDetector(
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Xem video học thử: ${lecture.title}'),
-                            backgroundColor: AppColors.primaryGreen,
-                          ),
+                        context.push(
+                          '/video-preview',
+                          extra: {
+                            'videoUrl': lecture.previewVideoUrl,
+                            'title': lecture.title,
+                            'courseName': course.title,
+                            'instructorName': course.instructorName,
+                            'duration': lecture.duration,
+                          },
                         );
                       },
                       child: Text(
@@ -604,7 +605,7 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                     color: AppColors.textGray,
                   ),
                 ),
-                if (isPreviewAvailable)
+                if (lecture.hasPreview)
                   Padding(
                     padding: EdgeInsets.only(top: 2.h),
                     child: Container(
