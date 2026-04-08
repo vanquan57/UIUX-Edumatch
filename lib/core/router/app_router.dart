@@ -21,6 +21,7 @@ import 'package:edu_match/student/features/course_details/presentation/views/cou
 import 'package:edu_match/student/features/feedback/presentation/views/list_feedback_course.dart';
 import 'package:edu_match/student/features/feedback/presentation/views/list_feedback.dart';
 import 'package:edu_match/student/features/tutor_details/presentation/views/tutor_details_page.dart';
+import 'package:edu_match/student/features/video-previews/presentation/views/video_preview_page.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/profile_welcome_view.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/subject_interest_view.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/welcome_view.dart';
@@ -44,6 +45,7 @@ class AppRouter {
   static const String courseList = '/courses';
   static const String courseDetails = '/courses/:courseId';
   static const String courseFeedbackList = '/courses/:courseId/feedback';
+  static const String videoPreview = '/video-preview';
   static const String feedbackList = '/tutor/:tutorId/feedback';
   static const String bookingLearningMethod = '/booking/learning-method';
   static const String bookingSelectTimeSlot = '/booking/select-time-slot';
@@ -265,6 +267,27 @@ class AppRouter {
               courseId: courseId,
               courseName: courseName,
               courseRating: courseRating,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: videoPreview,
+        name: 'videoPreview',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            backgroundColor: AppColors.bgLight,
+            padding: EdgeInsets.zero,
+            child: VideoPreviewPage(
+              videoUrl: extra['videoUrl'] as String,
+              title: extra['title'] as String,
+              courseName: extra['courseName'] as String,
+              instructorName: extra['instructorName'] as String,
+              duration: extra['duration'] as String,
             ),
           );
         },

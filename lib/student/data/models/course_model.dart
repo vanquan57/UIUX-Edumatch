@@ -14,11 +14,15 @@ class CourseLecture {
   final String title;
   final String duration;
   final String type; // "video", "article", "quiz"
+  final bool hasPreview; // Flag để check có học thử không
+  final String? previewVideoUrl; // URL video học thử
 
   CourseLecture({
     required this.title,
     required this.duration,
     required this.type,
+    this.hasPreview = false,
+    this.previewVideoUrl,
   });
 }
 
@@ -126,17 +130,27 @@ class CourseModel {
                 title: 'Hướng dẫn tải Source code & Slide của khoá học.',
                 duration: '2:47',
                 type: 'video',
+                hasPreview: true,
+                previewVideoUrl: 'assets/videos/course1.mp4',
               ),
               CourseLecture(
                 title: 'Download Slide + Code của khoá học.',
                 duration: '0:23',
                 type: 'article',
               ),
-              CourseLecture(title: 'About me', duration: '0:54', type: 'video'),
+              CourseLecture(
+                title: 'About me', 
+                duration: '0:54', 
+                type: 'video',
+                hasPreview: true,
+                previewVideoUrl: 'assets/videos/course2.mp4',
+              ),
               CourseLecture(
                 title: 'Khoá học này dành cho ai? không dành cho ai?',
                 duration: '1:51',
                 type: 'video',
+                hasPreview: true,
+                previewVideoUrl: 'assets/videos/course3.mp4',
               ),
               CourseLecture(
                 title: 'Nội dung khoá học này bao gồm những gì?',
@@ -173,6 +187,8 @@ class CourseModel {
                 title: 'EC2 Overview',
                 duration: '1:00',
                 type: 'video',
+                hasPreview: true,
+                previewVideoUrl: 'assets/videos/course1.mp4',
               ),
               CourseLecture(
                 title: 'Create EC2 Instance',
@@ -189,6 +205,8 @@ class CourseModel {
                 title: 'EBS Overview',
                 duration: '1:00',
                 type: 'video',
+                hasPreview: true,
+                previewVideoUrl: 'assets/videos/course2.mp4',
               ),
               CourseLecture(
                 title: 'Create EBS Volume',
@@ -312,7 +330,13 @@ class CourseModel {
             title: 'Giới thiệu',
             duration: '1:00',
             lectures: [
-              CourseLecture(title: 'Bài 1', duration: '30:00', type: 'video'),
+              CourseLecture(
+                title: 'Bài 1', 
+                duration: '30:00', 
+                type: 'video',
+                hasPreview: true,
+                previewVideoUrl: 'assets/videos/course3.mp4',
+              ),
             ],
           ),
         ],
@@ -346,7 +370,13 @@ class CourseModel {
             title: 'Giới thiệu',
             duration: '1:00',
             lectures: [
-              CourseLecture(title: 'Bài 1', duration: '30:00', type: 'video'),
+              CourseLecture(
+                title: 'Bài 1', 
+                duration: '30:00', 
+                type: 'video',
+                hasPreview: true,
+                previewVideoUrl: 'assets/videos/course1.mp4',
+              ),
             ],
           ),
         ],
@@ -380,7 +410,13 @@ class CourseModel {
             title: 'Giới thiệu',
             duration: '1:00',
             lectures: [
-              CourseLecture(title: 'Bài 1', duration: '30:00', type: 'video'),
+              CourseLecture(
+                title: 'Bài 1', 
+                duration: '30:00', 
+                type: 'video',
+                hasPreview: true,
+                previewVideoUrl: 'assets/videos/course2.mp4',
+              ),
             ],
           ),
         ],
@@ -510,7 +546,13 @@ class CourseModel {
               title: 'Giới thiệu',
               duration: '1:00',
               lectures: [
-                CourseLecture(title: 'Bài 1', duration: '30:00', type: 'video'),
+                CourseLecture(
+                  title: 'Bài 1', 
+                  duration: '30:00', 
+                  type: 'video',
+                  hasPreview: true,
+                  previewVideoUrl: 'assets/videos/course${(index % 3) + 1}.mp4',
+                ),
               ],
             ),
           ],
