@@ -1065,12 +1065,15 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
           // Buy now button
           GestureDetector(
             onTap: () {
-              // Handle buy course
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Chuyển đến trang thanh toán khóa học: ${course.title}'),
-                  backgroundColor: AppColors.primaryGreen,
-                ),
+              // Navigate to course payment page
+              context.push(
+                AppRouter.coursePayment,
+                extra: {
+                  'courseId': course.id,
+                  'courseTitle': course.title,
+                  'coursePrice': course.price,
+                  'instructorName': course.instructorName,
+                },
               );
             },
             child: Container(

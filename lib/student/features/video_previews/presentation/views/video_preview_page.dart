@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
+import 'package:go_router/go_router.dart';
 import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/router/app_router.dart';
+import 'package:edu_match/student/data/models/course_model.dart';
 
 class VideoPreviewPage extends StatefulWidget {
   final String videoUrl;
@@ -523,12 +526,23 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
                 flex: 2,
                 child: GestureDetector(
                   onTap: () {
+                    // Navigate to course payment page
+                    // First, find the course to get the required data
+                    final courses = CourseModel.mockCourses();
+                    final course = courses.firstWhere(
+                      (c) => c.title == widget.courseName,
+                      orElse: () => courses.first,
+                    );
+                    
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Chuyển đến trang mua khóa học: ${widget.courseName}'),
-                        backgroundColor: AppColors.primaryGreen,
-                      ),
+                    context.push(
+                      AppRouter.coursePayment,
+                      extra: {
+                        'courseId': course.id,
+                        'courseTitle': course.title,
+                        'coursePrice': course.price,
+                        'instructorName': course.instructorName,
+                      },
                     );
                   },
                   child: Container(
