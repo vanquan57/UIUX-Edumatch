@@ -22,7 +22,7 @@ class _HeaderState extends State<Header> {
   static const _navItems = [
     _NavItem('Tìm gia sư', '/marketplace/tutors'),
     _NavItem('Khóa học', '/courses'),
-    _NavItem('Về chúng tôi', '/about'),
+    _NavItem('Về chúng tôi', '/about-us'),
     _NavItem('Blog', '/blog'),
   ];
 
