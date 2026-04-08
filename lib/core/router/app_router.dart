@@ -12,6 +12,8 @@ import 'package:edu_match/student/features/confirm_booking/presentation/views/ch
 import 'package:edu_match/student/features/confirm_booking/presentation/views/confirm_info_booking.dart';
 import 'package:edu_match/student/features/payment/presentation/views/payment_page.dart';
 import 'package:edu_match/student/features/payment/presentation/views/payment_successful_page.dart';
+import 'package:edu_match/student/features/payment course/presentation/views/payment_course_page.dart';
+import 'package:edu_match/student/features/payment course/presentation/views/payment_course_successful_page.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/request_learning_requirement.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/select_time_slot.dart';
 import 'package:edu_match/student/features/home/presentation/views/student_home_page.dart';
@@ -21,7 +23,7 @@ import 'package:edu_match/student/features/course_details/presentation/views/cou
 import 'package:edu_match/student/features/feedback/presentation/views/list_feedback_course.dart';
 import 'package:edu_match/student/features/feedback/presentation/views/list_feedback.dart';
 import 'package:edu_match/student/features/tutor_details/presentation/views/tutor_details_page.dart';
-import 'package:edu_match/student/features/video-previews/presentation/views/video_preview_page.dart';
+import 'package:edu_match/student/features/video_previews/presentation/views/video_preview_page.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/profile_welcome_view.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/subject_interest_view.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/welcome_view.dart';
@@ -53,6 +55,8 @@ class AppRouter {
   static const String bookingConfirmInfo = '/booking/confirm-info';
   static const String bookingPayment = '/booking/payment';
   static const String bookingPaymentSuccess = '/booking/payment-success';
+  static const String coursePayment = '/course/payment';
+  static const String coursePaymentSuccess = '/course/payment-success';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -412,6 +416,41 @@ class AppRouter {
             backgroundColor: AppColors.bgLight,
             padding: EdgeInsets.zero,
             child: const PaymentSuccessfulPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: coursePayment,
+        name: 'coursePayment',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: true,
+            showFooter: true,
+            backgroundColor: AppColors.bgLight,
+            padding: EdgeInsets.zero,
+            child: PaymentCoursePage(
+              courseId: extra['courseId'] as String,
+              courseTitle: extra['courseTitle'] as String,
+              coursePrice: extra['coursePrice'] as double,
+              instructorName: extra['instructorName'] as String,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: coursePaymentSuccess,
+        name: 'coursePaymentSuccess',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: true,
+            showFooter: true,
+            backgroundColor: AppColors.bgLight,
+            padding: EdgeInsets.zero,
+            child: PaymentCourseSuccessfulPage(courseTitle: extra['courseTitle'] as String),
           );
         },
       ),
