@@ -1,6 +1,8 @@
 import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -34,10 +36,10 @@ class Footer extends StatelessWidget {
                       child: _LinksSection(
                         title: 'Liên kết nhanh',
                         items: const [
-                          _LinkItem('Tìm gia sư', '/find-tutor'),
-                          _LinkItem('Khóa học', '/courses'),
-                          _LinkItem('Blog', '/blog'),
-                          _LinkItem('Về chúng tôi', '/about'),
+                          _LinkItem('Tìm gia sư', AppRouter.marketplaceTutorList),
+                          _LinkItem('Khóa học', AppRouter.courseList),
+                          _LinkItem('Blog', AppRouter.blog),
+                          _LinkItem('Về chúng tôi', AppRouter.aboutUs),
                         ],
                       ),
                     ),
@@ -176,7 +178,7 @@ class _LinksSection extends StatelessWidget {
           (item) => Padding(
             padding: EdgeInsets.only(bottom: 10.h),
             child: GestureDetector(
-              onTap: () {}, // TODO: navigate
+              onTap: () => context.go(item.path),
               child: Text(
                 item.label,
                 style: GoogleFonts.poppins(
@@ -197,11 +199,14 @@ class _LinksSection extends StatelessWidget {
 
 class _ContactSection extends StatelessWidget {
   static const _contacts = [
-    _ContactItem(Icons.email_outlined, 'contact@edumatch.vn',
-        'mailto:contact@edumatch.vn'),
-    _ContactItem(Icons.phone_outlined, '1800 1234', 'tel:18001234'),
+    _ContactItem(
+      Icons.email_outlined,
+      'info@edumatch.online',
+      'mailto:info@edumatch.online',
+    ),
+    _ContactItem(Icons.phone_outlined, '0986 888 440', 'tel:0986888440'),
     _ContactItem(Icons.location_on_outlined,
-        '123 Nguyễn Huệ, Q.1, TP. Hồ Chí Minh', null),
+        '470 Trần Đại Nghĩa, P. Ngũ Hành Sơn, Tp. Đà Nẵng', null),
   ];
 
   @override

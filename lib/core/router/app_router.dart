@@ -28,6 +28,7 @@ import 'package:edu_match/student/features/onboarding/presentation/views/profile
 import 'package:edu_match/student/features/onboarding/presentation/views/subject_interest_view.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/welcome_view.dart';
 import 'package:edu_match/student/features/about_us/presentation/views/about_us.dart';
+import 'package:edu_match/student/features/blog/presentation/views/blog_page.dart';
 import 'package:edu_match/tutor/features/home/presentation/views/tutor_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -59,6 +60,7 @@ class AppRouter {
   static const String coursePayment = '/course/payment';
   static const String coursePaymentSuccess = '/course/payment-success';
   static const String aboutUs = '/about-us';
+  static const String blog = '/blog';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -466,6 +468,19 @@ class AppRouter {
             showFooter: true,
             backgroundColor: AppColors.white,
             child: const AboutUsPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: blog,
+        name: 'blog',
+        builder: (context, state) {
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: true,
+            showFooter: true,
+            backgroundColor: AppColors.white,
+            child: const BlogPage(),
           );
         },
       ),
