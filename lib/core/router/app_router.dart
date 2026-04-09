@@ -22,6 +22,7 @@ import 'package:edu_match/student/features/list_courses/presentation/views/list_
 import 'package:edu_match/student/features/course_details/presentation/views/course_details_page.dart';
 import 'package:edu_match/student/features/feedback/presentation/views/list_feedback_course.dart';
 import 'package:edu_match/student/features/feedback/presentation/views/list_feedback.dart';
+import 'package:edu_match/student/features/notification/presentation/views/notification_page.dart';
 import 'package:edu_match/student/features/tutor_details/presentation/views/tutor_details_page.dart';
 import 'package:edu_match/student/features/video_previews/presentation/views/video_preview_page.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/profile_welcome_view.dart';
@@ -61,6 +62,7 @@ class AppRouter {
   static const String coursePaymentSuccess = '/course/payment-success';
   static const String aboutUs = '/about-us';
   static const String blog = '/blog';
+  static const String notificationList = '/notifications';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -481,6 +483,19 @@ class AppRouter {
             showFooter: true,
             backgroundColor: AppColors.white,
             child: const BlogPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: notificationList,
+        name: 'notificationList',
+        builder: (context, state) {
+          return const MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: true,
+            showFooter: true,
+            backgroundColor: AppColors.bgLight,
+            child: NotificationPage(),
           );
         },
       ),
