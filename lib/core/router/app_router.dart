@@ -18,6 +18,8 @@ import 'package:edu_match/student/features/confirm_booking/presentation/views/re
 import 'package:edu_match/student/features/confirm_booking/presentation/views/select_time_slot.dart';
 import 'package:edu_match/student/features/home/presentation/views/student_home_page.dart';
 import 'package:edu_match/student/features/list_tutor/presentation/views/tutor_list_page.dart';
+import 'package:edu_match/student/features/messenger/presentation/views/chat_detail_page.dart';
+import 'package:edu_match/student/features/messenger/presentation/views/chat_list_page.dart';
 import 'package:edu_match/student/features/list_courses/presentation/views/list_course_page.dart';
 import 'package:edu_match/student/features/course_details/presentation/views/course_details_page.dart';
 import 'package:edu_match/student/features/feedback/presentation/views/list_feedback_course.dart';
@@ -63,6 +65,8 @@ class AppRouter {
   static const String aboutUs = '/about-us';
   static const String blog = '/blog';
   static const String notificationList = '/notifications';
+  static const String messengerChatList = '/messenger/chats';
+  static const String messengerChatDetail = '/messenger/chat';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -496,6 +500,34 @@ class AppRouter {
             showFooter: true,
             backgroundColor: AppColors.bgLight,
             child: NotificationPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: messengerChatList,
+        name: 'messengerChatList',
+        builder: (context, state) {
+          return const MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: true,
+            showFooter: true,
+            backgroundColor: AppColors.bgLight,
+            child: ChatListPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: '$messengerChatDetail/:tutorId',
+        name: 'messengerChatDetail',
+        builder: (context, state) {
+          final tutorId = state.pathParameters['tutorId']!;
+          final tutorName = state.extra as String?;
+          return MainLayout(
+            layoutType: LayoutType.fullscreen,
+            showHeader: false,
+            showFooter: false,
+            backgroundColor: AppColors.bgLight,
+            child: ChatDetailPage(tutorId: tutorId, tutorName: tutorName),
           );
         },
       ),

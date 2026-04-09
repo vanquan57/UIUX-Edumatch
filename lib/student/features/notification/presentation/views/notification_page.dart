@@ -32,15 +32,35 @@ class NotificationPage extends StatelessWidget {
           ),
         ),
         SizedBox(height: 16.h),
-        ListView.separated(
-          itemCount: notifications.length,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          separatorBuilder: (_, __) => SizedBox(height: 10.h),
-          itemBuilder: (context, index) {
-            return NotificationCard(notification: notifications[index]);
-          },
-        ),
+        if (notifications.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: AppColors.borderColor),
+            ),
+            child: Text(
+              'Không có thông báo nào cả',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 13.sp,
+                color: AppColors.textGray,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          )
+        else
+          ListView.separated(
+            itemCount: notifications.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            separatorBuilder: (_, __) => SizedBox(height: 10.h),
+            itemBuilder: (context, index) {
+              return NotificationCard(notification: notifications[index]);
+            },
+          ),
       ],
     );
   }
