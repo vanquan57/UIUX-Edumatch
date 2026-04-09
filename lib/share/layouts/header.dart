@@ -215,7 +215,7 @@ class _LoggedInActions extends StatelessWidget {
         _BadgeIconButton(
           icon: Icons.chat_bubble_outline_rounded,
           badgeCount: 1,
-          onTap: () {},
+          onTap: () => context.go(AppRouter.messengerChatList),
         ),
         SizedBox(width: 8.w),
         // Avatar dropdown
