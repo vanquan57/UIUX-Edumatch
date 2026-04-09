@@ -205,11 +205,10 @@ class _LoggedInActions extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Notification icon
         _BadgeIconButton(
           icon: Icons.notifications_outlined,
           badgeCount: 3,
-          onTap: () {},
+          onTap: () => context.go(AppRouter.notificationList),
         ),
         SizedBox(width: 4.w),
         // Chat icon
@@ -231,59 +230,65 @@ class _LoggedInActions extends StatelessWidget {
 class _BadgeIconButton extends StatelessWidget {
   final IconData icon;
   final int badgeCount;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _BadgeIconButton({
     required this.icon,
     required this.badgeCount,
-    required this.onTap,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            width: 36.w,
-            height: 36.w,
-            decoration: BoxDecoration(
-              color: AppColors.bgLight,
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: Icon(
-              icon,
-              size: 20.sp,
-              color: AppColors.textDark,
-            ),
+    final button = Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: 36.w,
+          height: 36.w,
+          decoration: BoxDecoration(
+            color: AppColors.bgLight,
+            borderRadius: BorderRadius.circular(10.r),
           ),
-          if (badgeCount > 0)
-            Positioned(
-              top: -4,
-              right: -4,
-              child: Container(
-                width: 16.w,
-                height: 16.w,
-                decoration: const BoxDecoration(
-                  color: AppColors.errorRed,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    badgeCount > 9 ? '9+' : '$badgeCount',
-                    style: GoogleFonts.poppins(
-                      fontSize: 9.sp,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.white,
-                    ),
+          child: Icon(
+            icon,
+            size: 20.sp,
+            color: AppColors.textDark,
+          ),
+        ),
+        if (badgeCount > 0)
+          Positioned(
+            top: -4,
+            right: -4,
+            child: Container(
+              width: 16.w,
+              height: 16.w,
+              decoration: const BoxDecoration(
+                color: AppColors.errorRed,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  badgeCount > 9 ? '9+' : '$badgeCount',
+                  style: GoogleFonts.poppins(
+                    fontSize: 9.sp,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.white,
                   ),
                 ),
               ),
             ),
-        ],
-      ),
+          ),
+      ],
+    );
+
+    if (onTap == null) {
+      return button;
+    }
+
+    return GestureDetector(
+      onTap: onTap,
+      child: button,
     );
   }
 }
