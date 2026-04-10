@@ -398,6 +398,8 @@ class _AvatarDropdown extends StatelessWidget {
         context.go(AppRouter.login);
         break;
       case _MenuAction.profile:
+        context.go(AppRouter.accountProfile);
+        break;
       case _MenuAction.schedule:
       case _MenuAction.courses:
       case _MenuAction.favorites:

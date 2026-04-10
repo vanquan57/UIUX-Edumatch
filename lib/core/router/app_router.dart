@@ -32,6 +32,7 @@ import 'package:edu_match/student/features/onboarding/presentation/views/subject
 import 'package:edu_match/student/features/onboarding/presentation/views/welcome_view.dart';
 import 'package:edu_match/student/features/about_us/presentation/views/about_us.dart';
 import 'package:edu_match/student/features/blog/presentation/views/blog_page.dart';
+import 'package:edu_match/student/features/account/presentation/views/account_page.dart';
 import 'package:edu_match/tutor/features/home/presentation/views/tutor_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -67,6 +68,7 @@ class AppRouter {
   static const String notificationList = '/notifications';
   static const String messengerChatList = '/messenger/chats';
   static const String messengerChatDetail = '/messenger/chat';
+  static const String accountProfile = '/account/profile';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -528,6 +530,20 @@ class AppRouter {
             showFooter: false,
             backgroundColor: AppColors.bgLight,
             child: ChatDetailPage(tutorId: tutorId, tutorName: tutorName),
+          );
+        },
+      ),
+      GoRoute(
+        path: accountProfile,
+        name: 'accountProfile',
+        builder: (context, state) {
+          return const MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: false,
+            backgroundColor: AppColors.white,
+            padding: EdgeInsets.zero,
+            child: AccountPage(),
           );
         },
       ),
