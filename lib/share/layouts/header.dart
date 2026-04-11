@@ -402,6 +402,8 @@ class _AvatarDropdown extends StatelessWidget {
         break;
       case _MenuAction.schedule:
       case _MenuAction.courses:
+        context.push(AppRouter.myCourses);
+        break;
       case _MenuAction.favorites:
       case _MenuAction.manageChildren:
         // TODO: navigate to respective pages

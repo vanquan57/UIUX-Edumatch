@@ -7,27 +7,29 @@ import 'package:edu_match/core/config/app_colors.dart';
 import 'package:edu_match/core/router/app_router.dart';
 import 'package:edu_match/student/data/models/course_model.dart';
 
-class VideoPreviewPage extends StatefulWidget {
+class PlayVideoPage extends StatefulWidget {
   final String videoUrl;
   final String title;
   final String courseName;
   final String instructorName;
   final String duration;
+  final bool isVideoPreview;
 
-  const VideoPreviewPage({
+  const PlayVideoPage({
     super.key,
     required this.videoUrl,
     required this.title,
     required this.courseName,
     required this.instructorName,
     required this.duration,
+    required this.isVideoPreview,
   });
 
   @override
-  State<VideoPreviewPage> createState() => _VideoPreviewPageState();
+  State<PlayVideoPage> createState() => _PlayVideoPageState();
 }
 
-class _VideoPreviewPageState extends State<VideoPreviewPage> {
+class _PlayVideoPageState extends State<PlayVideoPage> {
   late VideoPlayerController _controller;
   bool _isPlaying = false;
   bool _showControls = true;
@@ -160,7 +162,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
           SizedBox(width: 12.w),
           Expanded(
             child: Text(
-              'Học thử miễn phí',
+              widget.isVideoPreview ? 'Học thử miễn phí' : 'Khóa học',
               style: GoogleFonts.poppins(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
@@ -175,7 +177,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
               borderRadius: BorderRadius.circular(20.r),
             ),
             child: Text(
-              'Miễn phí',
+              widget.isVideoPreview ? 'Miễn phí' : 'Đã mua',
               style: GoogleFonts.poppins(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
@@ -493,95 +495,96 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
               ],
             ),
           ),
-          SizedBox(height: 20.h),
-          
-          // Action buttons
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 14.h),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.primaryGreen),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Text(
-                      'Quay lại',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primaryGreen,
+          // Action buttons - chỉ hiển thị khi là video preview
+          if (widget.isVideoPreview) ...[
+            SizedBox(height: 20.h),
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 14.h),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.primaryGreen),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Text(
+                        'Quay lại',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryGreen,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                flex: 2,
-                child: GestureDetector(
-                  onTap: () {
-                    // Navigate to course payment page
-                    // First, find the course to get the required data
-                    final courses = CourseModel.mockCourses();
-                    final course = courses.firstWhere(
-                      (c) => c.title == widget.courseName,
-                      orElse: () => courses.first,
-                    );
-                    
-                    Navigator.pop(context);
-                    context.push(
-                      AppRouter.coursePayment,
-                      extra: {
-                        'courseId': course.id,
-                        'courseTitle': course.title,
-                        'coursePrice': course.price,
-                        'instructorName': course.instructorName,
-                      },
-                    );
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 14.h),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryGreen,
-                      borderRadius: BorderRadius.circular(12.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primaryGreen.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.shopping_cart,
-                          size: 18.sp,
-                          color: AppColors.white,
-                        ),
-                        SizedBox(width: 8.w),
-                        Text(
-                          'Mua khóa học',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
+                SizedBox(width: 12.w),
+                Expanded(
+                  flex: 2,
+                  child: GestureDetector(
+                    onTap: () {
+                      // Navigate to course payment page
+                      // First, find the course to get the required data
+                      final courses = CourseModel.mockCourses();
+                      final course = courses.firstWhere(
+                        (c) => c.title == widget.courseName,
+                        orElse: () => courses.first,
+                      );
+                      
+                      Navigator.pop(context);
+                      context.push(
+                        AppRouter.coursePayment,
+                        extra: {
+                          'courseId': course.id,
+                          'courseTitle': course.title,
+                          'coursePrice': course.price,
+                          'instructorName': course.instructorName,
+                        },
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 14.h),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryGreen,
+                        borderRadius: BorderRadius.circular(12.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primaryGreen.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.shopping_cart,
+                            size: 18.sp,
                             color: AppColors.white,
                           ),
-                        ),
-                      ],
+                          SizedBox(width: 8.w),
+                          Text(
+                            'Mua khóa học',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.white,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ],
       ),
     );

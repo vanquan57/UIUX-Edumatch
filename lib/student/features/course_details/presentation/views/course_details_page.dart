@@ -571,13 +571,14 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> {
                     child: GestureDetector(
                       onTap: () {
                         context.push(
-                          '/video-preview',
+                          AppRouter.playVideo,
                           extra: {
                             'videoUrl': lecture.previewVideoUrl,
                             'title': lecture.title,
                             'courseName': course.title,
                             'instructorName': course.instructorName,
                             'duration': lecture.duration,
+                            'isVideoPreview': true,
                           },
                         );
                       },

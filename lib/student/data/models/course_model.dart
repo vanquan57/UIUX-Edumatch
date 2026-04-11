@@ -13,9 +13,10 @@ class CourseSection {
 class CourseLecture {
   final String title;
   final String duration;
-  final String type; // "video", "article", "quiz"
+  final String type; // "video", "article", "quiz", "certificate"
   final bool hasPreview; // Flag để check có học thử không
   final String? previewVideoUrl; // URL video học thử
+  final bool isCertificate; // Flag để đánh dấu lecture nhận chứng chỉ
 
   CourseLecture({
     required this.title,
@@ -23,6 +24,7 @@ class CourseLecture {
     required this.type,
     this.hasPreview = false,
     this.previewVideoUrl,
+    this.isCertificate = false,
   });
 }
 
@@ -53,6 +55,7 @@ class CourseModel {
   final List<String> courseIncludes;
   final List<CourseSection> courseSections;
   final List<String> relatedCategories;
+  final bool isCompleted; // Flag để đánh dấu khóa học đã hoàn thành
 
   CourseModel({
     required this.id,
@@ -79,6 +82,7 @@ class CourseModel {
     required this.courseIncludes,
     required this.courseSections,
     required this.relatedCategories,
+    this.isCompleted = false,
   });
 
   /// Mock data for courses list
@@ -103,6 +107,7 @@ class CourseModel {
         subcategory: 'Amazon AWS',
         shortDescription: 'AWS Cloud cho người mới bắt đầu (Tiếng Việt)',
         totalStudents: 5939,
+        isCompleted: true, // Đánh dấu khóa học này đã hoàn thành
         whatYouWillLearn: [
           'Nắm vững các khái niệm về Cloud Computing & AWS',
           'Có kiến thức cơ bản về các dịch vụ AWS (Networking, Compute, Storage, Database, Container...)',
@@ -215,6 +220,18 @@ class CourseModel {
               ),
             ],
           ),
+          CourseSection(
+            title: 'Hoàn thành khóa học',
+            duration: '0:30',
+            lectures: [
+              CourseLecture(
+                title: 'Nhận chứng chỉ hoàn thành khóa học',
+                duration: '0:30',
+                type: 'certificate',
+                isCertificate: true,
+              ),
+            ],
+          ),
         ],
         relatedCategories: [
           'Cloud Computing',
@@ -323,6 +340,7 @@ class CourseModel {
         subcategory: 'Digital Marketing',
         shortDescription: 'Khóa học Marketing cơ bản',
         totalStudents: 1200,
+        isCompleted: false,
         whatYouWillLearn: ['Marketing cơ bản', 'Social Media Strategy'],
         courseIncludes: ['8 giờ video', 'Tài liệu PDF'],
         courseSections: [
@@ -336,6 +354,11 @@ class CourseModel {
                 type: 'video',
                 hasPreview: true,
                 previewVideoUrl: 'assets/videos/course3.mp4',
+              ),
+              CourseLecture(
+                title: 'Bài 2', 
+                duration: '30:00', 
+                type: 'video',
               ),
             ],
           ),
@@ -363,6 +386,7 @@ class CourseModel {
         subcategory: 'Content Marketing',
         shortDescription: 'Khóa học Content Marketing nâng cao',
         totalStudents: 800,
+        isCompleted: false,
         whatYouWillLearn: ['Content Strategy', 'Content Creation'],
         courseIncludes: ['15 giờ video', 'Templates'],
         courseSections: [
@@ -403,6 +427,7 @@ class CourseModel {
         subcategory: 'Video Marketing',
         shortDescription: 'Khóa học làm video marketing',
         totalStudents: 500,
+        isCompleted: false,
         whatYouWillLearn: ['Video Creation', 'Marketing Strategy'],
         courseIncludes: ['20 giờ video', 'Tools'],
         courseSections: [
@@ -539,6 +564,7 @@ class CourseModel {
           subcategory: data['subcategory'] as String,
           shortDescription: 'Khóa học ${data['category']}',
           totalStudents: data['students'] as int,
+          isCompleted: false,
           whatYouWillLearn: ['Kiến thức cơ bản', 'Thực hành'],
           courseIncludes: ['${data['hours']} giờ video', 'Tài liệu'],
           courseSections: [
