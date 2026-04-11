@@ -220,7 +220,7 @@ class AccountPage extends StatelessWidget {
           icon: Icons.calendar_today_outlined,
           title: 'Lịch học (Thời khóa biểu)',
           subtitle: '3 buổi học tuần này',
-          onTap: () {},
+          onTap: () => context.push(AppRouter.mySchedule),
         ),
         _MenuItem(
           icon: Icons.person_outline_rounded,

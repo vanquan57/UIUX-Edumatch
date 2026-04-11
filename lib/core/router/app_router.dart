@@ -37,6 +37,7 @@ import 'package:edu_match/student/features/account/presentation/views/account_pa
 import 'package:edu_match/student/features/my-course/presentation/views/my_course_page.dart';
 import 'package:edu_match/student/features/my-course/presentation/views/course_content_page.dart';
 import 'package:edu_match/student/features/my-course/presentation/views/certificate_page.dart';
+import 'package:edu_match/student/features/my_schedule/presentation/views/my_schedule_page.dart';
 import 'package:edu_match/tutor/features/home/presentation/views/tutor_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -74,6 +75,7 @@ class AppRouter {
   static const String messengerChatDetail = '/messenger/chat';
   static const String accountProfile = '/account/profile';
   static const String myCourses = '/my-courses';
+  static const String mySchedule = '/my-schedule';
   static const String courseContent = '/course-content';
   static const String certificate = '/certificate';
 
@@ -566,6 +568,20 @@ class AppRouter {
             backgroundColor: AppColors.white,
             padding: EdgeInsets.zero,
             child: MyCoursePage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: mySchedule,
+        name: 'mySchedule',
+        builder: (context, state) {
+          return const MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            backgroundColor: AppColors.white,
+            padding: EdgeInsets.zero,
+            child: MySchedulePage(),
           );
         },
       ),
