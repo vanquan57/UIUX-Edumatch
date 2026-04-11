@@ -24,7 +24,7 @@ class AccountPage extends StatelessWidget {
         SizedBox(height: 24.h),
         
         // Lịch sử section
-        _buildHistorySection(),
+        _buildHistorySection(context),
         
         SizedBox(height: 16.h),
         
@@ -206,15 +206,15 @@ class AccountPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHistorySection() {
+  Widget _buildHistorySection(BuildContext context) {
     return _buildSection(
       title: 'Lịch sử',
       items: [
         _MenuItem(
           icon: Icons.school_outlined,
-          title: 'Khóa học đã mua',
+          title: 'Khóa học của tôi',
           subtitle: '5 khóa học',
-          onTap: () {},
+          onTap: () => context.push(AppRouter.myCourses),
         ),
         _MenuItem(
           icon: Icons.calendar_today_outlined,

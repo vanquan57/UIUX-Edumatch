@@ -7,6 +7,7 @@ import 'package:edu_match/features/auth/presentation/views/register_view.dart';
 import 'package:edu_match/parent/features/home/presentation/views/parent_home_page.dart';
 import 'package:edu_match/share/layouts/main_layout.dart';
 import 'package:edu_match/student/data/models/booking_model.dart';
+import 'package:edu_match/student/data/models/course_model.dart';
 import 'package:edu_match/student/data/models/tutor_model.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/choice_learning_method.dart';
 import 'package:edu_match/student/features/confirm_booking/presentation/views/confirm_info_booking.dart';
@@ -26,13 +27,16 @@ import 'package:edu_match/student/features/feedback/presentation/views/list_feed
 import 'package:edu_match/student/features/feedback/presentation/views/list_feedback.dart';
 import 'package:edu_match/student/features/notification/presentation/views/notification_page.dart';
 import 'package:edu_match/student/features/tutor_details/presentation/views/tutor_details_page.dart';
-import 'package:edu_match/student/features/video_previews/presentation/views/video_preview_page.dart';
+import 'package:edu_match/student/features/play_video/presentation/views/play_video_page.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/profile_welcome_view.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/subject_interest_view.dart';
 import 'package:edu_match/student/features/onboarding/presentation/views/welcome_view.dart';
 import 'package:edu_match/student/features/about_us/presentation/views/about_us.dart';
 import 'package:edu_match/student/features/blog/presentation/views/blog_page.dart';
 import 'package:edu_match/student/features/account/presentation/views/account_page.dart';
+import 'package:edu_match/student/features/my-course/presentation/views/my_course_page.dart';
+import 'package:edu_match/student/features/my-course/presentation/views/course_content_page.dart';
+import 'package:edu_match/student/features/my-course/presentation/views/certificate_page.dart';
 import 'package:edu_match/tutor/features/home/presentation/views/tutor_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -53,7 +57,7 @@ class AppRouter {
   static const String courseList = '/courses';
   static const String courseDetails = '/courses/:courseId';
   static const String courseFeedbackList = '/courses/:courseId/feedback';
-  static const String videoPreview = '/video-preview';
+  static const String playVideo = '/play-video';
   static const String feedbackList = '/tutor/:tutorId/feedback';
   static const String bookingLearningMethod = '/booking/learning-method';
   static const String bookingSelectTimeSlot = '/booking/select-time-slot';
@@ -69,6 +73,9 @@ class AppRouter {
   static const String messengerChatList = '/messenger/chats';
   static const String messengerChatDetail = '/messenger/chat';
   static const String accountProfile = '/account/profile';
+  static const String myCourses = '/my-courses';
+  static const String courseContent = '/course-content';
+  static const String certificate = '/certificate';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -288,8 +295,8 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: videoPreview,
-        name: 'videoPreview',
+        path: playVideo,
+        name: 'playVideo',
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
           return MainLayout(
@@ -298,12 +305,13 @@ class AppRouter {
             showFooter: true,
             backgroundColor: AppColors.bgLight,
             padding: EdgeInsets.zero,
-            child: VideoPreviewPage(
+            child: PlayVideoPage(
               videoUrl: extra['videoUrl'] as String,
               title: extra['title'] as String,
               courseName: extra['courseName'] as String,
               instructorName: extra['instructorName'] as String,
               duration: extra['duration'] as String,
+              isVideoPreview: extra['isVideoPreview'] as bool? ?? false,
             ),
           );
         },
@@ -544,6 +552,55 @@ class AppRouter {
             backgroundColor: AppColors.white,
             padding: EdgeInsets.zero,
             child: AccountPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: myCourses,
+        name: 'myCourses',
+        builder: (context, state) {
+          return const MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            backgroundColor: AppColors.white,
+            padding: EdgeInsets.zero,
+            child: MyCoursePage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: courseContent,
+        name: 'courseContent',
+        builder: (context, state) {
+          final course = state.extra as CourseModel;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            backgroundColor: AppColors.white,
+            padding: EdgeInsets.zero,
+            child: CourseContentPage(course: course),
+          );
+        },
+      ),
+      GoRoute(
+        path: certificate,
+        name: 'certificate',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            backgroundColor: AppColors.white,
+            padding: EdgeInsets.zero,
+            child: CertificatePage(
+              studentName: extra['studentName'] as String,
+              courseTitle: extra['courseTitle'] as String,
+              instructorName: extra['instructorName'] as String,
+              completionDate: extra['completionDate'] as DateTime,
+            ),
           );
         },
       ),
