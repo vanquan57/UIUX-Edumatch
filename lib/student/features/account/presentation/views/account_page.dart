@@ -226,7 +226,7 @@ class AccountPage extends StatelessWidget {
           icon: Icons.person_outline_rounded,
           title: 'Gia sư đã đặt',
           subtitle: '2 gia sư',
-          onTap: () {},
+          onTap: () => context.push(AppRouter.tutorAssigned),
         ),
       ],
     );
