@@ -38,6 +38,9 @@ import 'package:edu_match/student/features/my-course/presentation/views/my_cours
 import 'package:edu_match/student/features/my-course/presentation/views/course_content_page.dart';
 import 'package:edu_match/student/features/my-course/presentation/views/certificate_page.dart';
 import 'package:edu_match/student/features/my_schedule/presentation/views/my_schedule_page.dart';
+import 'package:edu_match/student/features/tutor_assigned/presentation/views/tutor_assigned_page.dart';
+import 'package:edu_match/student/features/tutor_assigned/presentation/views/tutor_assigned_details_page.dart';
+import 'package:edu_match/student/data/models/tutor_assigned_model.dart';
 import 'package:edu_match/tutor/features/home/presentation/views/tutor_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -78,6 +81,8 @@ class AppRouter {
   static const String mySchedule = '/my-schedule';
   static const String courseContent = '/course-content';
   static const String certificate = '/certificate';
+  static const String tutorAssigned = '/tutor-assigned';
+  static const String tutorAssignedDetails = '/tutor-assigned-details';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -617,6 +622,35 @@ class AppRouter {
               instructorName: extra['instructorName'] as String,
               completionDate: extra['completionDate'] as DateTime,
             ),
+          );
+        },
+      ),
+      GoRoute(
+        path: tutorAssigned,
+        name: 'tutorAssigned',
+        builder: (context, state) {
+          return const MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            backgroundColor: AppColors.white,
+            padding: EdgeInsets.zero,
+            child: TutorAssignedPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: tutorAssignedDetails,
+        name: 'tutorAssignedDetails',
+        builder: (context, state) {
+          final tutorAssigned = state.extra as TutorAssignedModel;
+          return MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            backgroundColor: AppColors.white,
+            padding: EdgeInsets.zero,
+            child: TutorAssignedDetailsPage(tutorAssigned: tutorAssigned),
           );
         },
       ),
