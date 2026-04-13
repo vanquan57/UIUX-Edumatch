@@ -281,7 +281,7 @@ class AccountPage extends StatelessWidget {
           icon: Icons.lock_outline_rounded,
           title: 'Đổi mật khẩu',
           subtitle: 'Bảo mật tài khoản',
-          onTap: () {},
+          onTap: () => context.push(AppRouter.changePassword),
         ),
         _MenuItem(
           icon: Icons.privacy_tip_outlined,
