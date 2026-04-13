@@ -34,7 +34,7 @@ class AccountPage extends StatelessWidget {
         SizedBox(height: 16.h),
         
         // Tài khoản và bảo mật section
-        _buildAccountSecuritySection(),
+        _buildAccountSecuritySection(context),
         
         SizedBox(height: 16.h),
         
@@ -267,7 +267,7 @@ class AccountPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAccountSecuritySection() {
+  Widget _buildAccountSecuritySection(BuildContext context) {
     return _buildSection(
       title: 'Tài khoản và bảo mật',
       items: [
@@ -275,7 +275,7 @@ class AccountPage extends StatelessWidget {
           icon: Icons.edit_outlined,
           title: 'Chỉnh sửa hồ sơ',
           subtitle: 'Cập nhật thông tin cá nhân',
-          onTap: () {},
+          onTap: () => context.push(AppRouter.editProfile),
         ),
         _MenuItem(
           icon: Icons.lock_outline_rounded,
