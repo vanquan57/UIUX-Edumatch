@@ -41,6 +41,7 @@ import 'package:edu_match/student/features/my_schedule/presentation/views/my_sch
 import 'package:edu_match/student/features/tutor_assigned/presentation/views/tutor_assigned_page.dart';
 import 'package:edu_match/student/features/tutor_assigned/presentation/views/tutor_assigned_details_page.dart';
 import 'package:edu_match/student/features/my_wallet/presentation/views/my_wallet_page.dart';
+import 'package:edu_match/student/features/transaction-history/presentation/views/transaction_history_page.dart';
 import 'package:edu_match/student/data/models/tutor_assigned_model.dart';
 import 'package:edu_match/tutor/features/home/presentation/views/tutor_home_page.dart';
 import 'package:flutter/material.dart';
@@ -85,6 +86,7 @@ class AppRouter {
   static const String tutorAssigned = '/tutor-assigned';
   static const String tutorAssignedDetails = '/tutor-assigned-details';
   static const String myWallet = '/my-wallet';
+  static const String transactionHistory = '/transaction-history';
 
   /// Build error page widget
   /// Can be reused for different error scenarios
@@ -666,6 +668,19 @@ class AppRouter {
             showFooter: true,
             backgroundColor: AppColors.white,
             child: MyWalletPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: transactionHistory,
+        name: 'transactionHistory',
+        builder: (context, state) {
+          return const MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            backgroundColor: AppColors.white,
+            child: TransactionHistoryPage(),
           );
         },
       ),
