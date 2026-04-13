@@ -29,7 +29,7 @@ class AccountPage extends StatelessWidget {
         SizedBox(height: 16.h),
         
         // Ví EduMatch section
-        _buildWalletSection(),
+        _buildWalletSection(context),
         
         SizedBox(height: 16.h),
         
@@ -232,14 +232,14 @@ class AccountPage extends StatelessWidget {
     );
   }
 
-  Widget _buildWalletSection() {
+  Widget _buildWalletSection(BuildContext context) {
     return _buildSection(
       title: 'Ví EduMatch',
       items: [
         _MenuItem(
           icon: Icons.account_balance_wallet_outlined,
           title: 'Số dư ví',
-          subtitle: '500,000 VND',
+          subtitle: '750,000 VND',
           trailing: Container(
             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
             decoration: BoxDecoration(
@@ -255,7 +255,7 @@ class AccountPage extends StatelessWidget {
               ),
             ),
           ),
-          onTap: () {},
+          onTap: () => context.push(AppRouter.myWallet),
         ),
         _MenuItem(
           icon: Icons.history_outlined,
