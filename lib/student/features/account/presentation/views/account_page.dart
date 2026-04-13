@@ -261,7 +261,7 @@ class AccountPage extends StatelessWidget {
           icon: Icons.history_outlined,
           title: 'Lịch sử giao dịch',
           subtitle: 'Xem tất cả giao dịch',
-          onTap: () {},
+          onTap: () => context.push(AppRouter.transactionHistory),
         ),
       ],
     );

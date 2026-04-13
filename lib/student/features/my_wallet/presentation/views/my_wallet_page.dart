@@ -1,4 +1,5 @@
 import 'package:edu_match/core/config/app_colors.dart';
+import 'package:edu_match/core/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -246,9 +247,7 @@ class _MyWalletPageState extends State<MyWalletPage> {
                 child: _buildBalanceAction(
                   icon: Icons.history,
                   label: 'Lịch sử',
-                  onTap: () {
-                    // Navigate to transaction history
-                  },
+                  onTap: () => context.push(AppRouter.transactionHistory),
                 ),
               ),
             ],
