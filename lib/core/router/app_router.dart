@@ -34,6 +34,7 @@ import 'package:edu_match/student/features/onboarding/presentation/views/welcome
 import 'package:edu_match/student/features/about_us/presentation/views/about_us.dart';
 import 'package:edu_match/student/features/blog/presentation/views/blog_page.dart';
 import 'package:edu_match/student/features/account/presentation/views/account_page.dart';
+import 'package:edu_match/student/features/account/presentation/views/edit_profile_page.dart';
 import 'package:edu_match/student/features/my-course/presentation/views/my_course_page.dart';
 import 'package:edu_match/student/features/my-course/presentation/views/course_content_page.dart';
 import 'package:edu_match/student/features/my-course/presentation/views/certificate_page.dart';
@@ -79,6 +80,7 @@ class AppRouter {
   static const String messengerChatList = '/messenger/chats';
   static const String messengerChatDetail = '/messenger/chat';
   static const String accountProfile = '/account/profile';
+  static const String editProfile = '/account/edit-profile';
   static const String myCourses = '/my-courses';
   static const String mySchedule = '/my-schedule';
   static const String courseContent = '/course-content';
@@ -563,6 +565,20 @@ class AppRouter {
             backgroundColor: AppColors.white,
             padding: EdgeInsets.zero,
             child: AccountPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: editProfile,
+        name: 'editProfile',
+        builder: (context, state) {
+          return const MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            backgroundColor: AppColors.white,
+            padding: EdgeInsets.zero,
+            child: EditProfilePage(),
           );
         },
       ),
