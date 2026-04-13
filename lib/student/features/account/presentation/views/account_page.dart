@@ -287,7 +287,7 @@ class AccountPage extends StatelessWidget {
           icon: Icons.privacy_tip_outlined,
           title: 'Cài đặt riêng tư',
           subtitle: 'Quản lý quyền riêng tư',
-          onTap: () {},
+          onTap: () => context.push(AppRouter.privacy),
         ),
       ],
     );

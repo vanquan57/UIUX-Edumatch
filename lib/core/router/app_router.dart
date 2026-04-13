@@ -36,6 +36,7 @@ import 'package:edu_match/student/features/blog/presentation/views/blog_page.dar
 import 'package:edu_match/student/features/account/presentation/views/account_page.dart';
 import 'package:edu_match/student/features/account/presentation/views/edit_profile_page.dart';
 import 'package:edu_match/student/features/account/presentation/views/change_password_page.dart';
+import 'package:edu_match/student/features/privacy/presentation/views/privacy_page.dart';
 import 'package:edu_match/student/features/my-course/presentation/views/my_course_page.dart';
 import 'package:edu_match/student/features/my-course/presentation/views/course_content_page.dart';
 import 'package:edu_match/student/features/my-course/presentation/views/certificate_page.dart';
@@ -80,9 +81,11 @@ class AppRouter {
   static const String notificationList = '/notifications';
   static const String messengerChatList = '/messenger/chats';
   static const String messengerChatDetail = '/messenger/chat';
+  static const String account = '/account';
   static const String accountProfile = '/account/profile';
   static const String editProfile = '/account/edit-profile';
   static const String changePassword = '/account/change-password';
+  static const String privacy = '/account/privacy';
   static const String myCourses = '/my-courses';
   static const String mySchedule = '/my-schedule';
   static const String courseContent = '/course-content';
@@ -594,6 +597,20 @@ class AppRouter {
             showFooter: true,
             backgroundColor: AppColors.white,
             child: ChangePasswordPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: privacy,
+        name: 'privacy',
+        builder: (context, state) {
+          return const MainLayout(
+            layoutType: LayoutType.normal,
+            showHeader: false,
+            showFooter: true,
+            backgroundColor: AppColors.white,
+            padding: EdgeInsets.zero,
+            child: PrivacyPage(),
           );
         },
       ),
